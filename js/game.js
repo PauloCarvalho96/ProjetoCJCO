@@ -1,13 +1,14 @@
 import bootGame from './scene/BootGame.js';
 import playGame from './scene/PlayGame.js';
+import forest from './scene/forest/Forest.js';
 
 var game;
 window.onload = function() {
     var gameConfig = {
-        width: 480,
-        height: 640,        
+        width: 800,
+        height: 600,        
         backgroundColor: 0x000000,
-        scene: [bootGame, playGame],
+        scene: [bootGame, playGame, forest],
         physics: {
             default: "arcade",
             arcade: {
