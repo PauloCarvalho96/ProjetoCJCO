@@ -38,16 +38,14 @@ export default class playGame extends Phaser.Scene{
         console.log("Starting game");
 
         //this.archer = new Archer(this, 100, 400);
-        //this.archer.setSize(45, 40);
-        //this.archer.setOffset(40,35);
+        //this.archer.setSize(30, 40);
+        //this.archer.setOffset(48,35);
 
         this.knight = new Knight(this,100,400);
-        this.knight.setSize(40,35);
-        this.knight.setOffset(20,10);
-
+        this.knight.setSize(30,30);
+        this.knight.setOffset(20,15);
 
         this.cursors = this.input.keyboard.createCursorKeys();
-
 
     }
 
