@@ -1,8 +1,8 @@
 
-export default class Archer extends Phaser.Physics.Arcade.Sprite {
+export default class Knight extends Phaser.Physics.Arcade.Sprite {
 
     constructor(scene, x, y) {
-        super(scene, x, y, "archer");
+        super(scene, x, y, "knight");
 
         this.scene.add.existing(this);
 
@@ -14,14 +14,14 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         // animations
         this.scene.anims.create({
             key: 'run', 
-            frames: this.scene.anims.generateFrameNumbers('archer_run', { start: 0, end: 7 }),
+            frames: this.scene.anims.generateFrameNumbers('knight_run', { start: 0, end: 7 }),
             frameRate: 15,
             repeat: -1,
         });
 
         this.scene.anims.create({
             key: 'steady', 
-            frames: this.scene.anims.generateFrameNumbers('archer', { start: 0, end: 7 }),
+            frames: this.scene.anims.generateFrameNumbers('knight', { start: 0, end: 14 }),
             frameRate: 15,
             repeat: -1,
         });
