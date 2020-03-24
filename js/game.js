@@ -1,10 +1,11 @@
 import bootGame from './scene/BootGame.js';
 import playGame from './scene/PlayGame.js';
-import forest from './scene/forest/Forest.js';
+import forest from './scene/maps/forest/Forest.js';
 
 var game;
 window.onload = function() {
     var gameConfig = {
+        type: Phaser.AUTO,
         width: 800,
         height: 600,        
         backgroundColor: 0x000000,
@@ -12,6 +13,7 @@ window.onload = function() {
         physics: {
             default: "arcade",
             arcade: {
+              //gravity: { y: 300 },
               debug: true
             }
         }

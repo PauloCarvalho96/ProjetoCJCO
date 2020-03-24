@@ -10,7 +10,7 @@ export default class bootGame extends Phaser.Scene{
     }
 
     create(){
-        this.scene.start("Forest");
+        this.scene.start("PlayGame");
     }
 
 }
