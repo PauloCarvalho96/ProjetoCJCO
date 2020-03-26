@@ -16,6 +16,7 @@ export default class Castle extends Phaser.Scene {
     this.load.image("back4", "assets/maps/castle/tiles/background4.png");
     this.load.image("back5", "assets/maps/castle/tiles/background5.png");
     this.load.image("tiles", "assets/maps/castle/tiles/main_lev_build.png");
+    this.load.image("decorative", "assets/maps/castle/tiles/other_and_decorative.png");
 
     this.load.tilemapTiledJSON("map", "assets/maps/castle/map2_v3.json");
 
@@ -44,6 +45,9 @@ export default class Castle extends Phaser.Scene {
       const back4 = this.map.addTilesetImage("04 background", "back4");
       const back5 = this.map.addTilesetImage("05 background", "back5");
       const tileset = this.map.addTilesetImage("main_lev_build", "tiles");
+      const castle = this.map.addTilesetImage("main_lev_build", "tiles");
+      const windows = this.map.addTilesetImage("main_lev_build", "tiles");
+      const dec = this.map.addTilesetImage("other_and_decorative", "decorative");
 
       //const tileset1 = this.map.addTilesetImage("mario-tiles", "tiles1");
 
@@ -54,6 +58,9 @@ export default class Castle extends Phaser.Scene {
       this.map.createStaticLayer("background3_b", back3_b, 0, 0); // tem que ter o mesmo nome do cenas do tiler 
       this.map.createStaticLayer("background4", back4, 0, 0); // tem que ter o mesmo nome do cenas do tiler 
       this.map.createStaticLayer("background5", back5, 0, 0); // tem que ter o mesmo nome do cenas do tiler 
+      this.map.createStaticLayer("fundo_castelo", castle, 0, 0);
+      this.map.createStaticLayer("decoracao", dec, 0, 0);
+      this.map.createStaticLayer("janelas", windows, 0, 0);
       const front = this.map.createStaticLayer("piso", tileset, 0, 0);
     
       this.archer = new Archer(this, 50, 360);
