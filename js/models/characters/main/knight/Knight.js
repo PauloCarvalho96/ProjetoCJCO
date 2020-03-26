@@ -4,11 +4,13 @@ export default class Knight extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
         super(scene, x, y, "knight");
 
-        this.scene.add.existing(this);
+        scene.add.existing(this); 
+        scene.physics.add.existing(this); 
+        scene.physics.world.enable(this);
 
-        //enable physics to sprite
-        this.scene.physics.world.enable(this);
-
+        //this.knight.setSize(30,30);
+        //this.knight.setOffset(20,15);
+        
         this.velocity = 100;
 
         // animations

@@ -1,41 +1,21 @@
-import bootGame from './scene/BootGame.js';
-import playGame from './scene/PlayGame.js';
-import forest from './scene/maps/forest/Forest.js';
+import config from './config.js';
+import Forest from '/js/scene/maps/forest/Forest.js';
+import Castle from './scene/maps/castle/Castle.js';
 
-var game;
-window.onload = function() {
-    var gameConfig = {
-        type: Phaser.AUTO,
-        width: 800,
-        height: 600,        
-        backgroundColor: 0x000000,
-        scene: [bootGame, playGame, forest],
-        physics: {
-            default: "arcade",
-            arcade: {
-              //gravity: { y: 300 },
-              debug: true
-            }
-        }
-    }
-    game = new Phaser.Game(gameConfig);
-    window.focus();
-    resizeGame();
-    window.addEventListener("resize", resizeGame);
-}
+class Game extends Phaser.Game{
+    constructor(){
+        super(config);
 
-function resizeGame(){
-    var canvas = document.querySelector("canvas");
-    var windowWidth = window.innerWidth;
-    var windowHeight = window.innerHeight;
-    var windowRatio = windowWidth / windowHeight;
-    var gameRatio = game.config.width / game.config.height;
-    if(windowRatio < gameRatio){
-        canvas.style.width = windowWidth + "px";
-        canvas.style.height = (windowWidth / gameRatio) + "px";
-    }
-    else{
-        canvas.style.width = (windowHeight * gameRatio) + "px";
-        canvas.style.height = windowHeight + "px";
+        // Descomentar para abrir o mapa correspondente!
+
+        //Mapa Forest 
+        //this.scene.add('Forest',Forest);
+        //this.scene.start('Forest');
+
+        //Mapa Castle
+        //this.scene.add('Castle',Castle);
+        //this.scene.start('Castle');
+
     }
 }
+new Game();

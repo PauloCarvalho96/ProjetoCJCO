@@ -2,14 +2,16 @@
 export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
     constructor(scene, x, y) {
-        super(scene, x, y, "archer");
+        super(scene, x, y);
 
-        this.scene.add.existing(this);
+        scene.add.existing(this); 
+        scene.physics.add.existing(this); 
+        scene.physics.world.enable(this);
 
-        //enable physics to sprite
-        this.scene.physics.world.enable(this);
+        this.setSize(30, 40);
+        this.setOffset(48,35);
 
-        this.velocity = 100;
+        this.velocity = 500;
 
         // animations
         this.scene.anims.create({
@@ -26,18 +28,28 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             repeat: -1,
         });
 
+        /*
+        //Não funciona
+        this.scene.anims.create({
+            key: 'jump', 
+            frames: this.scene.anims.generateFrameNumbers('archer_jump', { start: 0, end: 11 }),
+            frameRate: 15,
+            repeat: 1,
+        });
+        */
     }
 
     update(cursors){
 
-        this.setVelocity(0);
-
+        this.setVelocityX(0);
+        
         if (cursors.down.isDown) {
             // baixar
 
-        } else if (cursors.up.isDown) {
+        } else if (cursors.up.isDown && this.body.blocked.down) {
             // saltar
-            
+            this.setVelocityY(-200);	  
+  
         } else if (cursors.right.isDown) {
             this.setVelocityX(this.velocity);
             this.play('run',true);
