@@ -8,8 +8,10 @@ export default class Knight extends Phaser.Physics.Arcade.Sprite {
         scene.physics.add.existing(this); 
         scene.physics.world.enable(this);
 
-        //this.knight.setSize(30,30);
-        //this.knight.setOffset(20,15);
+       
+
+        this.setOffset(20,15);
+        this.setSize(20,40);
         
         this.velocity = 100;
 
@@ -32,8 +34,6 @@ export default class Knight extends Phaser.Physics.Arcade.Sprite {
 
     update(cursors){
 
-        this.setSize(30, 40);
-        this.setOffset(20,5);
         this.setVelocityX(0);
 
         if (cursors.down.isDown) {
