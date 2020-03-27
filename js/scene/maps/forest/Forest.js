@@ -6,7 +6,9 @@ export default class forest extends Phaser.Scene{
     constructor(){
         super("Forest");
     }
-
+    init(data){
+        this.char = data.char;
+    }
     preload(){
 
         // tiles para mapa
@@ -84,25 +86,31 @@ export default class forest extends Phaser.Scene{
         const ground = this.map.createStaticLayer("ground",env_ground,0,0);
 
         ground.setCollisionByProperty({"collides":true},true);
+        
 
-        this.archer = new Archer(this, 50, 200);
+        if(this.char == 0){
+            this.player = new Archer(this, 50, 200);
+        }else{
+            this.player = new Knight(this, 50, 200);
+        }
+        
 
         //this.knight = new Knight(this,100,400);
 
         const camera = this.cameras.main;
-        camera.startFollow(this.archer);
+        camera.startFollow(this.player);
         camera.setBounds(0,0,this.map.widthInPixels,this.map.heightInPixels);
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
         // collider
-        this.physics.add.collider(this.archer,ground);
+        this.physics.add.collider(this.player,ground);
 
     }
 
     update(){
 
-        this.archer.update(this.cursors);
+        this.player.update(this.cursors);
         //this.knight.update(this.cursors);
 
     }

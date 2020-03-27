@@ -32,7 +32,9 @@ export default class Knight extends Phaser.Physics.Arcade.Sprite {
 
     update(cursors){
 
-        this.setVelocity(0);
+        this.setSize(30, 40);
+        this.setOffset(20,5);
+        this.setVelocityX(0);
 
         if (cursors.down.isDown) {
             // baixar
