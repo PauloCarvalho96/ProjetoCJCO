@@ -123,8 +123,8 @@ export default class forest extends Phaser.Scene{
         this.physics.add.collider(this.archer,rocks);
         this.physics.add.collider(this.archer,plataforms);
         this.physics.add.collider(this.archer,spikes,() => {
-            // se cair na lava morre
-            this.archer.visible = false; // PARA TESTE
+            // se cair nos spikes morre
+            this.scene.restart();
         });
     }
 
@@ -132,8 +132,6 @@ export default class forest extends Phaser.Scene{
 
         this.archer.update(this.cursors);
         //this.knight.update(this.cursors);
-
-        
 
     }
 
