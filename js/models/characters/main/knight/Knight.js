@@ -7,7 +7,15 @@ export default class Knight extends Phaser.Physics.Arcade.Sprite {
         scene.add.existing(this); 
         scene.physics.add.existing(this); 
         scene.physics.world.enable(this);
-
+       
+      this.scene = scene;
+      this.alive = true; // Variável para indicar se o Rambo está vivo
+      this.lives = 3; // Vidas do Knight
+      this.health = 100; // Vida do knight
+      this.defense = 100; // defesa do personagem , afeta o dano sofrido pela personagem
+      this.damage = 100; // variavel que influencia o dano dado pelo knight
+      this.nextTick = 0; // Variável utilizada no disparo do Rambo para criar um "temporizador" sobre cada disparo
+      this.direction = "right"; // Posição/Direção Inicial do Rambo
        
 
         this.setOffset(20,15);
