@@ -11,7 +11,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         this.setSize(30, 40);
         this.setOffset(48,35);
 
-        this.velocity = 100;
+        this.velocity = 200;
 
         // animations
         this.scene.anims.create({
@@ -54,7 +54,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             this.setVelocityX(this.velocity);
             this.play('run',true);
             this.flipX = false;
-        } else if (cursors.left.isDown) {
+        } else if (cursors.left.isDown && this.x > 0) {
             this.setVelocityX(-this.velocity);
             this.play('run',true);
             this.flipX = true;
