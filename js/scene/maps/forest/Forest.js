@@ -19,6 +19,10 @@ export default class forest extends Phaser.Scene{
         this.load.image("env_ground","assets/maps/forest/tiles/env_ground.png");
         this.load.image("env_trees","assets/maps/forest/tiles/env_trees.png");
         this.load.image("castle_env","assets/maps/forest/tiles/castle_env.png");
+        this.load.image("env_rock","assets/maps/forest/tiles/env_rock.png");
+        this.load.image("wood_env","assets/maps/forest/tiles/wood_env.png");
+        this.load.image("torch1","assets/maps/forest/tiles/torch1.png");
+        this.load.image("torch2","assets/maps/forest/tiles/torch2.png");
 
         // mapa (forest)
         this.load.tilemapTiledJSON("forest","assets/maps/forest/forest.json");
@@ -59,7 +63,7 @@ export default class forest extends Phaser.Scene{
 
         // mapa (forest)
         this.map = this.make.tilemap({ key: "forest" });
-        
+ 
         //nome da tiles
         const main_background = this.map.addTilesetImage("main_background","main_background");
         const bgrd_tree1 = this.map.addTilesetImage("bgrd_tree1","bgrd_tree1");
@@ -70,9 +74,14 @@ export default class forest extends Phaser.Scene{
         const env_ground = this.map.addTilesetImage("env_ground","env_ground");
         const env_trees = this.map.addTilesetImage("env_trees","env_trees");
         const castle_env = this.map.addTilesetImage("castle_env","castle_env");
+        const env_rock = this.map.addTilesetImage("env_rock","env_rock");
+        const wood_env = this.map.addTilesetImage("wood_env","wood_env");
+        const torch1 = this.map.addTilesetImage("torch1","torch1");
+        const torch2 = this.map.addTilesetImage("torch2","torch2");
 
-        // layers
+        // layers (atras da personagem)
         this.map.createStaticLayer("main_background",main_background,0,0);
+        this.map.createStaticLayer("boss_bck",castle_env,0,0);
         this.map.createStaticLayer("bgrd_tree1",bgrd_tree1,0,0);
         this.map.createStaticLayer("bgrd_tree2",bgrd_tree2,0,0);
         this.map.createStaticLayer("bgrd_tree3",bgrd_tree3,0,0);
@@ -80,14 +89,28 @@ export default class forest extends Phaser.Scene{
         this.map.createStaticLayer("bgrd_tree5",bgrd_tree5,0,0);
         this.map.createStaticLayer("trees",env_trees,0,0);
         this.map.createStaticLayer("castle",castle_env,0,0);
-        this.map.createStaticLayer("castle_acessories",castle_env,0,0);
+        this.map.createStaticLayer("acessories",castle_env,0,0);
+        this.map.createStaticLayer("post",castle_env,0,0);
+        this.map.createStaticLayer("torch1",torch1,0,0);
+        this.map.createStaticLayer("torch2",torch2,0,0);
+        const rocks = this.map.createStaticLayer("rocks",env_rock,0,0);
         const ground = this.map.createStaticLayer("ground",env_ground,0,0);
+        const spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
+
+        // personagens
+        this.archer = new Archer(this, 50, 500);
+        //this.knight = new Knight(this,100,500);
+
+        // layers para a frente da personagem (especiais)  
+        const plataforms = this.map.createStaticLayer("plataforms",wood_env,0,0);
+        this.map.createStaticLayer("decoration_weed",env_ground,0,0);
+        this.map.createStaticLayer("front_chr",castle_env,0,0);
+        this.map.createStaticLayer("boss_bck_ac",torch2,0,0);
 
         ground.setCollisionByProperty({"collides":true},true);
-
-        this.archer = new Archer(this, 50, 200);
-
-        //this.knight = new Knight(this,100,400);
+        rocks.setCollisionByProperty({"collides":true},true);
+        plataforms.setCollisionByProperty({"collides":true},true);
+        spikes.setCollisionByProperty({"collides":true},true);
 
         const camera = this.cameras.main;
         camera.startFollow(this.archer);
@@ -97,7 +120,12 @@ export default class forest extends Phaser.Scene{
 
         // collider
         this.physics.add.collider(this.archer,ground);
-
+        this.physics.add.collider(this.archer,rocks);
+        this.physics.add.collider(this.archer,plataforms);
+        this.physics.add.collider(this.archer,spikes,() => {
+            // se cair na lava morre
+            this.archer.visible = false; // PARA TESTE
+        });
     }
 
     update(){
@@ -105,6 +133,9 @@ export default class forest extends Phaser.Scene{
         this.archer.update(this.cursors);
         //this.knight.update(this.cursors);
 
+        
+
     }
+
 
 }
