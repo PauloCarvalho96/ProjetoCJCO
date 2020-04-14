@@ -1,6 +1,7 @@
 import Archer from "../../../models/characters/main/archer/Archer.js";
 import Knight from "../../../models/characters/main/knight/Knight.js";
 import Goblin from "../../../models/characters/enemies/Goblin/Goblin.js";
+import Wizard from "../../../models/characters/enemies/Wizard/Wizard.js";
 
 export default class forest extends Phaser.Scene{
     
@@ -61,6 +62,14 @@ export default class forest extends Phaser.Scene{
             frameHeight: 150
         });
 
+        // spritesheet boss
+        this.load.spritesheet("wizard_idle", "assets/characters/enemies/Wizard/Idle.png", {
+            frameWidth: 231,
+            frameHeight: 190
+        });
+
+        // se conseguir chegar ao final do nivel entra no modo de BOSS
+        this.boss = false;
 
     }
 
@@ -87,6 +96,7 @@ export default class forest extends Phaser.Scene{
 
         // layers (atras da personagem)
         this.map.createStaticLayer("main_background",main_background,0,0);
+        const wall = this.map.createStaticLayer("wall",env_ground,0,0);
         this.map.createStaticLayer("boss_bck",castle_env,0,0);
         this.map.createStaticLayer("bgrd_tree1",bgrd_tree1,0,0);
         this.map.createStaticLayer("bgrd_tree2",bgrd_tree2,0,0);
@@ -100,15 +110,26 @@ export default class forest extends Phaser.Scene{
         this.map.createStaticLayer("torch1",torch1,0,0);
         this.map.createStaticLayer("torch2",torch2,0,0);
         const rocks = this.map.createStaticLayer("rocks",env_rock,0,0);
-        const ground = this.map.createStaticLayer("ground",env_ground,0,0);
+        const ground = this.map.createStaticLayer("ground",env_ground,0,0);  
         const spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
+        
 
         // personagens
-        this.archer = new Archer(this, 50, 500);
+        this.archer = new Archer(this, 4000, 500);
         //this.knight = new Knight(this,75,500);
 
-        // inimigos
-        this.goblin = new Goblin(this,200,500,50);
+        // inimigos ***EM TESTES!***
+        this.goblin = new Goblin(this,1060,500,300);
+        this.goblin1 = new Goblin(this,1060,100,200);
+        this.goblin2 = new Goblin(this,1790,100,130);
+        this.goblin3 = new Goblin(this,1770,500,160);
+        this.goblin4 = new Goblin(this,2356,500,80);
+        this.goblin5 = new Goblin(this,2660,100,125);
+        this.goblin6 = new Goblin(this,2690,500,115);
+        this.goblin7 = new Goblin(this,3445,500,95);
+
+        // BOSS
+        this.wizard = new Wizard(this,4500,500);
         
         // layers para a frente da personagem (especiais)  
         const plataforms = this.map.createStaticLayer("plataforms",wood_env,0,0);
@@ -117,6 +138,7 @@ export default class forest extends Phaser.Scene{
         this.map.createStaticLayer("boss_bck_ac",torch2,0,0);
 
         ground.setCollisionByProperty({"collides":true},true);
+        wall.setCollisionByProperty({"collides":true},true);
         rocks.setCollisionByProperty({"collides":true},true);
         plataforms.setCollisionByProperty({"collides":true},true);
         spikes.setCollisionByProperty({"collides":true},true);
@@ -129,6 +151,7 @@ export default class forest extends Phaser.Scene{
 
         // collider
         this.physics.add.collider(this.archer,ground);
+        this.physics.add.collider(this.archer,wall);
         this.physics.add.collider(this.archer,rocks);
         this.physics.add.collider(this.archer,plataforms);
         this.physics.add.collider(this.archer,spikes,() => {
@@ -136,17 +159,67 @@ export default class forest extends Phaser.Scene{
             this.scene.restart();
         });
 
-        //inimigos (propriedades)
+        //inimigos (propriedades) ***EM TESTES!***
         this.physics.add.collider(this.goblin,ground);
-        //this.physics.add.collider(this.goblin,rocks);
+        this.physics.add.collider(this.goblin,rocks);
         this.physics.add.collider(this.goblin,plataforms);
+        this.physics.add.collider(this.goblin1,ground);
+        this.physics.add.collider(this.goblin1,rocks);
+        this.physics.add.collider(this.goblin1,plataforms);
+        this.physics.add.collider(this.goblin2,ground);
+        this.physics.add.collider(this.goblin2,rocks);
+        this.physics.add.collider(this.goblin2,plataforms);
+        this.physics.add.collider(this.goblin3,ground);
+        this.physics.add.collider(this.goblin3,rocks);
+        this.physics.add.collider(this.goblin3,plataforms);
+        this.physics.add.collider(this.goblin4,ground);
+        this.physics.add.collider(this.goblin4,rocks);
+        this.physics.add.collider(this.goblin4,plataforms);
+        this.physics.add.collider(this.goblin5,ground);
+        this.physics.add.collider(this.goblin5,rocks);
+        this.physics.add.collider(this.goblin5,plataforms);
+        this.physics.add.collider(this.goblin6,ground);
+        this.physics.add.collider(this.goblin6,rocks);
+        this.physics.add.collider(this.goblin6,plataforms);
+        this.physics.add.collider(this.goblin7,ground);
+        this.physics.add.collider(this.goblin7,rocks);
+        this.physics.add.collider(this.goblin7,plataforms);
+
+        this.physics.add.collider(this.wizard,plataforms);
+        this.physics.add.collider(this.wizard,ground);
+        this.physics.add.collider(this.wizard,rocks);
 
     }
 
     update(){
         this.archer.update(this.cursors);
         //this.knight.update(this.cursors);
+
+        // ***EM TESTES***
         this.goblin.update();
+        this.goblin1.update();
+        this.goblin2.update();
+        this.goblin3.update();
+        this.goblin4.update();
+        this.goblin5.update();
+        this.goblin6.update();
+        this.goblin7.update();
+
+        this.wizard.update();
+
+        // quando chegar ao fim do nivel para defrontar o boss
+        if(this.archer.x > 3900){
+            this.cameras.main.stopFollow(this.archer);
+            this.cameras.main.setBounds(3860,0,4660,this.map.heightInPixels);
+            this.boss = true;
+        } 
+
+        if(this.boss == true && this.archer.x < 3880){
+            this.archer.x = 3880;
+        }
+
+        console.log(this.archer.x);
+
     }
 
 }

@@ -41,8 +41,6 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
     update(cursors){
 
-        console.log(this.x);
-
         this.setVelocityX(0);
         
         if (cursors.down.isDown) {
