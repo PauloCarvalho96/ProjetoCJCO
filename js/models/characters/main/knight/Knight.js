@@ -15,14 +15,14 @@ export default class Knight extends Phaser.Physics.Arcade.Sprite {
 
         // animations
         this.scene.anims.create({
-            key: 'run', 
+            key: 'knight_run', 
             frames: this.scene.anims.generateFrameNumbers('knight_run', { start: 0, end: 7 }),
             frameRate: 15,
             repeat: -1,
         });
 
         this.scene.anims.create({
-            key: 'steady', 
+            key: 'knight', 
             frames: this.scene.anims.generateFrameNumbers('knight', { start: 0, end: 14 }),
             frameRate: 15,
             repeat: -1,
@@ -42,14 +42,14 @@ export default class Knight extends Phaser.Physics.Arcade.Sprite {
             
         } else if (cursors.right.isDown) {
             this.setVelocityX(this.velocity);
-            this.play('run',true);
+            this.play('knight_run',true);
             this.flipX = false;
         } else if (cursors.left.isDown) {
             this.setVelocityX(-this.velocity);
-            this.play('run',true);
+            this.play('knight_run',true);
             this.flipX = true;
         } else {
-            this.play('steady',true);
+            this.play('knight',true);
         }
     }
 

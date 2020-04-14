@@ -1,5 +1,6 @@
 import Archer from "../../../models/characters/main/archer/Archer.js";
 import Knight from "../../../models/characters/main/knight/Knight.js";
+import Goblin from "../../../models/characters/enemies/Goblin/Goblin.js";
 
 export default class forest extends Phaser.Scene{
     
@@ -27,7 +28,6 @@ export default class forest extends Phaser.Scene{
         // mapa (forest)
         this.load.tilemapTiledJSON("forest","assets/maps/forest/forest.json");
 
-
         // spritesheet (Archer)
         this.load.spritesheet("archer", "assets/characters/main/archer/ArcherIdle.png", {
             frameWidth: 128,
@@ -53,6 +53,12 @@ export default class forest extends Phaser.Scene{
         this.load.spritesheet("knight_run", "assets/characters/main/knight/KnightRun.png", {
             frameWidth: 96,
             frameHeight: 64
+        });
+
+        // spritesheet inimigos
+        this.load.spritesheet("goblin_run", "assets/characters/enemies/Goblin/Run.png", {
+            frameWidth: 150,
+            frameHeight: 150
         });
 
 
@@ -99,8 +105,11 @@ export default class forest extends Phaser.Scene{
 
         // personagens
         this.archer = new Archer(this, 50, 500);
-        //this.knight = new Knight(this,100,500);
+        //this.knight = new Knight(this,75,500);
 
+        // inimigos
+        this.goblin = new Goblin(this,200,500,50);
+        
         // layers para a frente da personagem (especiais)  
         const plataforms = this.map.createStaticLayer("plataforms",wood_env,0,0);
         this.map.createStaticLayer("decoration_weed",env_ground,0,0);
@@ -126,14 +135,18 @@ export default class forest extends Phaser.Scene{
             // se cair nos spikes morre
             this.scene.restart();
         });
+
+        //inimigos (propriedades)
+        this.physics.add.collider(this.goblin,ground);
+        //this.physics.add.collider(this.goblin,rocks);
+        this.physics.add.collider(this.goblin,plataforms);
+
     }
 
     update(){
-
         this.archer.update(this.cursors);
         //this.knight.update(this.cursors);
-
+        this.goblin.update();
     }
-
 
 }
