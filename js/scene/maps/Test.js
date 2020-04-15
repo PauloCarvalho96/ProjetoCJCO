@@ -1,13 +1,10 @@
-import Archer from "../../../models/characters/main/archer/Archer.js";
-import Knight from "../../../models/characters/main/knight/Knight.js";
-import Goblin from "../../../models/characters/enemies/Goblin/Goblin.js";
-import GoblinGroup from "../../../models/characters/enemies/Goblin/GoblinGroup.js";
-import Wizard from "../../../models/characters/enemies/Wizard/Wizard.js";
+import Goblin from '../../models/characters/enemies/Goblin/Goblin.js';
+import GoblinGroup from "../../models/characters/enemies/Goblin/GoblinGroup.js";
 
 export default class forest extends Phaser.Scene{
     
     constructor(){
-        super("Forest");
+        super("Test");
     }
 
     preload(){
@@ -75,9 +72,6 @@ export default class forest extends Phaser.Scene{
     }
 
     create(){
-        console.log("Starting game");
-
-        // mapa (forest)
         this.map = this.make.tilemap({ key: "forest" });
  
         //nome da tiles
@@ -115,118 +109,21 @@ export default class forest extends Phaser.Scene{
         const spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
         
 
-        // personagens
-        this.archer = new Archer(this, 1000, 500);
-        //this.knight = new Knight(this,75,500);
 
-        // inimigos ***EM TESTES!***
-
-        // criação do grupo de goblins
+        //this.goblin = new Goblin(this,100,400,300);
         this.goblinGroup = new GoblinGroup(this.physics.world, this);
 
-        /*
-        this.goblin = this.goblinGroup.getFirstDead(false,1060,400);
-        this.goblin.active = true;
-        this.goblin.setVelocityX(50);
-        this.goblin = this.goblinGroup.getFirstDead(false,1060,100);
-        this.goblin.active = true;
-        //this.goblin.setVelocityX(50);
-        this.goblin = this.goblinGroup.getFirstDead(false,1790,100);
-        this.goblin.active = true;
-        this.goblin.setVelocityX(50);
-        this.goblin = this.goblinGroup.getFirstDead(false,1770,400);
-        this.goblin.active = true;
-        this.goblin.setVelocityX(50);
-        this.goblin = this.goblinGroup.getFirstDead(false,2356,400);
-        this.goblin.active = true;
-        this.goblin.setVelocityX(50);
-        this.goblin = this.goblinGroup.getFirstDead(false,2660,100);
-        this.goblin.active = true;
-        this.goblin.setVelocityX(50);
-        this.goblin = this.goblinGroup.getFirstDead(false,2690,400);
-        this.goblin.active = true;
-        this.goblin.setVelocityX(50);
-        this.goblin = this.goblinGroup.getFirstDead(false,3445,400);
-        this.goblin.active = true;
-        this.goblin.setVelocityX(50);
-        */
-
-        // BOSS
-        this.wizard = new Wizard(this,4500,500);
-        
-        // layers para a frente da personagem (especiais)  
-        const plataforms = this.map.createStaticLayer("plataforms",wood_env,0,0);
-        this.map.createStaticLayer("decoration_weed",env_ground,0,0);
-        this.map.createStaticLayer("front_chr",castle_env,0,0);
-        this.map.createStaticLayer("boss_bck_ac",torch2,0,0);
-
-        ground.setCollisionByProperty({"collides":true},true);
-        wall.setCollisionByProperty({"collides":true},true);
-        rocks.setCollisionByProperty({"collides":true},true);
-        plataforms.setCollisionByProperty({"collides":true},true);
-        spikes.setCollisionByProperty({"collides":true},true);
-
-        const camera = this.cameras.main;
-        camera.startFollow(this.archer);
-        camera.setBounds(0,0,this.map.widthInPixels,this.map.heightInPixels);
-
-        this.cursors = this.input.keyboard.createCursorKeys();
-
-        // collider
-        this.physics.add.collider(this.archer,ground);
-        this.physics.add.collider(this.archer,wall);
-        this.physics.add.collider(this.archer,rocks);
-        this.physics.add.collider(this.archer,plataforms);
-        this.physics.add.collider(this.archer,spikes,() => {
-            // se cair nos spikes morre
-            this.scene.restart();
-        });
-
-        //inimigos (propriedades) ***EM TESTES!***
-        this.physics.add.collider(this.goblinGroup,plataforms);
+        //this.physics.add.collider(this.goblinGroup,plataforms);
         this.physics.add.collider(this.goblinGroup,ground);
-        this.physics.add.collider(this.goblinGroup,rocks);
-
-        this.physics.add.collider(this.wizard,plataforms);
-        this.physics.add.collider(this.wizard,ground);
-        this.physics.add.collider(this.wizard,rocks);
-
-        // caso a personagem toque num goblin
-        this.physics.add.overlap(this.archer, this.goblinGroup, () => {
-            this.scene.restart();
-        }); 
-
-        // caso a personagem toque no boss
-        this.physics.add.overlap(this.archer, this.wizard, () => {
-            this.scene.restart();
-        });
+        //this.physics.add.collider(this.goblinGroup,rocks);
 
     }
 
     update(){
-
-        //console.log(this.archer.x);
-
-        this.archer.update(this.cursors);
-        //this.knight.update(this.cursors);
-
         this.goblinGroup.children.iterate(function (goblin) {
             goblin.update()
         });
-
-        this.wizard.update();
-
-        // quando chegar ao fim do nivel para defrontar o boss
-        if(this.archer.x > 3900){
-            this.cameras.main.stopFollow(this.archer);
-            this.cameras.main.setBounds(3860,0,4660,this.map.heightInPixels);
-            this.boss = true;
-        } 
-
-        if(this.boss == true && this.archer.x < 3880){
-            this.archer.x = 3880;
-        }
-
     }
+
 
 }

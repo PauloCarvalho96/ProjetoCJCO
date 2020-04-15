@@ -21,7 +21,7 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
     }
 
     update(){
-        this.play('wizard_idle');
+        this.play('wizard_idle',true);
         this.flipX = true;
     }
 

@@ -11,7 +11,7 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
         this.setSize(30, 38);
         this.setOffset(60,60);
 
-        this.velocity = 50;
+        //this.velocity = 50;
         // valor recebido para quanto o inimigo pode andar de um lado para o outro
         this.offset = offset;
 
@@ -26,18 +26,24 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
             repeat: -1,
         });
 
-        this.setVelocityX(this.velocity);
+        this.setVelocity(50,0);
+        this.setGravity(0,0);
+        //this.body.velocity.x=50;
+        console.log(this);
     }
 
     update(){
 
+        //console.log("posiçao: "+this.pos+" offset: "+this.offset+"velocity: "+this.velocity.x);
+        //console.log(this);
+
         this.play('goblin_run',true);
 
         if(this.x >= this.pos + this.offset){
-            this.setVelocityX(-this.velocity);
+          //  this.setVelocityX(-this.velocity);
             this.flipX = true;
         } else  if(this.x <= this.pos - this.offset){
-            this.setVelocityX(this.velocity);
+          //  this.setVelocityX(this.velocity);
             this.flipX = false;
         }
 
