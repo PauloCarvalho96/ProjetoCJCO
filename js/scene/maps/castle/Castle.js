@@ -1,5 +1,7 @@
+import EnemiesGroup from "../../../models/characters/main/enemies/EnemiesGroup.js";
 import Archer from "../../../models/characters/main/archer/Archer.js";
 import Knight from "../../../models/characters/main/knight/Knight.js";
+import Skeleton from "../../../models/characters/main/enemies/Skeleton.js";
 
 export default class Castle extends Phaser.Scene {
   
@@ -33,6 +35,8 @@ export default class Castle extends Phaser.Scene {
       frameHeight: 128
     });
 
+
+    
     }
 
     create() {
@@ -70,6 +74,13 @@ export default class Castle extends Phaser.Scene {
       const front1 = this.map.createStaticLayer("lava", dec1, 0, 0);
     
       this.archer = new Archer(this, 50, 360);
+      //this.skeleton = new Skeleton(this,70,360);
+       /** 
+         * create a new EnemiesGroup (new class to handle group of Enemy) that can hold 100 enemies
+         */
+      this.skeletons = new EnemiesGroup(this.physics.world,this,5);
+      
+      //this.skeleton = this.skeletons.getFirstDead(false,100,100);
 
       //get the scene camera
       const camera = this.cameras.main;
@@ -85,9 +96,13 @@ export default class Castle extends Phaser.Scene {
       front1.setCollisionByProperty({ "colides": true }, true);
       //set collision between collidable tiles from front and mario
       this.physics.add.collider(this.archer, front);
-
+      this.physics.add.collider(this.skeletons,front);
       //set the callback function killMario to be called when something collides with the tile 124 (axe)     
       this.physics.add.collider(this.archer,front1,() => {
+        this.scene.restart();
+      });
+
+      this.physics.add.collider(this.skeletons,front1,() => {
         this.scene.restart();
       });
       //set collidion between mario and the tilemap kill
@@ -95,8 +110,8 @@ export default class Castle extends Phaser.Scene {
 
   }
 
-    update() {
-      this.archer.update(this.cursors);
-    }
+  update() {
+    this.archer.update(this.cursors);
+  }
     
 }
