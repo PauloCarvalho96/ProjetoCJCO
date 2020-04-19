@@ -27,7 +27,6 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             frameRate: 15,
             repeat: -1,
         });
-        this.arrow = new Arrow(this,this.x,this.y);
         /*
         //Não funciona
         this.scene.anims.create({
