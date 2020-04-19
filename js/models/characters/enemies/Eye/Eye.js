@@ -1,6 +1,6 @@
-export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
+export default class Eye extends Phaser.Physics.Arcade.Sprite {
 
-    constructor(scene, x, y) {
+    constructor(scene, x, y, offset) {
         super(scene, x, y);
 
         scene.add.existing(this); 
@@ -12,11 +12,15 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
 
         this.velocity = 25;
         this.position = this.x;
+        this.offset = offset;
+
+        // pos de criaçao
+        this.pos = this.x;
 
         // animations
         this.scene.anims.create({
-            key: 'skeleton_run', 
-            frames: this.scene.anims.generateFrameNumbers('skeleton_run', { start: 0, end: 3 }),
+            key: 'eye_fly', 
+            frames: this.scene.anims.generateFrameNumbers('eye_fly', { start: 0, end: 3 }),
             frameRate: 1,
             repeat: -1,
         });
@@ -29,18 +33,15 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
             repeat: 1,
         });
         */
+       this.setVelocityX(this.velocity);
     }
 
     update(){
-        this.play('skeleton_run',true);
-        if(this.x == this.position){
-            this.setVelocityX(this.velocity);
-            this.flipX = false;
-        }
-        if(this.x > this.position + 50){
+        this.play('eye_fly',true);
+        if(this.x >= this.pos + this.offset){
             this.setVelocityX(-this.velocity);
             this.flipX = true;
-        } else  if(this.x < this.position - 50){
+        } else  if(this.x <= this.pos - this.offset){
             this.setVelocityX(this.velocity);
             this.flipX = false;
         }
