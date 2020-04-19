@@ -1,6 +1,7 @@
 import Archer from "../../../models/characters/main/archer/Archer.js";
 import Knight from "../../../models/characters/main/knight/Knight.js";
 
+
 export default class forest extends Phaser.Scene{
     
     constructor(){
@@ -10,7 +11,7 @@ export default class forest extends Phaser.Scene{
         this.char = data.char;
     }
     preload(){
-
+        
         // tiles para mapa
         this.load.image("main_background","assets/maps/forest/tiles/main_background.png");
         this.load.image("bgrd_tree1","assets/maps/forest/tiles/bgrd_tree1.png");
@@ -52,7 +53,9 @@ export default class forest extends Phaser.Scene{
             frameWidth: 96,
             frameHeight: 64
         });
+        
 
+        
 
     }
 
