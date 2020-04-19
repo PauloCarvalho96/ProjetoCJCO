@@ -31,9 +31,6 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
 
     update(){
 
-        //console.log("posiçao: "+this.pos+" offset: "+this.offset+"velocity: "+this.velocity.x);
-        //console.log(this);
-
         this.play('goblin_run',true);
         
         if(this.x >= this.pos + this.offset){

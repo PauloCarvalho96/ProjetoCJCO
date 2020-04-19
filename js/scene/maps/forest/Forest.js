@@ -3,6 +3,8 @@ import Knight from "../../../models/characters/main/knight/Knight.js";
 import Goblin from "../../../models/characters/enemies/Goblin/Goblin.js";
 import GoblinGroup from "../../../models/characters/enemies/Goblin/GoblinGroup.js";
 import Wizard from "../../../models/characters/enemies/Wizard/Wizard.js";
+import Mushroom from "../../../models/characters/enemies/Mushroom/Mushroom.js";
+import MushroomGroup from "../../../models/characters/enemies/Mushroom/MushroomGroup.js";
 
 export default class forest extends Phaser.Scene{
     
@@ -57,8 +59,14 @@ export default class forest extends Phaser.Scene{
             frameHeight: 64
         });
 
-        // spritesheet inimigos
+        // spritesheet goblin
         this.load.spritesheet("goblin_run", "assets/characters/enemies/Goblin/Run.png", {
+            frameWidth: 150,
+            frameHeight: 150
+        });
+
+        // spritesheet mushroom
+        this.load.spritesheet("mushroom_idle", "assets/characters/enemies/Mushroom/Idle.png", {
             frameWidth: 150,
             frameHeight: 150
         });
@@ -115,7 +123,7 @@ export default class forest extends Phaser.Scene{
         const spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
         
         // personagens
-        this.archer = new Archer(this, 1000, 500);
+        this.archer = new Archer(this, 100, 400);
         //this.knight = new Knight(this,75,500);
 
         // inimigos
@@ -123,6 +131,9 @@ export default class forest extends Phaser.Scene{
         // criação do grupo de goblins
         this.goblinGroup = new GoblinGroup(this.physics.world, this);
         this.goblinGroup.setVelocityX(50);
+
+        // mushroom
+        this.mushGroup = new MushroomGroup(this.physics.world,this);
 
         // BOSS
         this.wizard = new Wizard(this,4500,500);
@@ -155,19 +166,27 @@ export default class forest extends Phaser.Scene{
             this.scene.restart();
         });
 
-        //inimigos (propriedades) ***EM TESTES!***
+        //inimigos (propriedades) 
         this.physics.add.collider(this.goblinGroup,rocks);
         this.physics.add.collider(this.goblinGroup,ground);
         this.physics.add.collider(this.goblinGroup,plataforms);
+
+        this.physics.add.collider(this.mushGroup,rocks);
+        this.physics.add.collider(this.mushGroup,ground);
+        this.physics.add.collider(this.mushGroup,plataforms);
 
         this.physics.add.collider(this.wizard,plataforms);
         this.physics.add.collider(this.wizard,ground);
         this.physics.add.collider(this.wizard,rocks);
 
-        // caso a personagem toque num goblin
+        // caso a personagem toque num enemy
         this.physics.add.overlap(this.archer, this.goblinGroup, () => {
             this.scene.restart();
         }); 
+
+        this.physics.add.overlap(this.archer, this.mushGroup, () => {
+            this.scene.restart();
+        });
 
         // caso a personagem toque no boss
         this.physics.add.overlap(this.archer, this.wizard, () => {
@@ -178,13 +197,17 @@ export default class forest extends Phaser.Scene{
 
     update(){
 
-        //console.log(this.archer.x);
+        console.log(this.archer.x);
 
         this.archer.update(this.cursors);
         //this.knight.update(this.cursors);
 
         this.goblinGroup.children.iterate(function (goblin) {
-            goblin.update()
+            goblin.update();
+        },this);
+
+        this.mushGroup.children.iterate(function (mushroom) {
+            mushroom.update();
         },this);
 
         this.wizard.update();
