@@ -114,42 +114,15 @@ export default class forest extends Phaser.Scene{
         const ground = this.map.createStaticLayer("ground",env_ground,0,0);  
         const spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
         
-
         // personagens
         this.archer = new Archer(this, 1000, 500);
         //this.knight = new Knight(this,75,500);
 
-        // inimigos ***EM TESTES!***
+        // inimigos
 
         // criação do grupo de goblins
         this.goblinGroup = new GoblinGroup(this.physics.world, this);
-
-        /*
-        this.goblin = this.goblinGroup.getFirstDead(false,1060,400);
-        this.goblin.active = true;
-        this.goblin.setVelocityX(50);
-        this.goblin = this.goblinGroup.getFirstDead(false,1060,100);
-        this.goblin.active = true;
-        //this.goblin.setVelocityX(50);
-        this.goblin = this.goblinGroup.getFirstDead(false,1790,100);
-        this.goblin.active = true;
-        this.goblin.setVelocityX(50);
-        this.goblin = this.goblinGroup.getFirstDead(false,1770,400);
-        this.goblin.active = true;
-        this.goblin.setVelocityX(50);
-        this.goblin = this.goblinGroup.getFirstDead(false,2356,400);
-        this.goblin.active = true;
-        this.goblin.setVelocityX(50);
-        this.goblin = this.goblinGroup.getFirstDead(false,2660,100);
-        this.goblin.active = true;
-        this.goblin.setVelocityX(50);
-        this.goblin = this.goblinGroup.getFirstDead(false,2690,400);
-        this.goblin.active = true;
-        this.goblin.setVelocityX(50);
-        this.goblin = this.goblinGroup.getFirstDead(false,3445,400);
-        this.goblin.active = true;
-        this.goblin.setVelocityX(50);
-        */
+        this.goblinGroup.setVelocityX(50);
 
         // BOSS
         this.wizard = new Wizard(this,4500,500);
@@ -183,9 +156,9 @@ export default class forest extends Phaser.Scene{
         });
 
         //inimigos (propriedades) ***EM TESTES!***
-        this.physics.add.collider(this.goblinGroup,plataforms);
-        this.physics.add.collider(this.goblinGroup,ground);
         this.physics.add.collider(this.goblinGroup,rocks);
+        this.physics.add.collider(this.goblinGroup,ground);
+        this.physics.add.collider(this.goblinGroup,plataforms);
 
         this.physics.add.collider(this.wizard,plataforms);
         this.physics.add.collider(this.wizard,ground);
@@ -212,7 +185,7 @@ export default class forest extends Phaser.Scene{
 
         this.goblinGroup.children.iterate(function (goblin) {
             goblin.update()
-        });
+        },this);
 
         this.wizard.update();
 
