@@ -14,14 +14,14 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
         // animations
         this.scene.anims.create({
-            key: 'run', 
+            key: 'archer_run', 
             frames: this.scene.anims.generateFrameNumbers('archer_run', { start: 0, end: 7 }),
             frameRate: 15,
             repeat: -1,
         });
 
         this.scene.anims.create({
-            key: 'steady', 
+            key: 'archer', 
             frames: this.scene.anims.generateFrameNumbers('archer', { start: 0, end: 7 }),
             frameRate: 15,
             repeat: -1,
@@ -51,14 +51,14 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
   
         } else if (cursors.right.isDown) {
             this.setVelocityX(this.velocity);
-            this.play('run',true);
+            this.play('archer_run',true);
             this.flipX = false;
         } else if (cursors.left.isDown && this.x > 0) {
             this.setVelocityX(-this.velocity);
-            this.play('run',true);
+            this.play('archer_run',true);
             this.flipX = true;
         } else {
-            this.play('steady',true);
+            this.play('archer',true);
         }
     }
 
