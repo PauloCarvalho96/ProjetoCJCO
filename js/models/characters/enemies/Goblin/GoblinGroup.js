@@ -7,8 +7,9 @@ import Goblin from "./Goblin.js";
  * it will create as many Enemy objects as passed by maxSize argument
  */
 export default class GoblinGroup extends Phaser.Physics.Arcade.Group {
-    constructor(world, scene) {
+    constructor(world, scene, offset) {
         super(world, scene);
+
 /* 
         let goblinInformation=[
             {x:1060,y:400,offset:300},
@@ -44,5 +45,7 @@ export default class GoblinGroup extends Phaser.Physics.Arcade.Group {
         this.add(child7);
         this.add(child8);
   
+        // velocidade dos goblins
+        this.setVelocityX(50);
     }
 }

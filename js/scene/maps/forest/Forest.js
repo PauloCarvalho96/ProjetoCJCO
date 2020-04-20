@@ -71,6 +71,12 @@ export default class forest extends Phaser.Scene{
             frameHeight: 150
         });
 
+        // bullet mushroom
+        this.load.spritesheet("mushroom_bullet", "assets/characters/enemies/Mushroom/bullet.png", {
+            frameHeight: 11,
+            frameWidth: 11,
+          });
+
         // spritesheet boss
         this.load.spritesheet("wizard_idle", "assets/characters/enemies/Wizard/Idle.png", {
             frameWidth: 231,
@@ -118,7 +124,7 @@ export default class forest extends Phaser.Scene{
         this.map.createStaticLayer("post",castle_env,0,0);
         this.map.createStaticLayer("torch1",torch1,0,0);
         this.map.createStaticLayer("torch2",torch2,0,0);
-        const rocks = this.map.createStaticLayer("rocks",env_rock,0,0);
+        this.rocks = this.map.createStaticLayer("rocks",env_rock,0,0);
         const ground = this.map.createStaticLayer("ground",env_ground,0,0);  
         const spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
         
@@ -126,13 +132,12 @@ export default class forest extends Phaser.Scene{
         this.archer = new Archer(this, 100, 400);
         //this.knight = new Knight(this,75,500);
 
-        // inimigos
+        // *inimigos*
 
         // criação do grupo de goblins
         this.goblinGroup = new GoblinGroup(this.physics.world, this);
-        this.goblinGroup.setVelocityX(50);
 
-        // mushroom
+        // mushroom group
         this.mushGroup = new MushroomGroup(this.physics.world,this);
 
         // BOSS
@@ -146,7 +151,7 @@ export default class forest extends Phaser.Scene{
 
         ground.setCollisionByProperty({"collides":true},true);
         wall.setCollisionByProperty({"collides":true},true);
-        rocks.setCollisionByProperty({"collides":true},true);
+        this.rocks.setCollisionByProperty({"collides":true},true);
         plataforms.setCollisionByProperty({"collides":true},true);
         spikes.setCollisionByProperty({"collides":true},true);
 
@@ -159,7 +164,7 @@ export default class forest extends Phaser.Scene{
         // collider
         this.physics.add.collider(this.archer,ground);
         this.physics.add.collider(this.archer,wall);
-        this.physics.add.collider(this.archer,rocks);
+        this.physics.add.collider(this.archer,this.rocks);
         this.physics.add.collider(this.archer,plataforms);
         this.physics.add.collider(this.archer,spikes,() => {
             // se cair nos spikes morre
@@ -167,17 +172,17 @@ export default class forest extends Phaser.Scene{
         });
 
         //inimigos (propriedades) 
-        this.physics.add.collider(this.goblinGroup,rocks);
+        this.physics.add.collider(this.goblinGroup,this.rocks);
         this.physics.add.collider(this.goblinGroup,ground);
         this.physics.add.collider(this.goblinGroup,plataforms);
 
-        this.physics.add.collider(this.mushGroup,rocks);
+        this.physics.add.collider(this.mushGroup,this.rocks);
         this.physics.add.collider(this.mushGroup,ground);
         this.physics.add.collider(this.mushGroup,plataforms);
 
         this.physics.add.collider(this.wizard,plataforms);
         this.physics.add.collider(this.wizard,ground);
-        this.physics.add.collider(this.wizard,rocks);
+        this.physics.add.collider(this.wizard,this.rocks); 
 
         // caso a personagem toque num enemy
         this.physics.add.overlap(this.archer, this.goblinGroup, () => {
@@ -193,9 +198,10 @@ export default class forest extends Phaser.Scene{
             this.scene.restart();
         });
 
+
     }
 
-    update(){
+    update(time){
 
         console.log(this.archer.x);
 
@@ -206,8 +212,15 @@ export default class forest extends Phaser.Scene{
             goblin.update();
         },this);
 
+        // percorre os inimigos
         this.mushGroup.children.iterate(function (mushroom) {
-            mushroom.update();
+            mushroom.update(time);
+
+            //percorre as balas de cada inimigo e verifica se a bala bate nas rochas
+            this.physics.add.collider(this.rocks, mushroom.mushroomBullets, (bullet) => {
+                mushroom.mushroomBullets.killAndHide(bullet);
+            });
+
         },this);
 
         this.wizard.update();
