@@ -12,9 +12,9 @@ export default class forest extends Phaser.Scene{
     constructor(){
         super("Forest");
     }
-    init(data){
+   /*  init(data){
         this.char = data.char;
-    }
+    } */
     preload(){
         
         // tiles para mapa
@@ -166,7 +166,7 @@ export default class forest extends Phaser.Scene{
         spikes.setCollisionByProperty({"collides":true},true);
 
         const camera = this.cameras.main;
-        camera.startFollow(this.player);
+        camera.startFollow(this.archer);
         camera.setBounds(0,0,this.map.widthInPixels,this.map.heightInPixels);
 
         this.cursors = this.input.keyboard.createCursorKeys();
