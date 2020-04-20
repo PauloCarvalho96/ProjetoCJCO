@@ -12,7 +12,7 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
         this.setSize(30, 38);
         this.setOffset(60,60);
 
-        this.bulletsMaxsize = 1;
+        this.bulletsMaxsize = 5;
         this.mushroomBullets = this.scene.physics.add.group({
             classType: MushroomBullet,
             maxSize: this.bulletsMaxsize,
@@ -37,10 +37,22 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
         });
         this.play('mushroom_idle',true);
 
+        this.bulletVelocity = 0;
+
     }
 
     update(time,space){
-        
+
+        if(space > 0){
+            this.bulletVelocity = -350;
+            this.flipX = true;
+        }
+
+        if(space < 0) {
+            this.bulletVelocity = 350;
+            this.flipX = false;
+        }
+
         if(space > 100){
             this.play('mushroom_idle',true);
         }
@@ -49,7 +61,7 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
             let bullet = this.mushroomBullets.getFirstDead(true, this.x, this.y);
             if(bullet){
                 this.play('mushroom_fire',true);
-                bullet.setVelocityX(350);
+                bullet.setVelocityX(this.bulletVelocity);
                 bullet.active = true;
                 bullet.visible = true;
     

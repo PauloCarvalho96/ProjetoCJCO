@@ -12,9 +12,11 @@ export default class forest extends Phaser.Scene{
     constructor(){
         super("Forest");
     }
+
    /*  init(data){
         this.char = data.char;
     } */
+
     preload(){
         
         // tiles para mapa
@@ -215,7 +217,7 @@ export default class forest extends Phaser.Scene{
                 mushroom.mushroomBullets.killAndHide(bullet);
             });
             // adiciona collider da bala com personagem
-            this.physics.add.collider(this.archer, mushroom.mushroomBullets, (bullet) => {
+            this.physics.add.collider(this.archer, mushroom.mushroomBullets, () => {
                 this.scene.restart();
             });
         },this);
