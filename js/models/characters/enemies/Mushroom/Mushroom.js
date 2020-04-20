@@ -12,14 +12,14 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
         this.setSize(30, 38);
         this.setOffset(60,60);
 
-        this.bulletsMaxsize = 5;
+        this.bulletsMaxsize = 1;
         this.mushroomBullets = this.scene.physics.add.group({
+            classType: MushroomBullet,
             maxSize: this.bulletsMaxsize,
             allowGravity: false,
-            classType: MushroomBullet
         });
         this.timeToShoot = 0;
-        this.fireRate = 1000;
+        this.fireRate = 1500;
 
         // animations
         this.scene.anims.create({
@@ -28,29 +28,42 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
             frameRate: 15,
             repeat: -1,
         });
-/* 
-        this.scene.anims.create({
-            key: 'mushroom_run', 
-            frames: this.scene.anims.generateFrameNumbers('mushroom_run', { start: 0, end: 3 }),
-            frameRate: 15,
-            repeat: -1,
-        });
- */
-    }
 
-    update(time){
+        this.scene.anims.create({
+            key: 'mushroom_fire', 
+            frames: this.scene.anims.generateFrameNumbers('mushroom_fire', { start: 0, end: 7 }),
+            frameRate: 5,
+            repeat: 1,
+        });
         this.play('mushroom_idle',true);
 
-        if(this.timeToShoot < time){
+    }
+
+    update(time,space){
+        
+        if(space > 100){
+            this.play('mushroom_idle',true);
+        }
+
+        if(this.timeToShoot < time && space < 100){
             let bullet = this.mushroomBullets.getFirstDead(true, this.x, this.y);
             if(bullet){
+                this.play('mushroom_fire',true);
                 bullet.setVelocityX(350);
                 bullet.active = true;
                 bullet.visible = true;
     
                 this.timeToShoot = time + this.fireRate;
             }
-        }              
+        }
+        
+        // verifica pos das balas
+        this.mushroomBullets.children.iterate(function (bullet) {
+            if(bullet.x > bullet.pos + 500){
+                this.mushroomBullets.killAndHide(bullet);
+            }
+        },this);
+        
     } 
 
 }

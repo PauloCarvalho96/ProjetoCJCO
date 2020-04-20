@@ -77,6 +77,12 @@ export default class forest extends Phaser.Scene{
             frameWidth: 11,
           });
 
+          // disparo mushroom
+          this.load.spritesheet("mushroom_fire", "assets/characters/enemies/Mushroom/Attack.png", {
+            frameHeight: 150,
+            frameWidth: 150,
+          });
+
         // spritesheet boss
         this.load.spritesheet("wizard_idle", "assets/characters/enemies/Wizard/Idle.png", {
             frameWidth: 231,
@@ -204,6 +210,10 @@ export default class forest extends Phaser.Scene{
             this.physics.add.collider(this.rocks, mushroom.mushroomBullets, (bullet) => {
                 mushroom.mushroomBullets.killAndHide(bullet);
             });
+            // adiciona collider da bala com personagem
+            this.physics.add.collider(this.archer, mushroom.mushroomBullets, (bullet) => {
+                this.scene.restart();
+            });
         },this);
 
     }
@@ -221,7 +231,7 @@ export default class forest extends Phaser.Scene{
 
         // percorre os inimigos
         this.mushGroup.children.iterate(function (mushroom) {
-            mushroom.update(time);
+            mushroom.update(time,mushroom.x-this.archer.x);
         },this);
 
         this.wizard.update();
