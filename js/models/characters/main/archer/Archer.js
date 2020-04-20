@@ -1,4 +1,4 @@
-
+//import Arrow from "../../../models/characters/main/archer/Arrow.js";
 export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
     constructor(scene, x, y) {
@@ -27,7 +27,6 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             frameRate: 15,
             repeat: -1,
         });
-
         /*
         //Não funciona
         this.scene.anims.create({
@@ -58,6 +57,8 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             this.setVelocityX(-this.velocity);
             this.play('archer_run',true);
             this.flipX = true;
+        }else if (cursors.left.isDown && cursors.space.isDown) {
+            this.arrow.fireLaser
         } else {
             this.play('archer',true);
         }

@@ -1,5 +1,8 @@
+import SkeletonGroup from "../../../models/characters/enemies/Skeleton/SkeletonGroup.js";
+import EyeGroup from "../../../models/characters/enemies/Eye/EyeGroup.js";
 import Archer from "../../../models/characters/main/archer/Archer.js";
 import Knight from "../../../models/characters/main/knight/Knight.js";
+import Skeleton from "../../../models/characters/enemies/Skeleton/Skeleton.js";
 
 export default class Castle extends Phaser.Scene {
   
@@ -22,15 +25,32 @@ export default class Castle extends Phaser.Scene {
 
     this.load.tilemapTiledJSON("map", "assets/maps/castle/map2_v3.json");
 
-    // spritesheet (Archer)
-    this.load.spritesheet("archer", "assets/characters/main/archer/ArcherIdle.png", {
+     // spritesheet (Archer)
+     this.load.spritesheet("archer", "assets/characters/main/archer/ArcherIdle.png", {
       frameWidth: 128,
       frameHeight: 128
+  });
+
+  this.load.spritesheet("archer_run", "assets/characters/main/archer/ArcherRun.png", {
+      frameWidth: 128,
+      frameHeight: 128
+  });
+
+  this.load.spritesheet("archer_jump", "assets/characters/main/archer/ArcherJump.png", {
+      frameWidth: 128,
+      frameHeight: 128
+  });
+
+    // spritesheet inimigos
+    this.load.spritesheet("skeleton_run", "assets/characters/enemies/Skeleton/Walk.png", {
+      frameWidth: 150,
+      frameHeight: 150
     });
 
-    this.load.spritesheet("archer_run", "assets/characters/main/archer/ArcherRun.png", {
-      frameWidth: 128,
-      frameHeight: 128
+    // spritesheet inimigos
+    this.load.spritesheet("eye_fly", "assets/characters/enemies/Flying_eye/Flight.png", {
+      frameWidth: 150,
+      frameHeight: 150
     });
 
     }
@@ -70,6 +90,16 @@ export default class Castle extends Phaser.Scene {
       const front1 = this.map.createStaticLayer("lava", dec1, 0, 0);
     
       this.archer = new Archer(this, 50, 360);
+       /** 
+         * create a new EnemiesGroup (new class to handle group of Enemy) that can hold 100 enemies
+         */
+      this.skeletons = new SkeletonGroup(this.physics.world,this);
+      this.skeletons.setVelocityX(50);
+
+      this.eyes = new EyeGroup(this.physics.world,this);
+      this.eyes.setVelocityX(50);
+
+      //this.skeleton = this.skeletons.getFirstDead(false,100,100);
 
       //get the scene camera
       const camera = this.cameras.main;
@@ -85,18 +115,35 @@ export default class Castle extends Phaser.Scene {
       front1.setCollisionByProperty({ "colides": true }, true);
       //set collision between collidable tiles from front and mario
       this.physics.add.collider(this.archer, front);
+      this.physics.add.collider(this.skeletons,front);
+      this.physics.add.collider(this.eyes,front);
 
       //set the callback function killMario to be called when something collides with the tile 124 (axe)     
       this.physics.add.collider(this.archer,front1,() => {
         this.scene.restart();
       });
-      //set collidion between mario and the tilemap kill
-      //this.physics.add.overlap(this.archer, kill);
 
+      // caso a personagem toque num goblin
+      //this.physics.add.overlap(this.archer, this.skeletons, () => {
+      //  this.scene.restart();
+      //}); 
+      
   }
 
-    update() {
-      this.archer.update(this.cursors);
-    }
+  update() {
+    this.archer.update(this.cursors);
+
+    console.log(this.archer.x);
+    console.log(this.archer.y);
+
+    this.skeletons.children.iterate(function (skeleton) {
+      skeleton.update()
+    },this);
+
+    this.eyes.children.iterate(function (eye) {
+      eye.update()
+    },this);
+
+  }
     
 }

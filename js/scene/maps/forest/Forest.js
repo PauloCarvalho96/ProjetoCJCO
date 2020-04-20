@@ -6,14 +6,17 @@ import Wizard from "../../../models/characters/enemies/Wizard/Wizard.js";
 import Mushroom from "../../../models/characters/enemies/Mushroom/Mushroom.js";
 import MushroomGroup from "../../../models/characters/enemies/Mushroom/MushroomGroup.js";
 
+
 export default class forest extends Phaser.Scene{
     
     constructor(){
         super("Forest");
     }
-
+    init(data){
+        this.char = data.char;
+    }
     preload(){
-
+        
         // tiles para mapa
         this.load.image("main_background","assets/maps/forest/tiles/main_background.png");
         this.load.image("bgrd_tree1","assets/maps/forest/tiles/bgrd_tree1.png");
@@ -58,6 +61,7 @@ export default class forest extends Phaser.Scene{
             frameWidth: 96,
             frameHeight: 64
         });
+        
 
         // spritesheet goblin
         this.load.spritesheet("goblin_run", "assets/characters/enemies/Goblin/Run.png", {
@@ -162,7 +166,7 @@ export default class forest extends Phaser.Scene{
         spikes.setCollisionByProperty({"collides":true},true);
 
         const camera = this.cameras.main;
-        camera.startFollow(this.archer);
+        camera.startFollow(this.player);
         camera.setBounds(0,0,this.map.widthInPixels,this.map.heightInPixels);
 
         this.cursors = this.input.keyboard.createCursorKeys();
