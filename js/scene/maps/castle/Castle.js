@@ -3,6 +3,7 @@ import EyeGroup from "../../../models/characters/enemies/Eye/EyeGroup.js";
 import Archer from "../../../models/characters/main/archer/Archer.js";
 import Knight from "../../../models/characters/main/knight/Knight.js";
 import Skeleton from "../../../models/characters/enemies/Skeleton/Skeleton.js";
+import Bullet from "../../../models/bullet/bullet.js";
 
 export default class Castle extends Phaser.Scene {
   
@@ -52,6 +53,8 @@ export default class Castle extends Phaser.Scene {
       frameWidth: 150,
       frameHeight: 150
     });
+
+    this.load.image("bullet", "assets/bullet/bullet.png");
 
     }
 
@@ -123,25 +126,53 @@ export default class Castle extends Phaser.Scene {
         this.scene.restart();
       });
 
+     // this.physics.add.overlap(this.bird.bullets, this.enemies, (bullet, enemy) => {
+        //bullet.destroy(); //destroy method removes object from the memory
+        //enemy.destroy();
+
+        //this.enemies.killAndHide(enemy);
+        //this.bird.bullets.killAndHide(bullet);
+
+        //prevent collision with multiple enemies by removing the bullet from screen and stoping it
+        //bullet.removeFromScreen();
+
+        //remove enemy from screen and stop it
+       // enemy.removeFromScreen();
+
+        //this.score += 10;
+        //update the score text
+       // this.labelScore.setText("Score: " + this.score);
+
+   // });
+
       // caso a personagem toque num goblin
       //this.physics.add.overlap(this.archer, this.skeletons, () => {
       //  this.scene.restart();
       //}); 
+
+      this.update(front);
       
   }
 
-  update() {
+  update(time,front) {
     this.archer.update(this.cursors);
 
-    console.log(this.archer.x);
-    console.log(this.archer.y);
+    //console.log(this.archer.x);
+    //console.log(this.archer.y);
 
     this.skeletons.children.iterate(function (skeleton) {
       skeleton.update()
     },this);
 
     this.eyes.children.iterate(function (eye) {
-      eye.update()
+      eye.update(time)
+    },this);
+  
+
+    this.eyes.children.iterate(function (eye) {
+      this.physics.add.collider(front, eye.bullets,(bullet) =>{
+        eye.bullets.killAndHide(bullet);
+      });
     },this);
 
   }
