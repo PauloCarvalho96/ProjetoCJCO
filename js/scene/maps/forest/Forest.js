@@ -3,6 +3,8 @@ import Knight from "../../../models/characters/main/knight/Knight.js";
 import Goblin from "../../../models/characters/enemies/Goblin/Goblin.js";
 import GoblinGroup from "../../../models/characters/enemies/Goblin/GoblinGroup.js";
 import Wizard from "../../../models/characters/enemies/Wizard/Wizard.js";
+import Mushroom from "../../../models/characters/enemies/Mushroom/Mushroom.js";
+import MushroomGroup from "../../../models/characters/enemies/Mushroom/MushroomGroup.js";
 
 
 export default class forest extends Phaser.Scene{
@@ -10,9 +12,9 @@ export default class forest extends Phaser.Scene{
     constructor(){
         super("Forest");
     }
-    init(data){
+   /*  init(data){
         this.char = data.char;
-    }
+    } */
     preload(){
         
         // tiles para mapa
@@ -61,11 +63,29 @@ export default class forest extends Phaser.Scene{
         });
         
 
-        // spritesheet inimigos
+        // spritesheet goblin
         this.load.spritesheet("goblin_run", "assets/characters/enemies/Goblin/Run.png", {
             frameWidth: 150,
             frameHeight: 150
         });
+
+        // spritesheet mushroom
+        this.load.spritesheet("mushroom_idle", "assets/characters/enemies/Mushroom/Idle.png", {
+            frameWidth: 150,
+            frameHeight: 150
+        });
+
+        // bullet mushroom
+        this.load.spritesheet("mushroom_bullet", "assets/characters/enemies/Mushroom/bullet.png", {
+            frameHeight: 11,
+            frameWidth: 11,
+          });
+
+          // disparo mushroom
+          this.load.spritesheet("mushroom_fire", "assets/characters/enemies/Mushroom/Attack.png", {
+            frameHeight: 150,
+            frameWidth: 150,
+          });
 
         // spritesheet boss
         this.load.spritesheet("wizard_idle", "assets/characters/enemies/Wizard/Idle.png", {
@@ -114,19 +134,21 @@ export default class forest extends Phaser.Scene{
         this.map.createStaticLayer("post",castle_env,0,0);
         this.map.createStaticLayer("torch1",torch1,0,0);
         this.map.createStaticLayer("torch2",torch2,0,0);
-        const rocks = this.map.createStaticLayer("rocks",env_rock,0,0);
+        this.rocks = this.map.createStaticLayer("rocks",env_rock,0,0);
         const ground = this.map.createStaticLayer("ground",env_ground,0,0);  
         const spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
         
         // personagens
-        this.archer = new Archer(this, 1000, 500);
+        this.archer = new Archer(this, 100, 400);
         //this.knight = new Knight(this,75,500);
 
-        // inimigos
+        // *inimigos*
 
         // criação do grupo de goblins
         this.goblinGroup = new GoblinGroup(this.physics.world, this);
-        this.goblinGroup.setVelocityX(50);
+
+        // mushroom group
+        this.mushGroup = new MushroomGroup(this.physics.world,this);
 
         // BOSS
         this.wizard = new Wizard(this,4500,500);
@@ -139,12 +161,12 @@ export default class forest extends Phaser.Scene{
 
         ground.setCollisionByProperty({"collides":true},true);
         wall.setCollisionByProperty({"collides":true},true);
-        rocks.setCollisionByProperty({"collides":true},true);
+        this.rocks.setCollisionByProperty({"collides":true},true);
         plataforms.setCollisionByProperty({"collides":true},true);
         spikes.setCollisionByProperty({"collides":true},true);
 
         const camera = this.cameras.main;
-        camera.startFollow(this.player);
+        camera.startFollow(this.archer);
         camera.setBounds(0,0,this.map.widthInPixels,this.map.heightInPixels);
 
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -152,43 +174,68 @@ export default class forest extends Phaser.Scene{
         // collider
         this.physics.add.collider(this.archer,ground);
         this.physics.add.collider(this.archer,wall);
-        this.physics.add.collider(this.archer,rocks);
+        this.physics.add.collider(this.archer,this.rocks);
         this.physics.add.collider(this.archer,plataforms);
         this.physics.add.collider(this.archer,spikes,() => {
             // se cair nos spikes morre
             this.scene.restart();
         });
 
-        //inimigos (propriedades) ***EM TESTES!***
-        this.physics.add.collider(this.goblinGroup,rocks);
+        //inimigos (propriedades) 
+        this.physics.add.collider(this.goblinGroup,this.rocks);
         this.physics.add.collider(this.goblinGroup,ground);
         this.physics.add.collider(this.goblinGroup,plataforms);
 
+        this.physics.add.collider(this.mushGroup,this.rocks);
+        this.physics.add.collider(this.mushGroup,ground);
+        this.physics.add.collider(this.mushGroup,plataforms);
+
         this.physics.add.collider(this.wizard,plataforms);
         this.physics.add.collider(this.wizard,ground);
-        this.physics.add.collider(this.wizard,rocks);
+        this.physics.add.collider(this.wizard,this.rocks); 
 
-        // caso a personagem toque num goblin
+        // caso a personagem toque num enemy
         this.physics.add.overlap(this.archer, this.goblinGroup, () => {
             this.scene.restart();
         }); 
+
+        this.physics.add.overlap(this.archer, this.mushGroup, () => {
+            this.scene.restart();
+        });
 
         // caso a personagem toque no boss
         this.physics.add.overlap(this.archer, this.wizard, () => {
             this.scene.restart();
         });
 
+        // propriedas das balas
+        this.mushGroup.children.iterate(function (mushroom) {
+            //percorre as balas de cada inimigo e adiciona collider nas balas
+            this.physics.add.collider(this.rocks, mushroom.mushroomBullets, (bullet) => {
+                mushroom.mushroomBullets.killAndHide(bullet);
+            });
+            // adiciona collider da bala com personagem
+            this.physics.add.collider(this.archer, mushroom.mushroomBullets, (bullet) => {
+                this.scene.restart();
+            });
+        },this);
+
     }
 
-    update(){
+    update(time){
 
-        //console.log(this.archer.x);
+        console.log(this.archer.x);
 
         this.archer.update(this.cursors);
         //this.knight.update(this.cursors);
 
         this.goblinGroup.children.iterate(function (goblin) {
-            goblin.update()
+            goblin.update();
+        },this);
+
+        // percorre os inimigos
+        this.mushGroup.children.iterate(function (mushroom) {
+            mushroom.update(time,mushroom.x-this.archer.x);
         },this);
 
         this.wizard.update();
