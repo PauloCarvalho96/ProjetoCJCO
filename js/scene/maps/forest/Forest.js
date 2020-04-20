@@ -198,6 +198,13 @@ export default class forest extends Phaser.Scene{
             this.scene.restart();
         });
 
+        // propriedas das balas
+        this.mushGroup.children.iterate(function (mushroom) {
+            //percorre as balas de cada inimigo e adiciona collider nas balas
+            this.physics.add.collider(this.rocks, mushroom.mushroomBullets, (bullet) => {
+                mushroom.mushroomBullets.killAndHide(bullet);
+            });
+        },this);
 
     }
 
@@ -215,12 +222,6 @@ export default class forest extends Phaser.Scene{
         // percorre os inimigos
         this.mushGroup.children.iterate(function (mushroom) {
             mushroom.update(time);
-
-            //percorre as balas de cada inimigo e verifica se a bala bate nas rochas
-            this.physics.add.collider(this.rocks, mushroom.mushroomBullets, (bullet) => {
-                mushroom.mushroomBullets.killAndHide(bullet);
-            });
-
         },this);
 
         this.wizard.update();
