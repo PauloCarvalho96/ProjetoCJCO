@@ -123,7 +123,7 @@ export default class forest extends Phaser.Scene{
 
         // layers (atras da personagem)
         this.map.createStaticLayer("main_background",main_background,0,0);
-        const wall = this.map.createStaticLayer("wall",env_ground,0,0);
+        this.wall = this.map.createStaticLayer("wall",env_ground,0,0);
         this.map.createStaticLayer("boss_bck",castle_env,0,0);
         this.map.createStaticLayer("bgrd_tree1",bgrd_tree1,0,0);
         this.map.createStaticLayer("bgrd_tree2",bgrd_tree2,0,0);
@@ -137,8 +137,8 @@ export default class forest extends Phaser.Scene{
         this.map.createStaticLayer("torch1",torch1,0,0);
         this.map.createStaticLayer("torch2",torch2,0,0);
         this.rocks = this.map.createStaticLayer("rocks",env_rock,0,0);
-        const ground = this.map.createStaticLayer("ground",env_ground,0,0);  
-        const spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
+        this.ground = this.map.createStaticLayer("ground",env_ground,0,0);  
+        this.spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
         
         // personagens
         this.archer = new Archer(this, 100, 400);
@@ -156,16 +156,16 @@ export default class forest extends Phaser.Scene{
         this.wizard = new Wizard(this,4500,500);
         
         // layers para a frente da personagem (especiais)  
-        const plataforms = this.map.createStaticLayer("plataforms",wood_env,0,0);
+        this.plataforms = this.map.createStaticLayer("plataforms",wood_env,0,0);
         this.map.createStaticLayer("decoration_weed",env_ground,0,0);
         this.map.createStaticLayer("front_chr",castle_env,0,0);
         this.map.createStaticLayer("boss_bck_ac",torch2,0,0);
 
-        ground.setCollisionByProperty({"collides":true},true);
-        wall.setCollisionByProperty({"collides":true},true);
+        this.ground.setCollisionByProperty({"collides":true},true);
+        this.wall.setCollisionByProperty({"collides":true},true);
         this.rocks.setCollisionByProperty({"collides":true},true);
-        plataforms.setCollisionByProperty({"collides":true},true);
-        spikes.setCollisionByProperty({"collides":true},true);
+        this.plataforms.setCollisionByProperty({"collides":true},true);
+        this.spikes.setCollisionByProperty({"collides":true},true);
 
         const camera = this.cameras.main;
         camera.startFollow(this.archer);
@@ -174,27 +174,25 @@ export default class forest extends Phaser.Scene{
         this.cursors = this.input.keyboard.createCursorKeys();
 
         // collider
-        this.physics.add.collider(this.archer,ground);
-        this.physics.add.collider(this.archer,wall);
+        this.physics.add.collider(this.archer,this.ground);
+        this.physics.add.collider(this.archer,this.wall);
         this.physics.add.collider(this.archer,this.rocks);
-        this.physics.add.collider(this.archer,plataforms);
-        this.physics.add.collider(this.archer,spikes,() => {
+        this.physics.add.collider(this.archer,this.plataforms);
+        this.physics.add.collider(this.archer,this.spikes,() => {
             // se cair nos spikes morre
             this.scene.restart();
         });
 
         //inimigos (propriedades) 
         this.physics.add.collider(this.goblinGroup,this.rocks);
-        this.physics.add.collider(this.goblinGroup,ground);
-        this.physics.add.collider(this.goblinGroup,plataforms);
+        this.physics.add.collider(this.goblinGroup,this.ground);
+        this.physics.add.collider(this.goblinGroup,this.plataforms);
 
         this.physics.add.collider(this.mushGroup,this.rocks);
-        this.physics.add.collider(this.mushGroup,ground);
-        this.physics.add.collider(this.mushGroup,plataforms);
+        this.physics.add.collider(this.mushGroup,this.ground);
+        this.physics.add.collider(this.mushGroup,this.plataforms);
 
-        this.physics.add.collider(this.wizard,plataforms);
-        this.physics.add.collider(this.wizard,ground);
-        this.physics.add.collider(this.wizard,this.rocks); 
+        this.physics.add.collider(this.wizard,this.ground);
 
         // caso a personagem toque num enemy
         this.physics.add.overlap(this.archer, this.goblinGroup, () => {
@@ -216,10 +214,27 @@ export default class forest extends Phaser.Scene{
             this.physics.add.collider(this.rocks, mushroom.mushroomBullets, (bullet) => {
                 mushroom.mushroomBullets.killAndHide(bullet);
             });
-            // adiciona collider da bala com personagem
+
+            this.physics.add.collider(this.ground, mushroom.mushroomBullets, (bullet) => {
+                mushroom.mushroomBullets.killAndHide(bullet);
+            });
+
+            this.physics.add.collider(this.plataforms, mushroom.mushroomBullets, (bullet) => {
+                mushroom.mushroomBullets.killAndHide(bullet);
+            });
+
+            this.physics.add.collider(this.spikes, mushroom.mushroomBullets, (bullet) => {
+                mushroom.mushroomBullets.killAndHide(bullet);
+            });
+
+            this.physics.add.collider(this.wall, mushroom.mushroomBullets, (bullet) => {
+                mushroom.mushroomBullets.killAndHide(bullet);
+            });
+
             this.physics.add.collider(this.archer, mushroom.mushroomBullets, () => {
                 this.scene.restart();
-            });
+            }); 
+            
         },this);
 
     }

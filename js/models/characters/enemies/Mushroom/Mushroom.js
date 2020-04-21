@@ -20,6 +20,8 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
         });
         this.timeToShoot = 0;
         this.fireRate = 1500;
+        this.spaceToShoot = 400;
+        this.bulletSpaceDestroy = 500;
 
         // animations
         this.scene.anims.create({
@@ -43,17 +45,20 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
 
     update(time,space){
 
+        // verificar para que lado o inimigo vira
         this.side(space);
 
+        // disparar
         this.shoot(time,space);
         
+        // verificar pos da bala
         this.checkBulletpos();
           
     } 
 
     // para disparar
     shoot(time,space){
-        if(this.timeToShoot < time && space < 100 && space > -100){
+        if(this.timeToShoot < time && space < this.spaceToShoot && space > -this.spaceToShoot){
             let bullet = this.mushroomBullets.getFirstDead(true, this.x, this.y);
             this.play('mushroom_fire',true);
             if(bullet){
@@ -69,7 +74,7 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
     checkBulletpos(){
         // verifica pos das balas
         this.mushroomBullets.children.iterate(function (bullet) {
-            if(bullet.x > bullet.pos + 500){
+            if(bullet.x > bullet.pos + this.bulletSpaceDestroy || bullet.x < bullet.pos - this.bulletSpaceDestroy){
                 this.mushroomBullets.killAndHide(bullet);
             }
         },this);
@@ -88,7 +93,7 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
         }
 
         // se a distancia ao arqueiro for maior entao nao dispara
-        if(space > 100 || space < -100){
+        if(space > this.spaceToShoot || space < -this.spaceToShoot){
             this.play('mushroom_idle',true);         
         }
     }
