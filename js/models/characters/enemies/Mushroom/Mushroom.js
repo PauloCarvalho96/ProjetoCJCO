@@ -33,7 +33,7 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
             key: 'mushroom_fire', 
             frames: this.scene.anims.generateFrameNumbers('mushroom_fire', { start: 0, end: 7 }),
             frameRate: 5,
-            repeat: 1,
+            repeat: -1,
         });
         this.play('mushroom_idle',true);
 
@@ -43,6 +43,40 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
 
     update(time,space){
 
+        this.side(space);
+
+        this.shoot(time,space);
+        
+        this.checkBulletpos();
+          
+    } 
+
+    // para disparar
+    shoot(time,space){
+        if(this.timeToShoot < time && space < 100 && space > -100){
+            let bullet = this.mushroomBullets.getFirstDead(true, this.x, this.y);
+            this.play('mushroom_fire',true);
+            if(bullet){
+                bullet.setVelocityX(this.bulletVelocity);
+                bullet.active = true;
+                bullet.visible = true;
+    
+                this.timeToShoot = time + this.fireRate;
+            }
+        }
+    }
+
+    checkBulletpos(){
+        // verifica pos das balas
+        this.mushroomBullets.children.iterate(function (bullet) {
+            if(bullet.x > bullet.pos + 500){
+                this.mushroomBullets.killAndHide(bullet);
+            }
+        },this);
+    }
+
+    // para definir para que lado virar e disparar
+    side(space){
         if(space > 0){
             this.bulletVelocity = -350;
             this.flipX = true;
@@ -53,29 +87,10 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
             this.flipX = false;
         }
 
-        if(space > 100){
-            this.play('mushroom_idle',true);
+        // se a distancia ao arqueiro for maior entao nao dispara
+        if(space > 100 || space < -100){
+            this.play('mushroom_idle',true);         
         }
-
-        if(this.timeToShoot < time && space < 100){
-            let bullet = this.mushroomBullets.getFirstDead(true, this.x, this.y);
-            if(bullet){
-                this.play('mushroom_fire',true);
-                bullet.setVelocityX(this.bulletVelocity);
-                bullet.active = true;
-                bullet.visible = true;
-    
-                this.timeToShoot = time + this.fireRate;
-            }
-        }
-        
-        // verifica pos das balas
-        this.mushroomBullets.children.iterate(function (bullet) {
-            if(bullet.x > bullet.pos + 500){
-                this.mushroomBullets.killAndHide(bullet);
-            }
-        },this);
-        
-    } 
+    }
 
 }
