@@ -248,6 +248,10 @@ export default class forest extends Phaser.Scene{
             
         },this);
 
+        this.physics.add.collider(this.archer, this.wizard.wizardBullets, () => {
+            this.scene.restart();
+        });
+
         // evento para o wizard disparar
         this.enemyShootDelay = 600;
         this.enemyShootConfig = {
@@ -273,12 +277,11 @@ export default class forest extends Phaser.Scene{
                 this.time.addEvent(this.enemyShootConfig);
             }
         };
-
     }
 
     update(time,delta){
 
-        console.log(this.archer.x);
+        //console.log(this.archer.x);
 
         this.archer.update(this.cursors);
         //this.knight.update(this.cursors);
@@ -306,7 +309,7 @@ export default class forest extends Phaser.Scene{
                 if(bullet.x < 4000){
                     this.wizard.wizardBullets.killAndHide(bullet);
                 }
-            },this)
+            },this);
 
         //senao trata se do nivel 
         } else {  
@@ -322,6 +325,8 @@ export default class forest extends Phaser.Scene{
         }
 
     }
+
+    
 
    
 

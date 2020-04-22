@@ -12,7 +12,7 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
         this.setOffset(90,50);
         this.flipX = true;
 
-        this.bulletsMaxsize = 5;
+        this.bulletsMaxsize = 6;
         this.wizardBullets = this.scene.physics.add.group({
             classType: Bullet,
             maxSize: this.bulletsMaxsize,
@@ -49,9 +49,16 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
     shoot(){
         let bullet = this.wizardBullets.getFirstDead(true,this.x,this.y);
         if(bullet){
-            bullet.setVelocityX(-350);
+
+            //direção da bala (random)
+            const vx = Math.floor((Math.random() * 400) + 300);
+            const vy = Math.floor((Math.random() * 200) + 100);
+            
+            bullet.setVelocityX(-vx);
+            bullet.setVelocityY(-vy);
             bullet.active = true;
             bullet.visible = true;
+            
         }
     }
 
