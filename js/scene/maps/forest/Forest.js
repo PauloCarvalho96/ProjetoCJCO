@@ -249,24 +249,27 @@ export default class forest extends Phaser.Scene{
         },this);
 
         // evento para o wizard disparar
-        this.enemyShootDelay = 500;
+        this.enemyShootDelay = 600;
         this.enemyShootConfig = {
             delay: this.enemyShootDelay,
             repeat: 2,
             callback: () => {
-                // dispara
-                this.wizard.play('wizard_idle',true);
+                // dispara 
+                this.wizard.play('wizard_attack1',true);
                 this.wizard.shoot();
             }
         };
 
         // evento para duraçao de cada rajada de disparos
-        this.eventShootDelay = 5000;
+        this.eventShootDelay = 6000;
         this.eventShootConfig = {
             delay: this.eventShootDelay,
             repeat: -1,
-            callback: () => {
-                this.wizard.play('wizard_attack1',true);
+            callback: () => {  
+                // quando acaba a animaçao de disparo entao volta a idle
+                this.wizard.on("animationcomplete", ()=>{
+                    this.wizard.play('wizard_idle',true);
+                })
                 this.time.addEvent(this.enemyShootConfig);
             }
         };

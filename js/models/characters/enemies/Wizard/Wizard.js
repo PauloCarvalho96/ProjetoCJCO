@@ -31,15 +31,15 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
         this.scene.anims.create({
             key: 'wizard_attack1', 
             frames: this.scene.anims.generateFrameNumbers('wizard_attack1', { start: 0, end: 7 }),
-            frameRate: 10,
-            repeat: 1,
+            frameRate: 15,
+            repeat: 2,
         });
 
         // spawn de inimigos
         this.scene.anims.create({
             key: 'wizard_attack2', 
             frames: this.scene.anims.generateFrameNumbers('wizard_attack2', { start: 0, end: 7 }),
-            frameRate: 10,
+            frameRate: 15,
             repeat: -1,
         });
 
