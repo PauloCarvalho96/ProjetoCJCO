@@ -77,8 +77,8 @@ export default class forest extends Phaser.Scene{
             frameHeight: 150
         });
 
-        // bullet mushroom
-        this.load.spritesheet("mushroom_bullet", "assets/characters/enemies/Mushroom/bullet.png", {
+        // bullet
+        this.load.spritesheet("mushroom_bullet", "assets/characters/enemies/Bullet/bullet.png", {
             frameHeight: 11,
             frameWidth: 11,
           });
@@ -89,14 +89,25 @@ export default class forest extends Phaser.Scene{
             frameWidth: 150,
           });
 
-        // spritesheet boss
+        // spritesheet wizard
         this.load.spritesheet("wizard_idle", "assets/characters/enemies/Wizard/Idle.png", {
+            frameWidth: 231,
+            frameHeight: 190
+        });
+
+        this.load.spritesheet("wizard_attack1", "assets/characters/enemies/Wizard/Attack1.png", {
+            frameWidth: 231,
+            frameHeight: 190
+        });
+
+        this.load.spritesheet("wizard_attack2", "assets/characters/enemies/Wizard/Attack2.png", {
             frameWidth: 231,
             frameHeight: 190
         });
 
         // se conseguir chegar ao final do nivel entra no modo de BOSS
         this.boss = false;
+        this.bossConfigs = false;
 
     }
 
@@ -141,7 +152,7 @@ export default class forest extends Phaser.Scene{
         this.spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
         
         // personagens
-        this.archer = new Archer(this, 100, 400);
+        this.archer = new Archer(this, 3800, 400);
         //this.knight = new Knight(this,75,500);
 
         // *inimigos*
@@ -237,37 +248,78 @@ export default class forest extends Phaser.Scene{
             
         },this);
 
+        // evento para o wizard disparar
+        this.enemyShootDelay = 500;
+        this.enemyShootConfig = {
+            delay: this.enemyShootDelay,
+            repeat: 2,
+            callback: () => {
+                // dispara
+                this.wizard.play('wizard_idle',true);
+                this.wizard.shoot();
+            }
+        };
+
+        // evento para duraçao de cada rajada de disparos
+        this.eventShootDelay = 5000;
+        this.eventShootConfig = {
+            delay: this.eventShootDelay,
+            repeat: -1,
+            callback: () => {
+                this.wizard.play('wizard_attack1',true);
+                this.time.addEvent(this.enemyShootConfig);
+            }
+        };
+
     }
 
-    update(time){
+    update(time,delta){
 
         console.log(this.archer.x);
 
         this.archer.update(this.cursors);
         //this.knight.update(this.cursors);
 
-        this.goblinGroup.children.iterate(function (goblin) {
-            goblin.update();
-        },this);
+        // defrontar o boss
+        if(this.archer.x > 3850){
 
-        // percorre os inimigos
-        this.mushGroup.children.iterate(function (mushroom) {
-            mushroom.update(time,mushroom.x-this.archer.x);
-        },this);
+            // faz as configs do boss 1x
+            if(this.boss == false && this.bossConfigs == false){
+                //evento de disparo do boss
+                this.time.addEvent(this.eventShootConfig);
+                this.boss = true;
+                this.bossConfigs = true;
+            }
 
-        this.wizard.update();
-
-        // quando chegar ao fim do nivel para defrontar o boss
-        if(this.archer.x > 3900){
             this.cameras.main.stopFollow(this.archer);
             this.cameras.main.setBounds(3860,0,4660,this.map.heightInPixels);
-            this.boss = true;
-        } 
 
-        if(this.boss == true && this.archer.x < 3880){
-            this.archer.x = 3880;
+            if(this.boss == true && this.archer.x < 3880){
+                this.archer.x = 3880;
+            }   
+            
+            // itera as balas do wizard
+            this.wizard.wizardBullets.children.iterate(function (bullet) {
+                if(bullet.x < 4000){
+                    this.wizard.wizardBullets.killAndHide(bullet);
+                }
+            },this)
+
+        //senao trata se do nivel 
+        } else {  
+            
+            this.goblinGroup.children.iterate(function (goblin) {
+                goblin.update();
+            },this);
+    
+            // percorre os inimigos
+            this.mushGroup.children.iterate(function (mushroom) {
+                mushroom.update(time,mushroom.x-this.archer.x);
+            },this);
         }
 
     }
+
+   
 
 }

@@ -1,3 +1,4 @@
+import Bullet from "../Bullet/Bullet.js";
 
 export default class Wizard extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
@@ -9,6 +10,14 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
 
         this.setSize(60, 90);
         this.setOffset(90,50);
+        this.flipX = true;
+
+        this.bulletsMaxsize = 5;
+        this.wizardBullets = this.scene.physics.add.group({
+            classType: Bullet,
+            maxSize: this.bulletsMaxsize,
+            allowGravity: false,
+        });
 
         // animations
         this.scene.anims.create({
@@ -18,11 +27,32 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
             repeat: -1,
         });
 
+        // disparar bala
+        this.scene.anims.create({
+            key: 'wizard_attack1', 
+            frames: this.scene.anims.generateFrameNumbers('wizard_attack1', { start: 0, end: 7 }),
+            frameRate: 10,
+            repeat: 1,
+        });
+
+        // spawn de inimigos
+        this.scene.anims.create({
+            key: 'wizard_attack2', 
+            frames: this.scene.anims.generateFrameNumbers('wizard_attack2', { start: 0, end: 7 }),
+            frameRate: 10,
+            repeat: -1,
+        });
+
+        this.play('wizard_idle');
     }
 
-    update(){
-        this.play('wizard_idle',true);
-        this.flipX = true;
+    shoot(){
+        let bullet = this.wizardBullets.getFirstDead(true,this.x,this.y);
+        if(bullet){
+            bullet.setVelocityX(-350);
+            bullet.active = true;
+            bullet.visible = true;
+        }
     }
 
 }

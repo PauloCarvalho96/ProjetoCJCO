@@ -1,4 +1,4 @@
-import MushroomBullet from "./MushroomBullet.js";
+import Bullet from "../Bullet/Bullet.js";
 
 export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
 
@@ -14,7 +14,7 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
 
         this.bulletsMaxsize = 5;
         this.mushroomBullets = this.scene.physics.add.group({
-            classType: MushroomBullet,
+            classType: Bullet,
             maxSize: this.bulletsMaxsize,
             allowGravity: false,
         });
