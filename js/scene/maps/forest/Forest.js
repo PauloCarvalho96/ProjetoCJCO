@@ -252,11 +252,20 @@ export default class forest extends Phaser.Scene{
             this.scene.restart();
         });
 
+        // wizard (BOSS) monstros/propriedades
+        this.physics.add.collider(this.archer, this.wizard.wizardMonsters, () => {
+            this.scene.restart();
+        });
+        this.physics.add.collider(this.wizard.wizardMonsters,this.rocks);
+        this.physics.add.collider(this.wizard.wizardMonsters,this.ground);
+        this.physics.add.collider(this.wizard.wizardMonsters,this.plataforms);
+        
+
         // evento para o wizard disparar
-        this.enemyShootDelay = 600;
+        //this.enemyShootDelay = 600;
         this.enemyShootConfig = {
             delay: this.enemyShootDelay,
-            repeat: 2,
+            repeat: 4,
             callback: () => {
                 // dispara 
                 this.wizard.play('wizard_attack1',true);
@@ -277,11 +286,36 @@ export default class forest extends Phaser.Scene{
                 this.time.addEvent(this.enemyShootConfig);
             }
         };
+
+
+        // evento para o wizard spawnar inimigos
+        this.enemySpawnDelay = 100;
+        this.enemySpawnConfig = {
+            delay: this.enemySpawnDelay,
+            repeat: 0,
+            callback: () => {
+                this.wizard.play('wizard_attack2',true);
+                this.wizard.spawn();
+            }
+        };
+
+        // evento para duraçao de cada spawn de inimigos
+        this.eventSpawnDelay = 5000;
+        this.eventSpawnConfig = {
+            delay: this.eventSpawnDelay,
+            repeat: -1,
+            callback: () => {  
+                this.wizard.on("animationcomplete", ()=>{
+                    this.wizard.play('wizard_idle',true);
+                })
+                this.time.addEvent(this.enemySpawnConfig);
+            }
+        };
     }
 
     update(time,delta){
 
-        //console.log(this.archer.x);
+        console.log(this.archer.x);
 
         this.archer.update(this.cursors);
         //this.knight.update(this.cursors);
@@ -293,6 +327,7 @@ export default class forest extends Phaser.Scene{
             if(this.boss == false && this.bossConfigs == false){
                 //evento de disparo do boss
                 this.time.addEvent(this.eventShootConfig);
+                this.time.addEvent(this.eventSpawnConfig);
                 this.boss = true;
                 this.bossConfigs = true;
             }
@@ -306,8 +341,15 @@ export default class forest extends Phaser.Scene{
             
             // itera as balas do wizard
             this.wizard.wizardBullets.children.iterate(function (bullet) {
-                if(bullet.x < 4000){
+                if(bullet.x < 3900 || bullet.y < 100){
                     this.wizard.wizardBullets.killAndHide(bullet);
+                }
+            },this);
+
+            // itera os monstros do wizard
+            this.wizard.wizardMonsters.children.iterate(function(monster) {
+                if(monster.x < 3700){
+                    this.wizard.wizardMonsters.killAndHide(monster);
                 }
             },this);
 
@@ -322,12 +364,7 @@ export default class forest extends Phaser.Scene{
             this.mushGroup.children.iterate(function (mushroom) {
                 mushroom.update(time,mushroom.x-this.archer.x);
             },this);
+
         }
-
     }
-
-    
-
-   
-
 }

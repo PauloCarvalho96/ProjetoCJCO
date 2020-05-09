@@ -1,4 +1,5 @@
 import Bullet from "../Bullet/Bullet.js";
+import Goblin from "../Goblin/Goblin.js";
 
 export default class Wizard extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
@@ -12,11 +13,17 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
         this.setOffset(90,50);
         this.flipX = true;
 
-        this.bulletsMaxsize = 6;
+        this.bulletsMaxsize = 10;
         this.wizardBullets = this.scene.physics.add.group({
             classType: Bullet,
             maxSize: this.bulletsMaxsize,
             allowGravity: false,
+        });
+
+        this.monstersMaxsize = 10;
+        this.wizardMonsters = this.scene.physics.add.group({
+            classType: Goblin,
+            maxSize: this.monstersMaxsize,
         });
 
         // animations
@@ -32,7 +39,7 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
             key: 'wizard_attack1', 
             frames: this.scene.anims.generateFrameNumbers('wizard_attack1', { start: 0, end: 7 }),
             frameRate: 15,
-            repeat: 2,
+            repeat: 0,
         });
 
         // spawn de inimigos
@@ -40,7 +47,7 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
             key: 'wizard_attack2', 
             frames: this.scene.anims.generateFrameNumbers('wizard_attack2', { start: 0, end: 7 }),
             frameRate: 15,
-            repeat: -1,
+            repeat: 0,
         });
 
         this.play('wizard_idle');
@@ -49,16 +56,24 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
     shoot(){
         let bullet = this.wizardBullets.getFirstDead(true,this.x,this.y);
         if(bullet){
-
             //direção da bala (random)
-            const vx = Math.floor((Math.random() * 400) + 300);
-            const vy = Math.floor((Math.random() * 200) + 100);
+            const vx = Math.floor((Math.random() * 400) + 100);
+            const vy = Math.floor((Math.random() * 400) + 100);
             
             bullet.setVelocityX(-vx);
             bullet.setVelocityY(-vy);
             bullet.active = true;
             bullet.visible = true;
-            
+        }
+    }
+
+    spawn(){
+        let monster = this.wizardMonsters.getFirstDead(true,4500,100);
+        if(monster){
+            monster.setVelocityX(-100);
+            monster.flipX = true;
+            monster.active = true;
+            monster.visible = true;
         }
     }
 
