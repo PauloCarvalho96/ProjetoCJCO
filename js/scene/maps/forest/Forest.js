@@ -229,22 +229,27 @@ export default class forest extends Phaser.Scene{
             //percorre as balas de cada inimigo e adiciona collider nas balas
             this.physics.add.collider(this.rocks, mushroom.mushroomBullets, (bullet) => {
                 mushroom.mushroomBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
             });
 
             this.physics.add.collider(this.ground, mushroom.mushroomBullets, (bullet) => {
                 mushroom.mushroomBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
             });
 
             this.physics.add.collider(this.plataforms, mushroom.mushroomBullets, (bullet) => {
                 mushroom.mushroomBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
             });
 
             this.physics.add.collider(this.spikes, mushroom.mushroomBullets, (bullet) => {
                 mushroom.mushroomBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
             });
 
             this.physics.add.collider(this.wall, mushroom.mushroomBullets, (bullet) => {
                 mushroom.mushroomBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
             });
 
             this.physics.add.collider(this.archer, mushroom.mushroomBullets, () => {
@@ -359,13 +364,15 @@ export default class forest extends Phaser.Scene{
             this.wizard.wizardBullets.children.iterate(function (bullet) {
                 if(bullet.x < 3900 || bullet.y < 100){
                     this.wizard.wizardBullets.killAndHide(bullet);
+                    bullet.removeFromScreen();
                 }
             },this);
 
             // itera os monstros do wizard
             this.wizard.wizardMonsters.children.iterate(function(monster) {
                 if(monster.x < 3700){
-                    this.wizard.wizardMonsters.killAndHide(monster);
+                    this.wizard.wizardMonsters(monster);
+                    monster.removeFromScreen();
                 }
             },this);
 

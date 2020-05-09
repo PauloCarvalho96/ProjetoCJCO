@@ -14,4 +14,9 @@ export default class Bullet extends Phaser.Physics.Arcade.Sprite {
 
     }
 
+    removeFromScreen() {
+        this.y = 700;
+        this.setVelocity(0, 0);
+    }
+
 }
