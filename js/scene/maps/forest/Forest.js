@@ -48,7 +48,12 @@ export default class forest extends Phaser.Scene{
             frameHeight: 128
         });
 
-        this.load.spritesheet("archer_jump", "assets/characters/main/archer/ArcherJump.png", {
+        this.load.spritesheet("archer_shoot", "assets/characters/main/archer/ArcherAttack.png", {
+            frameWidth: 128,
+            frameHeight: 128
+        });
+
+        this.load.spritesheet("archer_arrow", "assets/characters/main/archer/arrow.png", {
             frameWidth: 128,
             frameHeight: 128
         });
@@ -152,7 +157,7 @@ export default class forest extends Phaser.Scene{
         this.spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
         
         // personagens
-        this.archer = new Archer(this, 3800, 400);
+        this.archer = new Archer(this, 100, 400);
         //this.knight = new Knight(this,75,500);
 
         // *inimigos*
@@ -248,8 +253,19 @@ export default class forest extends Phaser.Scene{
             
         },this);
 
-        this.physics.add.collider(this.archer, this.wizard.wizardBullets, () => {
-            this.scene.restart();
+        // archer arrow (propriedades)
+        this.physics.add.overlap(this.archer.archerBullets, this.goblinGroup, (bullet,goblin) => {
+            this.goblinGroup.killAndHide(goblin);
+            goblin.removeFromScreen();
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
+
+        this.physics.add.overlap(this.archer.archerBullets, this.mushGroup, (bullet,mushroom) => {
+            this.mushGroup.killAndHide(mushroom);
+            mushroom.removeFromScreen();
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
         });
 
         // wizard (BOSS) monstros/propriedades
@@ -317,7 +333,7 @@ export default class forest extends Phaser.Scene{
 
         console.log(this.archer.x);
 
-        this.archer.update(this.cursors);
+        this.archer.update(this.cursors,time);
         //this.knight.update(this.cursors);
 
         // defrontar o boss

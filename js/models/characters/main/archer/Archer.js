@@ -1,3 +1,5 @@
+import Arrow from "./Arrow.js";
+
 //import Arrow from "../../../models/characters/main/archer/Arrow.js";
 export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
@@ -13,6 +15,13 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
         this.velocity = 200;
 
+        this.bulletsMaxsize = 1;
+        this.archerBullets = this.scene.physics.add.group({
+            classType: Arrow,
+            maxSize: this.bulletsMaxsize,
+            allowGravity: false,
+        });
+
         // animations
         this.scene.anims.create({
             key: 'archer_run', 
@@ -27,18 +36,24 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             frameRate: 15,
             repeat: -1,
         });
-        /*
-        //Não funciona
+
         this.scene.anims.create({
-            key: 'jump', 
-            frames: this.scene.anims.generateFrameNumbers('archer_jump', { start: 0, end: 11 }),
+            key: 'archer_shoot', 
+            frames: this.scene.anims.generateFrameNumbers('archer_shoot', { start: 0, end: 8 }),
             frameRate: 15,
             repeat: 1,
         });
-        */
+
+        this.scene.anims.create({
+            key: 'archer_arrow', 
+            frames: this.scene.anims.generateFrameNumbers('archer_arrow', { start: 0, end: 3 }),
+            frameRate: 5,
+            repeat: -1,
+        });
+
     }
 
-    update(cursors){
+    update(cursors,time){
 
         this.setVelocityX(0);
         
@@ -57,10 +72,22 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             this.setVelocityX(-this.velocity);
             this.play('archer_run',true);
             this.flipX = true;
-        }else if (cursors.left.isDown && cursors.space.isDown) {
-            this.arrow.fireLaser
+        }else if (cursors.space.isDown) {
+            this.shoot(time);
         } else {
             this.play('archer',true);
+        }
+    }
+
+    // falta disparar em 1 click // 
+    shoot(time){
+        let bullet = this.archerBullets.getFirstDead(true, this.x, this.y-10,"archer_arrow",3);
+        this.play('archer_shoot',true);
+        if(bullet){
+            bullet.setVelocityX(bullet.baseVelocity);
+            bullet.active = true;
+            bullet.visible = true;
+            //this.timeToShoot = time + this.fireRate;
         }
     }
 
