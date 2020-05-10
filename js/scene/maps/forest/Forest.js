@@ -288,6 +288,13 @@ export default class forest extends Phaser.Scene{
             bullet.removeFromScreen();
         });
 
+        this.physics.add.collider(this.archer.archerBullets, this.wizard.wizardMonsters, (bullet,monster) => {
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+            this.wizard.wizardMonsters.killAndHide(monster);
+            monster.removeFromScreen();
+        });
+
         this.physics.add.collider(this.archer.archerBullets, this.wizard, (bullet) => {
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
