@@ -400,7 +400,6 @@ export default class forest extends Phaser.Scene{
             // itera os monstros do wizard
             this.wizard.wizardMonsters.children.iterate(function(monster) {
                 if(monster.x < 3700){
-                    this.wizard.wizardMonsters(monster);
                     monster.removeFromScreen();
                 }
             },this);
