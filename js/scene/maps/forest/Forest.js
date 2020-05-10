@@ -157,7 +157,7 @@ export default class forest extends Phaser.Scene{
         this.spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
         
         // personagens
-        this.archer = new Archer(this, 100, 400);
+        this.archer = new Archer(this, 3800, 400);
         //this.knight = new Knight(this,75,500);
 
         // *inimigos*
@@ -242,11 +242,6 @@ export default class forest extends Phaser.Scene{
                 bullet.removeFromScreen();
             });
 
-            this.physics.add.collider(this.spikes, mushroom.mushroomBullets, (bullet) => {
-                mushroom.mushroomBullets.killAndHide(bullet);
-                bullet.removeFromScreen();
-            });
-
             this.physics.add.collider(this.wall, mushroom.mushroomBullets, (bullet) => {
                 mushroom.mushroomBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
@@ -271,6 +266,33 @@ export default class forest extends Phaser.Scene{
             mushroom.removeFromScreen();
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
+        });
+
+        this.physics.add.collider(this.archer.archerBullets, this.rocks, (bullet) => {
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
+
+        this.physics.add.collider(this.archer.archerBullets, this.plataforms, (bullet) => {
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
+
+        this.physics.add.collider(this.archer.archerBullets, this.wall, (bullet) => {
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
+
+        this.physics.add.collider(this.archer.archerBullets, this.ground, (bullet) => {
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
+
+        this.physics.add.collider(this.archer.archerBullets, this.wizard, (bullet) => {
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+            this.add.text(4250,300,"WINNER!");
+            this.scene.pause();
         });
 
         // wizard (BOSS) monstros/propriedades
@@ -303,7 +325,7 @@ export default class forest extends Phaser.Scene{
                 // quando acaba a animaçao de disparo entao volta a idle
                 this.wizard.on("animationcomplete", ()=>{
                     this.wizard.play('wizard_idle',true);
-                })
+                });
                 this.time.addEvent(this.enemyShootConfig);
             }
         };
@@ -328,7 +350,7 @@ export default class forest extends Phaser.Scene{
             callback: () => {  
                 this.wizard.on("animationcomplete", ()=>{
                     this.wizard.play('wizard_idle',true);
-                })
+                });
                 this.time.addEvent(this.enemySpawnConfig);
             }
         };

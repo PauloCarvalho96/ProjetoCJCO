@@ -77,4 +77,9 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
+    removeFromScreen() {
+        this.y = 700;
+        this.setVelocity(0, 0);
+    }
+
 }

@@ -15,12 +15,14 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
         this.velocity = 200;
 
-        this.bulletsMaxsize = 1;
+        this.bulletsMaxsize = 5;
         this.archerBullets = this.scene.physics.add.group({
             classType: Arrow,
             maxSize: this.bulletsMaxsize,
             allowGravity: false,
         });
+        this.timeToShoot = 0;
+        this.fireRate = 350;    
 
         // animations
         this.scene.anims.create({
@@ -41,14 +43,14 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             key: 'archer_shoot', 
             frames: this.scene.anims.generateFrameNumbers('archer_shoot', { start: 0, end: 8 }),
             frameRate: 15,
-            repeat: 1,
+            repeat: -1,
         });
 
         this.scene.anims.create({
             key: 'archer_arrow', 
             frames: this.scene.anims.generateFrameNumbers('archer_arrow', { start: 0, end: 3 }),
             frameRate: 5,
-            repeat: -1,
+            repeat: 0,
         });
 
     }
@@ -57,13 +59,9 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
         this.setVelocityX(0);
         
-        if (cursors.down.isDown) {
-            // baixar
-
-        } else if (cursors.up.isDown && this.body.blocked.down) {
+        if (cursors.up.isDown && this.body.blocked.down) {
             // saltar
             this.setVelocityY(-350);	  
-  
         } else if (cursors.right.isDown) {
             this.setVelocityX(this.velocity);
             this.play('archer_run',true);
@@ -73,21 +71,36 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             this.play('archer_run',true);
             this.flipX = true;
         }else if (cursors.space.isDown) {
-            this.shoot(time);
+            this.play('archer_shoot',true);
+            if(this.timeToShoot < time){
+                this.shoot(time);
+            }
         } else {
             this.play('archer',true);
         }
+
+        
     }
 
     // falta disparar em 1 click // 
     shoot(time){
-        let bullet = this.archerBullets.getFirstDead(true, this.x, this.y-10,"archer_arrow",3);
-        this.play('archer_shoot',true);
-        if(bullet){
-            bullet.setVelocityX(bullet.baseVelocity);
+        // verifica pos do jogador para disparar a seta
+        if(this.flipX){
+            this.direction = 1;
+        } else {
+            this.direction = 3;
+        }
+        let bullet = this.archerBullets.getFirstDead(true, this.x, this.y-10,"archer_arrow",this.direction);
+        if(bullet){ 
+            //velocidade da bala
+            if(this.flipX){
+                bullet.setVelocityX(-bullet.baseVelocity);
+            } else {
+                bullet.setVelocityX(bullet.baseVelocity);
+            }
             bullet.active = true;
             bullet.visible = true;
-            //this.timeToShoot = time + this.fireRate;
+            this.timeToShoot = time + this.fireRate;
         }
     }
 
