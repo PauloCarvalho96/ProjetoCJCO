@@ -34,7 +34,7 @@ export default class GoblinGroup extends Phaser.Physics.Arcade.Group {
         let child5 = new Goblin(scene,2356,400,80);
         let child6 = new Goblin(scene,2700,400,90);
         let child7 = new Goblin(scene,2650,100,115);
-        let child8 = new Goblin(scene,3445,100,95);
+        let child8 = new Goblin(scene,3445,400,95);
 
         this.add(child1);
         this.add(child2);

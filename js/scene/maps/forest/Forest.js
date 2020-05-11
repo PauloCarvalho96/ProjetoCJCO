@@ -12,9 +12,11 @@ export default class forest extends Phaser.Scene{
     constructor(){
         super("Forest");
     }
+
    /*  init(data){
         this.char = data.char;
     } */
+
     preload(){
         
         // tiles para mapa
@@ -46,7 +48,12 @@ export default class forest extends Phaser.Scene{
             frameHeight: 128
         });
 
-        this.load.spritesheet("archer_jump", "assets/characters/main/archer/ArcherJump.png", {
+        this.load.spritesheet("archer_shoot", "assets/characters/main/archer/ArcherAttack.png", {
+            frameWidth: 128,
+            frameHeight: 128
+        });
+
+        this.load.spritesheet("archer_arrow", "assets/characters/main/archer/arrow.png", {
             frameWidth: 128,
             frameHeight: 128
         });
@@ -75,8 +82,8 @@ export default class forest extends Phaser.Scene{
             frameHeight: 150
         });
 
-        // bullet mushroom
-        this.load.spritesheet("mushroom_bullet", "assets/characters/enemies/Mushroom/bullet.png", {
+        // bullet
+        this.load.spritesheet("mushroom_bullet", "assets/characters/enemies/Bullet/bullet.png", {
             frameHeight: 11,
             frameWidth: 11,
           });
@@ -87,14 +94,25 @@ export default class forest extends Phaser.Scene{
             frameWidth: 150,
           });
 
-        // spritesheet boss
+        // spritesheet wizard
         this.load.spritesheet("wizard_idle", "assets/characters/enemies/Wizard/Idle.png", {
+            frameWidth: 231,
+            frameHeight: 190
+        });
+
+        this.load.spritesheet("wizard_attack1", "assets/characters/enemies/Wizard/Attack1.png", {
+            frameWidth: 231,
+            frameHeight: 190
+        });
+
+        this.load.spritesheet("wizard_attack2", "assets/characters/enemies/Wizard/Attack2.png", {
             frameWidth: 231,
             frameHeight: 190
         });
 
         // se conseguir chegar ao final do nivel entra no modo de BOSS
         this.boss = false;
+        this.bossConfigs = false;
 
     }
 
@@ -121,7 +139,7 @@ export default class forest extends Phaser.Scene{
 
         // layers (atras da personagem)
         this.map.createStaticLayer("main_background",main_background,0,0);
-        const wall = this.map.createStaticLayer("wall",env_ground,0,0);
+        this.wall = this.map.createStaticLayer("wall",env_ground,0,0);
         this.map.createStaticLayer("boss_bck",castle_env,0,0);
         this.map.createStaticLayer("bgrd_tree1",bgrd_tree1,0,0);
         this.map.createStaticLayer("bgrd_tree2",bgrd_tree2,0,0);
@@ -135,11 +153,11 @@ export default class forest extends Phaser.Scene{
         this.map.createStaticLayer("torch1",torch1,0,0);
         this.map.createStaticLayer("torch2",torch2,0,0);
         this.rocks = this.map.createStaticLayer("rocks",env_rock,0,0);
-        const ground = this.map.createStaticLayer("ground",env_ground,0,0);  
-        const spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
+        this.ground = this.map.createStaticLayer("ground",env_ground,0,0);  
+        this.spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
         
         // personagens
-        this.archer = new Archer(this, 100, 400);
+        this.archer = new Archer(this, 3800, 400);
         //this.knight = new Knight(this,75,500);
 
         // *inimigos*
@@ -154,16 +172,16 @@ export default class forest extends Phaser.Scene{
         this.wizard = new Wizard(this,4500,500);
         
         // layers para a frente da personagem (especiais)  
-        const plataforms = this.map.createStaticLayer("plataforms",wood_env,0,0);
+        this.plataforms = this.map.createStaticLayer("plataforms",wood_env,0,0);
         this.map.createStaticLayer("decoration_weed",env_ground,0,0);
         this.map.createStaticLayer("front_chr",castle_env,0,0);
         this.map.createStaticLayer("boss_bck_ac",torch2,0,0);
 
-        ground.setCollisionByProperty({"collides":true},true);
-        wall.setCollisionByProperty({"collides":true},true);
+        this.ground.setCollisionByProperty({"collides":true},true);
+        this.wall.setCollisionByProperty({"collides":true},true);
         this.rocks.setCollisionByProperty({"collides":true},true);
-        plataforms.setCollisionByProperty({"collides":true},true);
-        spikes.setCollisionByProperty({"collides":true},true);
+        this.plataforms.setCollisionByProperty({"collides":true},true);
+        this.spikes.setCollisionByProperty({"collides":true},true);
 
         const camera = this.cameras.main;
         camera.startFollow(this.archer);
@@ -172,27 +190,25 @@ export default class forest extends Phaser.Scene{
         this.cursors = this.input.keyboard.createCursorKeys();
 
         // collider
-        this.physics.add.collider(this.archer,ground);
-        this.physics.add.collider(this.archer,wall);
+        this.physics.add.collider(this.archer,this.ground);
+        this.physics.add.collider(this.archer,this.wall);
         this.physics.add.collider(this.archer,this.rocks);
-        this.physics.add.collider(this.archer,plataforms);
-        this.physics.add.collider(this.archer,spikes,() => {
+        this.physics.add.collider(this.archer,this.plataforms);
+        this.physics.add.collider(this.archer,this.spikes,() => {
             // se cair nos spikes morre
             this.scene.restart();
         });
 
         //inimigos (propriedades) 
         this.physics.add.collider(this.goblinGroup,this.rocks);
-        this.physics.add.collider(this.goblinGroup,ground);
-        this.physics.add.collider(this.goblinGroup,plataforms);
+        this.physics.add.collider(this.goblinGroup,this.ground);
+        this.physics.add.collider(this.goblinGroup,this.plataforms);
 
         this.physics.add.collider(this.mushGroup,this.rocks);
-        this.physics.add.collider(this.mushGroup,ground);
-        this.physics.add.collider(this.mushGroup,plataforms);
+        this.physics.add.collider(this.mushGroup,this.ground);
+        this.physics.add.collider(this.mushGroup,this.plataforms);
 
-        this.physics.add.collider(this.wizard,plataforms);
-        this.physics.add.collider(this.wizard,ground);
-        this.physics.add.collider(this.wizard,this.rocks); 
+        this.physics.add.collider(this.wizard,this.ground);
 
         // caso a personagem toque num enemy
         this.physics.add.overlap(this.archer, this.goblinGroup, () => {
@@ -213,44 +229,193 @@ export default class forest extends Phaser.Scene{
             //percorre as balas de cada inimigo e adiciona collider nas balas
             this.physics.add.collider(this.rocks, mushroom.mushroomBullets, (bullet) => {
                 mushroom.mushroomBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
             });
-            // adiciona collider da bala com personagem
-            this.physics.add.collider(this.archer, mushroom.mushroomBullets, (bullet) => {
+
+            this.physics.add.collider(this.ground, mushroom.mushroomBullets, (bullet) => {
+                mushroom.mushroomBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
+            });
+
+            this.physics.add.collider(this.plataforms, mushroom.mushroomBullets, (bullet) => {
+                mushroom.mushroomBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
+            });
+
+            this.physics.add.collider(this.wall, mushroom.mushroomBullets, (bullet) => {
+                mushroom.mushroomBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
+            });
+
+            this.physics.add.collider(this.archer, mushroom.mushroomBullets, () => {
                 this.scene.restart();
-            });
+            }); 
+            
         },this);
 
+        // archer arrow (propriedades)
+        this.physics.add.overlap(this.archer.archerBullets, this.goblinGroup, (bullet,goblin) => {
+            this.goblinGroup.killAndHide(goblin);
+            goblin.removeFromScreen();
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
+
+        this.physics.add.overlap(this.archer.archerBullets, this.mushGroup, (bullet,mushroom) => {
+            this.mushGroup.killAndHide(mushroom);
+            mushroom.removeFromScreen();
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
+
+        this.physics.add.collider(this.archer.archerBullets, this.rocks, (bullet) => {
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
+
+        this.physics.add.collider(this.archer.archerBullets, this.plataforms, (bullet) => {
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
+
+        this.physics.add.collider(this.archer.archerBullets, this.wall, (bullet) => {
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
+
+        this.physics.add.collider(this.archer.archerBullets, this.ground, (bullet) => {
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
+
+        this.physics.add.collider(this.archer.archerBullets, this.wizard.wizardMonsters, (bullet,monster) => {
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+            this.wizard.wizardMonsters.killAndHide(monster);
+            monster.removeFromScreen();
+        });
+
+        this.physics.add.collider(this.archer.archerBullets, this.wizard, (bullet) => {
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+            this.add.text(4250,300,"WINNER!");
+            this.scene.pause();
+        });
+
+        // wizard (BOSS) monstros/propriedades
+        this.physics.add.collider(this.archer, this.wizard.wizardMonsters, () => {
+            this.scene.restart();
+        });
+        this.physics.add.collider(this.wizard.wizardMonsters,this.rocks);
+        this.physics.add.collider(this.wizard.wizardMonsters,this.ground);
+        this.physics.add.collider(this.wizard.wizardMonsters,this.plataforms);
+        
+
+        // evento para o wizard disparar
+        //this.enemyShootDelay = 600;
+        this.enemyShootConfig = {
+            delay: this.enemyShootDelay,
+            repeat: 4,
+            callback: () => {
+                // dispara 
+                this.wizard.play('wizard_attack1',true);
+                this.wizard.shoot();
+            }
+        };
+
+        // evento para duraçao de cada rajada de disparos
+        this.eventShootDelay = 6000;
+        this.eventShootConfig = {
+            delay: this.eventShootDelay,
+            repeat: -1,
+            callback: () => {  
+                // quando acaba a animaçao de disparo entao volta a idle
+                this.wizard.on("animationcomplete", ()=>{
+                    this.wizard.play('wizard_idle',true);
+                });
+                this.time.addEvent(this.enemyShootConfig);
+            }
+        };
+
+
+        // evento para o wizard spawnar inimigos
+        this.enemySpawnDelay = 100;
+        this.enemySpawnConfig = {
+            delay: this.enemySpawnDelay,
+            repeat: 0,
+            callback: () => {
+                this.wizard.play('wizard_attack2',true);
+                this.wizard.spawn();
+            }
+        };
+
+        // evento para duraçao de cada spawn de inimigos
+        this.eventSpawnDelay = 5000;
+        this.eventSpawnConfig = {
+            delay: this.eventSpawnDelay,
+            repeat: -1,
+            callback: () => {  
+                this.wizard.on("animationcomplete", ()=>{
+                    this.wizard.play('wizard_idle',true);
+                });
+                this.time.addEvent(this.enemySpawnConfig);
+            }
+        };
     }
 
-    update(time){
+    update(time,delta){
 
         console.log(this.archer.x);
 
-        this.archer.update(this.cursors);
+        this.archer.update(this.cursors,time);
         //this.knight.update(this.cursors);
 
-        this.goblinGroup.children.iterate(function (goblin) {
-            goblin.update();
-        },this);
+        // defrontar o boss
+        if(this.archer.x > 3850){
 
-        // percorre os inimigos
-        this.mushGroup.children.iterate(function (mushroom) {
-            mushroom.update(time,mushroom.x-this.archer.x);
-        },this);
+            // faz as configs do boss 1x
+            if(this.boss == false && this.bossConfigs == false){
+                //evento de disparo do boss
+                this.time.addEvent(this.eventShootConfig);
+                this.time.addEvent(this.eventSpawnConfig);
+                this.boss = true;
+                this.bossConfigs = true;
+            }
 
-        this.wizard.update();
-
-        // quando chegar ao fim do nivel para defrontar o boss
-        if(this.archer.x > 3900){
             this.cameras.main.stopFollow(this.archer);
             this.cameras.main.setBounds(3860,0,4660,this.map.heightInPixels);
-            this.boss = true;
-        } 
 
-        if(this.boss == true && this.archer.x < 3880){
-            this.archer.x = 3880;
+            if(this.boss == true && this.archer.x < 3880){
+                this.archer.x = 3880;
+            }   
+            
+            // itera as balas do wizard
+            this.wizard.wizardBullets.children.iterate(function (bullet) {
+                if(bullet.x < 3900 || bullet.y < 100){
+                    this.wizard.wizardBullets.killAndHide(bullet);
+                    bullet.removeFromScreen();
+                }
+            },this);
+
+            // itera os monstros do wizard
+            this.wizard.wizardMonsters.children.iterate(function(monster) {
+                if(monster.x < 3700){
+                    monster.removeFromScreen();
+                }
+            },this);
+
+        //senao trata se do nivel 
+        } else {  
+            
+            this.goblinGroup.children.iterate(function (goblin) {
+                goblin.update();
+            },this);
+    
+            // percorre os inimigos
+            this.mushGroup.children.iterate(function (mushroom) {
+                mushroom.update(time,mushroom.x-this.archer.x);
+            },this);
+
         }
-
     }
-
 }

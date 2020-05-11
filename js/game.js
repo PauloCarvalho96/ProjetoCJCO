@@ -10,6 +10,7 @@ class Game extends Phaser.Game{
         // Descomentar para abrir o mapa correspondente!
         //this.scene.add('BootGame', bootGame);
         //this.scene.start('BootGame');
+        
         //Mapa Forest 
         //this.scene.add('Forest',Forest);
         //this.scene.start('Forest');

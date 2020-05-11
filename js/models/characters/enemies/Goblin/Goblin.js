@@ -26,7 +26,8 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
             repeat: -1,
         });
 
-        this.setVelocityX(this.velocity);
+        this.play('goblin_run',true);
+
     }
 
     update(){
@@ -41,5 +42,10 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
             this.flipX = false;
         }
 
+    }
+
+    removeFromScreen() {
+        this.y = 700;
+        this.setVelocity(0, 0);
     }
 }

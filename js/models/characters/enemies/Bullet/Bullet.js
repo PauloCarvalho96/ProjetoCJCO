@@ -1,5 +1,5 @@
 
-export default class MushroomBullet extends Phaser.Physics.Arcade.Sprite {
+export default class Bullet extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
         super(scene, x, y, "mushroom_bullet");
 
@@ -14,8 +14,9 @@ export default class MushroomBullet extends Phaser.Physics.Arcade.Sprite {
 
     }
 
-    isOutsideCanvas() {
-        return this.x > 100 || this.y > 100 || this.x < 0 || this.y < 0;
+    removeFromScreen() {
+        this.y = 700;
+        this.setVelocity(0, 0);
     }
 
 }
