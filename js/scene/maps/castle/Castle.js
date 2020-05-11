@@ -54,6 +54,12 @@ export default class Castle extends Phaser.Scene {
       frameHeight: 150
     });
 
+    // disparo eye
+    this.load.spritesheet("eye_fire", "assets/characters/enemies/Flying_eye/Attack.png", {
+      frameHeight: 150,
+      frameWidth: 150,
+    });
+
     this.load.image("bullet", "assets/bullet/bullet.png");
 
     }
@@ -150,11 +156,21 @@ export default class Castle extends Phaser.Scene {
       //  this.scene.restart();
       //}); 
 
-      this.update(front);
+      this.eyes.children.iterate(function (eye) {
+        this.physics.add.collider(front, eye.bullets,(bullet) =>{
+          eye.bullets.killAndHide(bullet);
+        });
+         // adiciona collider da bala com personagem
+         this.physics.add.collider(this.archer, eye.bullets, (bullet) => {
+          this.scene.restart();
+      });
+      },this);
+
+
       
   }
 
-  update(time,front) {
+  update(time) {
     this.archer.update(this.cursors);
 
     //console.log(this.archer.x);
@@ -165,16 +181,8 @@ export default class Castle extends Phaser.Scene {
     },this);
 
     this.eyes.children.iterate(function (eye) {
-      eye.update(time)
+      eye.update(time,eye.x-this.archer.x)
     },this);
-  
-
-    this.eyes.children.iterate(function (eye) {
-      this.physics.add.collider(front, eye.bullets,(bullet) =>{
-        eye.bullets.killAndHide(bullet);
-      });
-    },this);
-
   }
     
 }

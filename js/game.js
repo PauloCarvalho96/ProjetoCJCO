@@ -11,12 +11,12 @@ class Game extends Phaser.Game{
         //this.scene.add('BootGame', bootGame);
         //this.scene.start('BootGame');
         //Mapa Forest 
-        this.scene.add('Forest',Forest);
-        this.scene.start('Forest');
+        //this.scene.add('Forest',Forest);
+        //this.scene.start('Forest');
 
         //Mapa Castle
-        //this.scene.add('Castle',Castle);
-        //this.scene.start('Castle');
+        this.scene.add('Castle',Castle);
+        this.scene.start('Castle');
 
     }
 }

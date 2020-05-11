@@ -36,36 +36,31 @@ export default class Eye extends Phaser.Physics.Arcade.Sprite {
             frameRate: 1,
             repeat: -1,
         });
-        /*
-        //Não funciona
+
         this.scene.anims.create({
-            key: 'jump', 
-            frames: this.scene.anims.generateFrameNumbers('archer_jump', { start: 0, end: 11 }),
-            frameRate: 15,
+            key: 'eye_fire', 
+            frames: this.scene.anims.generateFrameNumbers('eye_fire', { start: 0, end: 7 }),
+            frameRate: 10,
             repeat: 1,
         });
-        */
-       this.setVelocityX(this.velocity);
+        this.play('eye_fly',true);
+
+        this.setVelocityX(this.velocity);
     }
 
     update(time){
 
         if (this.timeToShoot < time) {
-            //let bullet = this.scene.physics.add.image(this.x, this.y, "bullet");
             let bullet = this.bullets.getFirstDead(true, this.x, this.y);
-
             if (bullet) {
+                this.play('eye_fire',true);
                 bullet.setVelocityX(350);
                 bullet.active = true;
                 bullet.visible = true;
-                //bullet.fire(this.scene.enemy);
             }
-            //this.bullets.push(bullet);
-
             this.timeToShoot = time + this.fireRate;
         }
-
-        this.play('eye_fly',true);
+        
         if(this.x >= this.pos + this.offset){
             this.setVelocityX(-this.velocity);
             this.flipX = true;
@@ -74,12 +69,13 @@ export default class Eye extends Phaser.Physics.Arcade.Sprite {
             this.flipX = false;
         }
 
-        //this.bullets.children.iterate(function (bullet) {
-        //    if (bullet.isOutsideCanvas()) {
-         //       //bullet.active = false;
-        //        this.bullets.killAndHide(bullet);
-        //    }
-       // }, this);
+        // verifica pos das balas
+        this.bullets.children.iterate(function (bullet) {
+            if(bullet.x > bullet.pos + 500){
+                this.bullets.killAndHide(bullet);
+            }
+        },this);
+
     }
 
 }
