@@ -10,6 +10,10 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         scene.physics.add.existing(this); 
         scene.physics.world.enable(this);
 
+        this.health = 100; // Saúde do Arqueiro
+        this.coins = 0; // Coins
+        
+
         this.setSize(30, 40);
         this.setOffset(48,35);
 

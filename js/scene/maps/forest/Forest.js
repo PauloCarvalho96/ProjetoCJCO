@@ -114,10 +114,13 @@ export default class forest extends Phaser.Scene{
         this.boss = false;
         this.bossConfigs = false;
 
+        
+
     }
 
     create(){
         console.log("Starting game");
+      
 
         // mapa (forest)
         this.map = this.make.tilemap({ key: "forest" });
@@ -159,7 +162,7 @@ export default class forest extends Phaser.Scene{
         // personagens
         this.archer = new Archer(this, 3800, 400);
         //this.knight = new Knight(this,75,500);
-
+        
         // *inimigos*
 
         // criação do grupo de goblins
@@ -361,12 +364,23 @@ export default class forest extends Phaser.Scene{
                 this.time.addEvent(this.enemySpawnConfig);
             }
         };
+
+       
+      
+
+
+
     }
 
     update(time,delta){
 
         console.log(this.archer.x);
 
+        //this.add.text(this.archer.x, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+        this.addGUI();
+
+        
+        
         this.archer.update(this.cursors,time);
         //this.knight.update(this.cursors);
 
@@ -415,7 +429,19 @@ export default class forest extends Phaser.Scene{
             this.mushGroup.children.iterate(function (mushroom) {
                 mushroom.update(time,mushroom.x-this.archer.x);
             },this);
-
+            
         }
     }
+
+    addGUI() {
+        let labelhealth = this.add.text(10, 30, "Saúde: " + this.archer.health + "%", {
+            font: "25px",
+            fill: "#ffffff"
+          });
+        
+        labelhealth.setScrollFactor(0);
+        
+    }
+
+
 }

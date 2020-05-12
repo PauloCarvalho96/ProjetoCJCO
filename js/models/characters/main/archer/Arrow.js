@@ -1,28 +1,31 @@
+export default class Arrow extends Phaser.Physics.Arcade.Sprite{
 
-export default class Arrow extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y,texture,frame) {
-        super(scene, x, y,texture,frame);
+    constructor(scene,x,y){
+     super(scene,x,y,"arrow");
+       
+       this.scene.add.existing(this);
+       this.baseVelocity = 350;
+       this.scene.physics.world.enable(this);
+   } 
 
-        scene.add.existing(this); 
-        scene.physics.add.existing(this); 
-        scene.physics.world.enable(this);
+fire(enemy) {
+   const dx = enemy.x-this.x;
+   const dy = enemy.y-this.y;
+   const alpha = Math.atan2(dy,dx);
 
-        this.setScale(0.5)
-        this.setSize(60, 10);
-        this.setOffset(35,60);
+   const vx = this.baseVelocity * Math.cos(alpha);
+   const vy = this.baseVelocity * Math.sin(alpha);
 
-        this.baseVelocity = 300;
+   this.setVelocityX(vx);
+   this.setVelocityY(vy);
+   this.active = true;
+   this.visible = true;
+   
+}
+isOutsideCanvas(){
+   const width = this.scene.game.config.width;
+           const height = this.scene.game.config.height;
+           return this.x > width || this.y > height || this.x < 0 || this.y < 0;
+       }
 
-        this.scene.anims.create({
-            key: 'archer_arrow', 
-            frames: this.scene.anims.generateFrameNumbers('archer_arrow', { start: 0, end: 3 }),
-            frameRate: 5,
-            repeat: -1,
-        });
-    }
-
-    removeFromScreen() {
-        this.y = 700;
-        this.setVelocity(0, 0);
-    }
 }
