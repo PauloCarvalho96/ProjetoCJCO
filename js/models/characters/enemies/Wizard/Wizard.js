@@ -34,6 +34,13 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
             repeat: -1,
         });
 
+        this.scene.anims.create({
+            key: 'wizard_run', 
+            frames: this.scene.anims.generateFrameNumbers('wizard_run', { start: 0, end: 7 }),
+            frameRate: 5,
+            repeat: -1,
+        });
+
         // disparar bala
         this.scene.anims.create({
             key: 'wizard_attack1', 
@@ -50,15 +57,16 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
             repeat: 0,
         });
 
-        this.play('wizard_idle');
+        this.play('wizard_run',true);
+        this.setVelocityX(0);
     }
 
     shoot(){
         let bullet = this.wizardBullets.getFirstDead(true,this.x,this.y);
         if(bullet){
             //direção da bala (random)
-            const vx = Math.floor((Math.random() * 400) + 100);
-            const vy = Math.floor((Math.random() * 400) + 100);
+            let vx = Math.floor(Math.random() * (800 - 100 + 1) - 100);
+            let vy = Math.floor(Math.random() * (800 - 100 + 1) - 100);
             
             bullet.setVelocityX(-vx);
             bullet.setVelocityY(-vy);
@@ -68,7 +76,9 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
     }
 
     spawn(){
-        let monster = this.wizardMonsters.getFirstDead(true,4500,100);
+        let px = Math.floor(Math.random() * (4500 - 4400 + 1) + 4400);
+
+        let monster = this.wizardMonsters.getFirstDead(true,px,200);
         if(monster){
             monster.setVelocityX(-100);
             monster.flipX = true;

@@ -76,6 +76,7 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
         this.mushroomBullets.children.iterate(function (bullet) {
             if(bullet.x > bullet.pos + this.bulletSpaceDestroy || bullet.x < bullet.pos - this.bulletSpaceDestroy){
                 this.mushroomBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
             }
         },this);
     }
