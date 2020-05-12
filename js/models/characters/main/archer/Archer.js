@@ -1,4 +1,4 @@
-//import Arrow from "../../../models/characters/main/archer/Arrow.js";
+import Arrow from "../../../models/characters/main/archer/Arrow.js";
 export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
     constructor(scene, x, y) {
@@ -10,7 +10,10 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
         this.setSize(30, 40);
         this.setOffset(48,35);
-
+        this.Arrow = this.scene.physics.add.group({
+            maxSize:5,
+            classType: Bullet
+        });
         this.velocity = 100;
 
         // animations
@@ -27,7 +30,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             frameRate: 15,
             repeat: -1,
         });
-        this.arrow = new Arrow(this,this.x,this.y);
+       // this.arrow = new Arrow(this,this.x,this.y);
         /*
         //Não funciona
         this.scene.anims.create({
@@ -58,11 +61,28 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             this.setVelocityX(-this.velocity);
             this.play('run',true);
             this.flipX = true;
-        }else if (cursors.left.isDown && cursors.space.isDown) {
-            this.arrow.fireLaser
         } else {
             this.play('steady',true);
         }
+
+        if (cursors.space.isDown & this.timeToShoot<time){
+            let bullet = this.bullets.getFirstDead(true, this.x , this.y , "bullet");
+            if(bullet){
+                //bullet.setVelocityX(400);
+                
+               bullet.fire(this.scene.enemy);
+            }
+           
+
+            this.timeToShoot = time + this.fireRate;
+            }
+        
+    this.bullets.children.iterate(function(bullet){
+        
+        if(bullet.isOutsideCanvas()){
+            this.bullets.killAndHide(bullet);
+        }
+    }, this);
     }
 
 }
