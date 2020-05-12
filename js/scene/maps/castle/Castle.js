@@ -30,17 +30,27 @@ export default class Castle extends Phaser.Scene {
      this.load.spritesheet("archer", "assets/characters/main/archer/ArcherIdle.png", {
       frameWidth: 128,
       frameHeight: 128
-  });
+    });
 
-  this.load.spritesheet("archer_run", "assets/characters/main/archer/ArcherRun.png", {
+    this.load.spritesheet("archer_run", "assets/characters/main/archer/ArcherRun.png", {
       frameWidth: 128,
       frameHeight: 128
-  });
+    });
 
-  this.load.spritesheet("archer_jump", "assets/characters/main/archer/ArcherJump.png", {
+    this.load.spritesheet("archer_jump", "assets/characters/main/archer/ArcherJump.png", {
       frameWidth: 128,
       frameHeight: 128
-  });
+    });
+
+    this.load.spritesheet("archer_shoot", "assets/characters/main/archer/ArcherAttack.png", {
+      frameWidth: 128,
+      frameHeight: 128 
+    });
+
+    this.load.spritesheet("archer_arrow", "assets/characters/main/archer/arrow.png", {
+      frameWidth: 128,
+      frameHeight: 128
+    });
 
     // spritesheet inimigos
     this.load.spritesheet("skeleton_run", "assets/characters/enemies/Skeleton/Walk.png", {
@@ -108,8 +118,6 @@ export default class Castle extends Phaser.Scene {
       this.eyes = new EyeGroup(this.physics.world,this);
       this.eyes.setVelocityX(50);
 
-      //this.skeleton = this.skeletons.getFirstDead(false,100,100);
-
       //get the scene camera
       const camera = this.cameras.main;
       //make camera follow mario
@@ -126,55 +134,54 @@ export default class Castle extends Phaser.Scene {
       this.physics.add.collider(this.archer, front);
       this.physics.add.collider(this.skeletons,front);
       this.physics.add.collider(this.eyes,front);
-
-      //set the callback function killMario to be called when something collides with the tile 124 (axe)     
+ 
       this.physics.add.collider(this.archer,front1,() => {
         this.scene.restart();
       });
 
-     // this.physics.add.overlap(this.bird.bullets, this.enemies, (bullet, enemy) => {
-        //bullet.destroy(); //destroy method removes object from the memory
-        //enemy.destroy();
-
-        //this.enemies.killAndHide(enemy);
-        //this.bird.bullets.killAndHide(bullet);
-
-        //prevent collision with multiple enemies by removing the bullet from screen and stoping it
-        //bullet.removeFromScreen();
-
-        //remove enemy from screen and stop it
-       // enemy.removeFromScreen();
-
-        //this.score += 10;
-        //update the score text
-       // this.labelScore.setText("Score: " + this.score);
-
-   // });
-
       // caso a personagem toque num goblin
-      //this.physics.add.overlap(this.archer, this.skeletons, () => {
-      //  this.scene.restart();
-      //}); 
+      this.physics.add.overlap(this.archer, this.skeletons, () => {
+        this.scene.restart();
+      }); 
 
       this.eyes.children.iterate(function (eye) {
         this.physics.add.collider(front, eye.bullets,(bullet) =>{
           eye.bullets.killAndHide(bullet);
+          bullet.removeFromScreen();
         });
          // adiciona collider da bala com personagem
          this.physics.add.collider(this.archer, eye.bullets, (bullet) => {
           this.scene.restart();
-      });
+         });
       },this);
 
+        // shift alt A - > comentar + que uma linha de código
+        // archer arrow (propriedades)
+        this.physics.add.overlap(this.archer.archerBullets, this.skeletons, (bullet,skeleton) => {
+            this.skeletons.killAndHide(skeleton);
+            skeleton.removeFromScreen();
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
 
-      
+        this.physics.add.overlap(this.archer.archerBullets, this.eyes, (bullet,eye) => {
+            this.eyes.killAndHide(eye);
+            eye.removeFromScreen();
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        }); 
+
+        this.physics.add.collider(this.archer.archerBullets, front, (bullet) => {
+          this.archer.archerBullets.killAndHide(bullet);
+          bullet.removeFromScreen();
+        });
+
   }
 
-  update(time) {
-    this.archer.update(this.cursors);
-
+  update(time,delta) {
     //console.log(this.archer.x);
     //console.log(this.archer.y);
+    this.archer.update(this.cursors,time,this.map.widthInPixels);
 
     this.skeletons.children.iterate(function (skeleton) {
       skeleton.update()

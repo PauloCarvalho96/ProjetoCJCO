@@ -28,7 +28,7 @@ export default class Bullet extends Phaser.Physics.Arcade.Image {
     }
 
     removeFromScreen() {
-        this.x = -100;
+        this.y = 700;
         this.setVelocity(0, 0);
     }
 

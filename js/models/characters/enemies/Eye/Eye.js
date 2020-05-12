@@ -17,6 +17,8 @@ export default class Eye extends Phaser.Physics.Arcade.Sprite {
 
         this.timeToShoot = 0;
         this.fireRate = 1000;
+        this.spaceToShoot = 400;
+        this.bulletSpaceDestroy = 500;
 
         // pos de criaçao
         this.pos = this.x;
@@ -48,19 +50,23 @@ export default class Eye extends Phaser.Physics.Arcade.Sprite {
         this.setVelocityX(this.velocity);
     }
 
-    update(time){
+    removeFromScreen() {
+        this.y = 700;
+        this.setVelocity(0, 0);
+    }
+    
+    update(time,space){
 
-        if (this.timeToShoot < time) {
-            let bullet = this.bullets.getFirstDead(true, this.x, this.y);
-            if (bullet) {
-                this.play('eye_fire',true);
-                bullet.setVelocityX(350);
-                bullet.active = true;
-                bullet.visible = true;
-            }
-            this.timeToShoot = time + this.fireRate;
-        }
+        // verificar para que lado o inimigo vira
+        this.side(space);
+
+        // disparar
+        this.shoot(time,space);
         
+        // verificar pos da bala
+        this.checkBulletpos();
+
+        // para andar dentro dos limites
         if(this.x >= this.pos + this.offset){
             this.setVelocityX(-this.velocity);
             this.flipX = true;
@@ -69,13 +75,48 @@ export default class Eye extends Phaser.Physics.Arcade.Sprite {
             this.flipX = false;
         }
 
+    }
+
+    // para disparar
+    shoot(time,space){
+        if(this.timeToShoot < time && space < this.spaceToShoot && space > -this.spaceToShoot){
+            let bullet = this.bullets.getFirstDead(true, this.x, this.y);
+            this.play('eye_fire',true);
+            if(bullet){
+                bullet.setVelocityX(this.bulletVelocity);
+                bullet.active = true;
+                bullet.visible = true;
+
+                this.timeToShoot = time + this.fireRate;
+            }
+        }
+    }
+
+    checkBulletpos(){
         // verifica pos das balas
         this.bullets.children.iterate(function (bullet) {
-            if(bullet.x > bullet.pos + 500){
+            if(bullet.x > bullet.pos + this.bulletSpaceDestroy || bullet.x < bullet.pos - this.bulletSpaceDestroy){
                 this.bullets.killAndHide(bullet);
             }
         },this);
+    }
 
+    // para definir para que lado virar e disparar
+    side(space){
+        if(space > 0){
+            this.bulletVelocity = -350;
+            this.flipX = true;
+        }
+
+        if(space < 0) {
+            this.bulletVelocity = 350;
+            this.flipX = false;
+        }
+
+        // se a distancia ao arqueiro for maior entao nao dispara
+        if(space > this.spaceToShoot || space < -this.spaceToShoot){
+            this.play('eye_fly',true);      
+        }
     }
 
 }
