@@ -1,5 +1,8 @@
+import SkeletonGroup from "../../../models/characters/enemies/Skeleton/SkeletonGroup.js";
+import EyeGroup from "../../../models/characters/enemies/Eye/EyeGroup.js";
 import Archer from "../../../models/characters/main/archer/Archer.js";
 import Knight from "../../../models/characters/main/knight/Knight.js";
+import Skeleton from "../../../models/characters/enemies/Skeleton/Skeleton.js";
 
 export default class Castle extends Phaser.Scene {
   
@@ -17,18 +20,37 @@ export default class Castle extends Phaser.Scene {
     this.load.image("back5", "assets/maps/castle/tiles/background5.png");
     this.load.image("tiles", "assets/maps/castle/tiles/main_lev_build.png");
     this.load.image("decorative", "assets/maps/castle/tiles/other_and_decorative.png");
+    this.load.image("tocha", "assets/maps/castle/tiles/torch-C-03.png");
+    this.load.image("lava", "assets/maps/castle/tiles/lava.png");
 
     this.load.tilemapTiledJSON("map", "assets/maps/castle/map2_v3.json");
 
-    // spritesheet (Archer)
-    this.load.spritesheet("archer", "assets/characters/main/archer/ArcherIdle.png", {
+     // spritesheet (Archer)
+     this.load.spritesheet("archer", "assets/characters/main/archer/ArcherIdle.png", {
       frameWidth: 128,
       frameHeight: 128
+  });
+
+  this.load.spritesheet("archer_run", "assets/characters/main/archer/ArcherRun.png", {
+      frameWidth: 128,
+      frameHeight: 128
+  });
+
+  this.load.spritesheet("archer_jump", "assets/characters/main/archer/ArcherJump.png", {
+      frameWidth: 128,
+      frameHeight: 128
+  });
+
+    // spritesheet inimigos
+    this.load.spritesheet("skeleton_run", "assets/characters/enemies/Skeleton/Walk.png", {
+      frameWidth: 150,
+      frameHeight: 150
     });
 
-    this.load.spritesheet("archer_run", "assets/characters/main/archer/ArcherRun.png", {
-      frameWidth: 128,
-      frameHeight: 128
+    // spritesheet inimigos
+    this.load.spritesheet("eye_fly", "assets/characters/enemies/Flying_eye/Flight.png", {
+      frameWidth: 150,
+      frameHeight: 150
     });
 
     }
@@ -47,9 +69,10 @@ export default class Castle extends Phaser.Scene {
       const tileset = this.map.addTilesetImage("main_lev_build", "tiles");
       const castle = this.map.addTilesetImage("main_lev_build", "tiles");
       const windows = this.map.addTilesetImage("main_lev_build", "tiles");
+      const tochas = this.map.addTilesetImage("torch-C-03", "tocha");
       const dec = this.map.addTilesetImage("other_and_decorative", "decorative");
+      const dec1 = this.map.addTilesetImage("lava", "lava");
 
-      //const tileset1 = this.map.addTilesetImage("mario-tiles", "tiles1");
 
       // Parameters: layer name (or index) from Tiled, tileset, x, y
       this.map.createStaticLayer("background1", back1, 0, 0); // tem que ter o mesmo nome do cenas do tiler 
@@ -60,10 +83,23 @@ export default class Castle extends Phaser.Scene {
       this.map.createStaticLayer("background5", back5, 0, 0); // tem que ter o mesmo nome do cenas do tiler 
       this.map.createStaticLayer("fundo_castelo", castle, 0, 0);
       this.map.createStaticLayer("decoracao", dec, 0, 0);
+      this.map.createStaticLayer("tochas", tochas, 0, 0);
       this.map.createStaticLayer("janelas", windows, 0, 0);
+
       const front = this.map.createStaticLayer("piso", tileset, 0, 0);
+      const front1 = this.map.createStaticLayer("lava", dec1, 0, 0);
     
       this.archer = new Archer(this, 50, 360);
+       /** 
+         * create a new EnemiesGroup (new class to handle group of Enemy) that can hold 100 enemies
+         */
+      this.skeletons = new SkeletonGroup(this.physics.world,this);
+      this.skeletons.setVelocityX(50);
+
+      this.eyes = new EyeGroup(this.physics.world,this);
+      this.eyes.setVelocityX(50);
+
+      //this.skeleton = this.skeletons.getFirstDead(false,100,100);
 
       //get the scene camera
       const camera = this.cameras.main;
@@ -75,21 +111,39 @@ export default class Castle extends Phaser.Scene {
       this.cursors = this.input.keyboard.createCursorKeys();
 
       //set tiles from front tilemap that have collides property true as collidable
-      front.setCollisionByProperty({ "colides": true }, true);
+      front.setCollisionByProperty({ "colides": true }, true); // escrevi mal eu sei mas agora fica assim !!!
+      front1.setCollisionByProperty({ "colides": true }, true);
       //set collision between collidable tiles from front and mario
       this.physics.add.collider(this.archer, front);
+      this.physics.add.collider(this.skeletons,front);
+      this.physics.add.collider(this.eyes,front);
 
       //set the callback function killMario to be called when something collides with the tile 124 (axe)     
-      //this.map.setTileIndexCallback(124, this.killArcher, this); // todos os elementos da label front tem de colidir com as cenas
-      //set collidion between mario and the tilemap kill
-      //this.physics.add.overlap(this.archer, kill);
+      this.physics.add.collider(this.archer,front1,() => {
+        this.scene.restart();
+      });
 
+      // caso a personagem toque num goblin
+      //this.physics.add.overlap(this.archer, this.skeletons, () => {
+      //  this.scene.restart();
+      //}); 
+      
   }
 
-    update() {
-      this.archer.update(this.cursors);
-    }
-    killArcher() {
-      this.scene.restart();
-    }
+  update() {
+    this.archer.update(this.cursors);
+
+    console.log(this.archer.x);
+    console.log(this.archer.y);
+
+    this.skeletons.children.iterate(function (skeleton) {
+      skeleton.update()
+    },this);
+
+    this.eyes.children.iterate(function (eye) {
+      eye.update()
+    },this);
+
+  }
+    
 }
