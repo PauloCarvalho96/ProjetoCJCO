@@ -17,6 +17,9 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         this.setSize(30, 40);
         this.setOffset(48,35);
 
+        // hp archer
+        this.archerHP = 100;
+
         this.velocity = 200;
 
         this.bulletsMaxsize = 5;
@@ -58,14 +61,14 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
     }
 
-    update(cursors,time){
+    update(cursors,time,width){
 
         this.setVelocityX(0);
-        
+        this.velocityY = -350;
         if (cursors.up.isDown && this.body.blocked.down) {
-            // saltar
-            this.setVelocityY(-350);	  
-        } else if (cursors.right.isDown) {
+            this.setVelocityY(this.velocityY);	  
+        }
+        else if (cursors.right.isDown && this.x < width) {
             this.setVelocityX(this.velocity);
             this.play('archer_run',true);
             this.flipX = false;
@@ -73,7 +76,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             this.setVelocityX(-this.velocity);
             this.play('archer_run',true);
             this.flipX = true;
-        }else if (cursors.space.isDown) {
+        }else if (cursors.space.isDown ) {
             this.play('archer_shoot',true);
             if(this.timeToShoot < time){
                 this.shoot(time);
@@ -82,10 +85,8 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             this.play('archer',true);
         }
 
-        
     }
 
-    // falta disparar em 1 click // 
     shoot(time){
         // verifica pos do jogador para disparar a seta
         if(this.flipX){
@@ -124,6 +125,35 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             this.bullets.killAndHide(bullet);
         }
     }, this);
+    }
+
+    takeDamage(){
+        let i = 0;
+        let repetition = 200
+        let changeTint = true;
+
+        this.scene.time.addEvent({
+            repeat: repetition,
+            loop: false,
+            callback: () => {
+                //in the last repetition replace the normal color (tint) and re-enables collision
+                if (i >= repetition) {
+                    this.tint = 0xFFFFFF
+                } else {
+
+                    if (changeTint) {
+                        this.tint = 0xFF0000
+                    } else {
+                        this.tint = 0xFFFFFF
+                    }
+                    if (i % 20 == 0) {
+                        changeTint = !changeTint;
+                    }
+                }
+                i++
+            }
+        });
+        
     }
 
 }

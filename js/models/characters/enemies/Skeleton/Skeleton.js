@@ -36,6 +36,11 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
        this.setVelocityX(this.velocity);
     }
 
+    removeFromScreen() {
+        this.y = 700;
+        this.setVelocity(0, 0);
+    }
+
     update(){
         this.play('skeleton_run',true);
         if(this.x >= this.pos + this.offset){

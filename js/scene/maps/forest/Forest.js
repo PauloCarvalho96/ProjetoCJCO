@@ -100,6 +100,11 @@ export default class forest extends Phaser.Scene{
             frameHeight: 190
         });
 
+        this.load.spritesheet("wizard_run", "assets/characters/enemies/Wizard/Run.png", {
+            frameWidth: 231,
+            frameHeight: 190
+        });
+
         this.load.spritesheet("wizard_attack1", "assets/characters/enemies/Wizard/Attack1.png", {
             frameWidth: 231,
             frameHeight: 190
@@ -199,7 +204,8 @@ export default class forest extends Phaser.Scene{
         this.physics.add.collider(this.archer,this.plataforms);
         this.physics.add.collider(this.archer,this.spikes,() => {
             // se cair nos spikes morre
-            this.scene.restart();
+            this.archer.archerHP--;
+            this.archer.takeDamage();
         });
 
         //inimigos (propriedades) 
@@ -215,16 +221,19 @@ export default class forest extends Phaser.Scene{
 
         // caso a personagem toque num enemy
         this.physics.add.overlap(this.archer, this.goblinGroup, () => {
-            this.scene.restart();
+            this.archer.archerHP--;
+            this.archer.takeDamage();
         }); 
 
         this.physics.add.overlap(this.archer, this.mushGroup, () => {
-            this.scene.restart();
+            this.archer.archerHP--;
+            this.archer.takeDamage();
         });
 
         // caso a personagem toque no boss
         this.physics.add.overlap(this.archer, this.wizard, () => {
-            this.scene.restart();
+            this.archer.archerHP--;
+            this.archer.takeDamage();
         });
 
         // propriedas das balas
@@ -250,8 +259,10 @@ export default class forest extends Phaser.Scene{
                 bullet.removeFromScreen();
             });
 
-            this.physics.add.collider(this.archer, mushroom.mushroomBullets, () => {
-                this.scene.restart();
+            this.physics.add.collider(this.archer,mushroom.mushroomBullets, (archer,bullet) => {
+                this.archer.archerHP--;
+                this.archer.takeDamage();
+                bullet.removeFromScreen();
             }); 
             
         },this);
@@ -306,13 +317,20 @@ export default class forest extends Phaser.Scene{
         });
 
         // wizard (BOSS) monstros/propriedades
-        this.physics.add.collider(this.archer, this.wizard.wizardMonsters, () => {
-            this.scene.restart();
+        this.physics.add.overlap(this.archer, this.wizard.wizardMonsters, (monster) => {
+            this.archer.archerHP--;
+            this.archer.takeDamage();
         });
         this.physics.add.collider(this.wizard.wizardMonsters,this.rocks);
         this.physics.add.collider(this.wizard.wizardMonsters,this.ground);
         this.physics.add.collider(this.wizard.wizardMonsters,this.plataforms);
-        
+        this.physics.add.collider(this.wizard.wizardBullets,this.archer,(archer,bullet) => {
+            this.wizard.wizardBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+            this.archer.archerHP--;
+            this.archer.takeDamage();
+        });
+
 
         // evento para o wizard disparar
         //this.enemyShootDelay = 600;
@@ -334,15 +352,14 @@ export default class forest extends Phaser.Scene{
             callback: () => {  
                 // quando acaba a animaçao de disparo entao volta a idle
                 this.wizard.on("animationcomplete", ()=>{
-                    this.wizard.play('wizard_idle',true);
+                    this.wizard.play('wizard_run',true);
                 });
                 this.time.addEvent(this.enemyShootConfig);
             }
         };
 
-
         // evento para o wizard spawnar inimigos
-        this.enemySpawnDelay = 100;
+        this.enemySpawnDelay = 0;
         this.enemySpawnConfig = {
             delay: this.enemySpawnDelay,
             repeat: 0,
@@ -359,16 +376,11 @@ export default class forest extends Phaser.Scene{
             repeat: -1,
             callback: () => {  
                 this.wizard.on("animationcomplete", ()=>{
-                    this.wizard.play('wizard_idle',true);
+                    this.wizard.play('wizard_run',true);
                 });
                 this.time.addEvent(this.enemySpawnConfig);
             }
         };
-
-       
-      
-
-
 
     }
 
@@ -382,6 +394,7 @@ export default class forest extends Phaser.Scene{
         
         
         this.archer.update(this.cursors,time);
+        this.checkArcherHP();
         //this.knight.update(this.cursors);
 
         // defrontar o boss
@@ -394,10 +407,11 @@ export default class forest extends Phaser.Scene{
                 this.time.addEvent(this.eventSpawnConfig);
                 this.boss = true;
                 this.bossConfigs = true;
+                this.wizard.setVelocityX(-50);
             }
 
             this.cameras.main.stopFollow(this.archer);
-            this.cameras.main.setBounds(3860,0,4660,this.map.heightInPixels);
+            this.cameras.main.setBounds(3860,0,this.map.widthInPixels,this.map.heightInPixels);
 
             if(this.boss == true && this.archer.x < 3880){
                 this.archer.x = 3880;
@@ -413,10 +427,32 @@ export default class forest extends Phaser.Scene{
 
             // itera os monstros do wizard
             this.wizard.wizardMonsters.children.iterate(function(monster) {
-                if(monster.x < 3700){
-                    monster.removeFromScreen();
+                if(monster.x < 3900){
+                   // this.wizard.wizardMonsters.killAndHide(monster);
+                    //monster.removeFromScreen();
+                    monster.setVelocityX(monster.velocity);
+                    monster.flipX = false;
+                }
+                if(monster.x > 4500){
+                    monster.setVelocityX(-monster.velocity);
+                    monster.flipX = true;
                 }
             },this);
+
+            this.archer.archerBullets.children.iterate(function (bullet) {
+                if(bullet.x < 3850){
+                    this.archer.archerBullets.killAndHide(bullet);
+                    bullet.removeFromScreen();
+                }
+            },this);
+
+            if(this.wizard.x < 3850){
+                this.wizard.setVelocityX(50);
+                this.wizard.flipX = false;
+            } else if(this.wizard.x > 4500){
+                this.wizard.setVelocityX(-50);
+                this.wizard.flipX = true;
+            }
 
         //senao trata se do nivel 
         } else {  
@@ -429,7 +465,21 @@ export default class forest extends Phaser.Scene{
             this.mushGroup.children.iterate(function (mushroom) {
                 mushroom.update(time,mushroom.x-this.archer.x);
             },this);
-            
+
+            // destroi balas antes de chegar ao castelo
+            this.archer.archerBullets.children.iterate(function (bullet) {
+                if(bullet.x > 3850){
+                    this.archer.archerBullets.killAndHide(bullet);
+                    bullet.removeFromScreen();
+                }
+            },this);
+
+        }
+    }
+
+    checkArcherHP(){
+        if(this.archer.archerHP <= 0){
+            this.scene.restart();
         }
     }
 
