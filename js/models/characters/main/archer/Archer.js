@@ -13,6 +13,9 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         this.setSize(30, 40);
         this.setOffset(48,35);
 
+        // hp archer
+        this.archerHP = 100;
+
         this.velocity = 200;
 
         this.bulletsMaxsize = 5;
@@ -58,6 +61,9 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
     update(cursors,time){
 
         this.setVelocityX(0);
+
+        // pos da seta
+        this.checkbulletpos();
         
         if (cursors.up.isDown && this.body.blocked.down) {
             // saltar
@@ -79,10 +85,18 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             this.play('archer',true);
         }
 
-        
     }
 
-    // falta disparar em 1 click // 
+    // verifica pos da seta
+    checkbulletpos(){
+        this.archerBullets.children.iterate(function (bullet) {
+            if(bullet.x < 0){
+                this.archerBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
+            }
+        },this);
+    }
+
     shoot(time){
         // verifica pos do jogador para disparar a seta
         if(this.flipX){
@@ -102,6 +116,35 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             bullet.visible = true;
             this.timeToShoot = time + this.fireRate;
         }
+    }
+
+    takeDamage(){
+        let i = 0;
+        let repetition = 200
+        let changeTint = true;
+
+        this.scene.time.addEvent({
+            repeat: repetition,
+            loop: false,
+            callback: () => {
+                //in the last repetition replace the normal color (tint) and re-enables collision
+                if (i >= repetition) {
+                    this.tint = 0xFFFFFF
+                } else {
+
+                    if (changeTint) {
+                        this.tint = 0xFF0000
+                    } else {
+                        this.tint = 0xFFFFFF
+                    }
+                    if (i % 20 == 0) {
+                        changeTint = !changeTint;
+                    }
+                }
+                i++
+            }
+        });
+        
     }
 
 }
