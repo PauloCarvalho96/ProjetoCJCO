@@ -92,11 +92,10 @@ export default class Gothic extends Phaser.Scene {
         this.map.createStaticLayer("ground_dec",tiles,0,0);
 
         // criação da personagem
-        this.archer = new Archer(this, 100, 400);
+        this.archer = new Archer(this, 3000, 400);
 
         // grupos de inimigos
         this.fireskullGroup = new FireSkullGroup(this.physics.world, this);
-
         this.mushroomGroup = new MushroomGroupGothic(this.physics.world, this);
 
         // camera
@@ -122,9 +121,11 @@ export default class Gothic extends Phaser.Scene {
 
         // collider fireskull
         this.physics.add.collider(this.fireskullGroup,this.ground);
+        this.physics.add.collider(this.fireskullGroup,this.plataforms);
 
         // collider mushroom
         this.physics.add.collider(this.mushroomGroup,this.ground);
+        this.physics.add.collider(this.mushroomGroup,this.plataforms);
         
     }
 
