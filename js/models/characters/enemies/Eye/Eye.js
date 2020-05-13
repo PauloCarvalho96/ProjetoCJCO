@@ -1,4 +1,4 @@
-import Bullet from "../../../bullet/bullet.js";
+import Bullet from "../Bullet/Bullet.js";
 export default class Eye extends Phaser.Physics.Arcade.Sprite {
 
     constructor(scene, x, y, offset) {
@@ -11,7 +11,7 @@ export default class Eye extends Phaser.Physics.Arcade.Sprite {
         this.setSize(30, 40);
         this.setOffset(66,56);
 
-        this.velocity = 25;
+        this.velocity = 10;
         this.position = this.x;
         this.offset = offset;
 
@@ -23,10 +23,10 @@ export default class Eye extends Phaser.Physics.Arcade.Sprite {
         // pos de criaçao
         this.pos = this.x;
 
-        //this.bulletsMaxsize = 5;
+        this.bulletsMaxsize = 5;
 
         this.bullets = this.scene.physics.add.group({
-           // maxSize: this.bulletsMaxsize,
+           maxSize: this.bulletsMaxsize,
            allowGravity: false,
            classType: Bullet
         });
@@ -97,6 +97,7 @@ export default class Eye extends Phaser.Physics.Arcade.Sprite {
         this.bullets.children.iterate(function (bullet) {
             if(bullet.x > bullet.pos + this.bulletSpaceDestroy || bullet.x < bullet.pos - this.bulletSpaceDestroy){
                 this.bullets.killAndHide(bullet);
+                bullet.removeFromScreen();
             }
         },this);
     }

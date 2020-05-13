@@ -4,7 +4,6 @@ import Archer from "../../../models/characters/main/archer/Archer.js";
 import Demon from "../../../models/characters/enemies/Demon/Demon.js";
 import Knight from "../../../models/characters/main/knight/Knight.js";
 import Skeleton from "../../../models/characters/enemies/Skeleton/Skeleton.js";
-import Bullet from "../../../models/bullet/bullet.js";
 
 let count = 0;
 
@@ -94,7 +93,11 @@ export default class Castle extends Phaser.Scene {
       frameWidth: 160,
     });
 
-    this.load.image("bullet", "assets/bullet/bullet.png");
+    // bullet
+    this.load.spritesheet("monsterbullet", "assets/characters/enemies/Bullet/bullet.png", {
+      frameHeight: 11,
+      frameWidth: 11,
+    });
 
     // se conseguir chegar ao final do nivel entra no modo de BOSS
     this.boss = false;
@@ -136,20 +139,19 @@ export default class Castle extends Phaser.Scene {
       const front = this.map.createStaticLayer("piso", tileset, 0, 0);
       const front1 = this.map.createStaticLayer("lava", dec1, 0, 0);
     
-      // this.archer = new Archer(this, 100, 300);
-      this.archer = new Archer(this, 3960, 500);
+      this.archer = new Archer(this, 100, 300);
+      //this.archer = new Archer(this, 3960, 500);
        /** 
          * create a new EnemiesGroup (new class to handle group of Enemy) that can hold 100 enemies
          */
       this.skeletons = new SkeletonGroup(this.physics.world,this);
-      this.skeletons.setVelocityX(50);
+      this.skeletons.setVelocityX(150);
 
       this.eyes = new EyeGroup(this.physics.world,this);
       this.eyes.setVelocityX(50);
 
       // BOSS
       this.demon = new Demon(this,4412,480);
-      this.demon.setVelocityX(50);
       //get the scene camera
       const camera = this.cameras.main;
       //make camera follow mario
@@ -212,7 +214,7 @@ export default class Castle extends Phaser.Scene {
             eye.removeFromScreen();
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
-        }); 
+        });   
 
         this.physics.add.collider(this.archer.archerBullets, front, (bullet) => {
           this.archer.archerBullets.killAndHide(bullet);
@@ -223,7 +225,8 @@ export default class Castle extends Phaser.Scene {
           this.archer.archerBullets.killAndHide(bullet);
           bullet.removeFromScreen();
         });
-
+        
+        // ataques do Boss
          this.physics.add.collider(this.demon.DemonBullets, front, (bullet) => {
           this.demon.DemonBullets.killAndHide(bullet);
           bullet.removeFromScreen();
@@ -299,11 +302,11 @@ export default class Castle extends Phaser.Scene {
   }
 
   update(time,delta) {
-    console.log(this.archer.x);
-    console.log(this.archer.y);
-   // console.log(count);
+    //console.log(this.archer.x);
+    //console.log(this.archer.y);
     this.archer.update(this.cursors,time,this.map.widthInPixels);
 
+    // Mapa do Boss
     if(this.archer.x >= 4000){
       let espaco = this.demon.x-this.archer.x;
       if( espaco <= 10 && espaco >= -10  ){
@@ -319,12 +322,29 @@ export default class Castle extends Phaser.Scene {
         this.boss = true;
         this.bossConfigs = true;
     }
+    if(this.archer.x < 4020 && this.boss == true){
+        this.archer.x = 4020;
+    }
+     // elimina as balas do arqueiro caso passem os limites da parte do boss
+     this.archer.archerBullets.children.iterate(function (bullet) {
+        if(bullet.x < 4020 || bullet.x > this.map.widthInPixels){
+          this.archer.archerBullets.killAndHide(bullet);
+          bullet.removeFromScreen();
+        } 
+      },this);
 
       this.cameras.main.stopFollow(this.archer);
       this.cameras.main.setBounds(4000,0,this.map.widthInPixels,this.map.heightInPixels);
 
+    }else if(this.boss == false){
+       // elimina as balas do arqueiro caso passem os limites do mapa
+     this.archer.archerBullets.children.iterate(function (bullet) {
+      if(bullet.x > 4020 || bullet.x < 0){
+        this.archer.archerBullets.killAndHide(bullet);
+        bullet.removeFromScreen();
+      } 
+    },this);
 
-    }else{
       this.skeletons.children.iterate(function (skeleton) {
         skeleton.update()
       },this);

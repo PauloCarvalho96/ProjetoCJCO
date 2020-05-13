@@ -11,10 +11,10 @@ export default class EnemiesGroup extends Phaser.Physics.Arcade.Group {
         super(world,scene);
 
         let child1 = new Skeleton(scene,440,277,8);    
-        let child2 = new Skeleton(scene,665,101,30);
+        let child2 = new Skeleton(scene,665,101,60);
         let child3 = new Skeleton(scene,1587,165,20);
         let child4 = new Skeleton(scene,2011,357,40);
-        let child5 = new Skeleton(scene,3906,501,10);
+        let child5 = new Skeleton(scene,3906,501,50);
 
 
         this.add(child1,true);
