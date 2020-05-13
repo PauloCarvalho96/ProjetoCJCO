@@ -323,7 +323,7 @@ export default class Castle extends Phaser.Scene {
   update(time,delta) {
     //console.log(this.archer.x);
     //console.log(this.archer.y);
-    this.archer.update(this.cursors,time,this.map.widthInPixels);
+    this.archer.update(this.cursors,time);
 
     // Mapa do Boss
     if(this.archer.x >= 4000){
