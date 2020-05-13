@@ -96,7 +96,7 @@ export default class Gothic extends Phaser.Scene {
         this.map.createStaticLayer("ground_dec",tiles,0,0);
 
         // criação da personagem
-        this.archer = new Archer(this, 4500, 400);
+        this.archer = new Archer(this, 100, 400);
 
         // grupos de inimigos
         this.fireskullGroup = new FireSkullGroup(this.physics.world, this);

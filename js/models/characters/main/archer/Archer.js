@@ -1,6 +1,5 @@
 import Arrow from "./Arrow.js";
 
-//import Arrow from "../../../models/characters/main/archer/Arrow.js";
 export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
     constructor(scene, x, y) {
@@ -58,14 +57,14 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
     }
 
-    update(cursors,time,width){
+    update(cursors,time){
 
         this.setVelocityX(0);
         this.velocityY = -350;
         if (cursors.up.isDown && this.body.blocked.down) {
             this.setVelocityY(this.velocityY);	  
         }
-        else if (cursors.right.isDown && this.x < width) {
+        else if (cursors.right.isDown) {
             this.setVelocityX(this.velocity);
             this.play('archer_run',true);
             this.flipX = false;
