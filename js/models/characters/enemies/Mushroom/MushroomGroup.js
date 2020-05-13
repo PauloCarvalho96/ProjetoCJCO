@@ -10,14 +10,14 @@ export default class MushroomGroup extends Phaser.Physics.Arcade.Group {
     constructor(world, scene) {
         super(world, scene);
 
-        let child1 = new Mushroom(scene,1060,400,300);      
-        let child2 = new Mushroom(scene,1060,100,200);
-        let child3 = new Mushroom(scene,1790,100,130);
-        let child4 = new Mushroom(scene,1770,400,160);
-        let child5 = new Mushroom(scene,2356,400,80);
-        let child6 = new Mushroom(scene,2700,400,90);
-        let child7 = new Mushroom(scene,2650,100,115);
-        let child8 = new Mushroom(scene,3130,100,95);
+        let child1 = new Mushroom(scene,1060,400);      
+        let child2 = new Mushroom(scene,1060,100);
+        let child3 = new Mushroom(scene,1790,100);
+        let child4 = new Mushroom(scene,1770,400);
+        let child5 = new Mushroom(scene,2356,400);
+        let child6 = new Mushroom(scene,2700,400);
+        let child7 = new Mushroom(scene,2650,100);
+        let child8 = new Mushroom(scene,3130,100);
  
         this.add(child1);
         this.add(child2);

@@ -1,6 +1,6 @@
 
-export default class Goblin extends Phaser.Physics.Arcade.Sprite {
 
+export default class FireSkull extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, offset) {
         super(scene, x, y);
 
@@ -8,11 +8,9 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
         scene.physics.add.existing(this); 
         scene.physics.world.enable(this);
 
-        this.setSize(30, 38);
-        this.setOffset(60,60);
+        this.setSize(70, 90);
+        this.setOffset(10,30);
 
-        this.velocity = 100;
-        // valor recebido para quanto o inimigo pode andar de um lado para o outro
         this.offset = offset;
 
         // pos de criaçao
@@ -20,34 +18,32 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
 
         // animations
         this.scene.anims.create({
-            key: 'goblin_run', 
-            frames: this.scene.anims.generateFrameNumbers('goblin_run', { start: 0, end: 7 }),
-            frameRate: 15,
+            key: 'fireskull', 
+            frames: this.scene.anims.generateFrameNumbers('fireskull', { start: 0, end: 7 }),
+            frameRate: 10,
             repeat: -1,
         });
 
-        this.play('goblin_run',true);
+        this.play('fireskull',true);
+
+        this.flipX = true;
+        this.velocity = 100;
 
     }
 
-
     update(){
-
-        this.play('goblin_run',true);
-
         if(this.x >= this.pos + this.offset){
             this.setVelocityX(-this.velocity);
-            this.flipX = true;
+            this.flipX = false;
         } else  if(this.x <= this.pos - this.offset){
             this.setVelocityX(this.velocity);
-            this.flipX = false;
+            this.flipX = true;
         }
-
     }
 
     removeFromScreen() {
         this.y = 700;
         this.setVelocity(0, 0);
     }
-    
+
 }
