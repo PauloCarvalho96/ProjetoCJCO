@@ -165,7 +165,7 @@ export default class forest extends Phaser.Scene{
         this.spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
         
         // personagens
-        this.archer = new Archer(this, 3800, 400);
+        this.archer = new Archer(this, 100, 400);
         //this.knight = new Knight(this,75,500);
         
         // *inimigos*
@@ -428,8 +428,6 @@ export default class forest extends Phaser.Scene{
             // itera os monstros do wizard
             this.wizard.wizardMonsters.children.iterate(function(monster) {
                 if(monster.x < 3900){
-                   // this.wizard.wizardMonsters.killAndHide(monster);
-                    //monster.removeFromScreen();
                     monster.setVelocityX(monster.velocity);
                     monster.flipX = false;
                 }

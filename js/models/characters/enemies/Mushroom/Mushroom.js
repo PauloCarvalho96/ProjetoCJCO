@@ -60,8 +60,8 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
     shoot(time,space){
         if(this.timeToShoot < time && space < this.spaceToShoot && space > -this.spaceToShoot){
             let bullet = this.mushroomBullets.getFirstDead(true, this.x, this.y);
-            this.play('mushroom_fire',true);
             if(bullet){
+                this.play('mushroom_fire',true);
                 bullet.setVelocityX(this.bulletVelocity);
                 bullet.active = true;
                 bullet.visible = true;
