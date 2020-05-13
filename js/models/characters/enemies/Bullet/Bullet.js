@@ -1,7 +1,7 @@
 
 export default class Bullet extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
-        super(scene, x, y, "mushroom_bullet");
+        super(scene, x, y, "monsterbullet");
 
         scene.add.existing(this); 
         scene.physics.add.existing(this); 

@@ -83,7 +83,7 @@ export default class forest extends Phaser.Scene{
         });
 
         // bullet
-        this.load.spritesheet("mushroom_bullet", "assets/characters/enemies/Bullet/bullet.png", {
+        this.load.spritesheet("monsterbullet", "assets/characters/enemies/Bullet/bullet.png", {
             frameHeight: 11,
             frameWidth: 11,
           });
@@ -118,6 +118,7 @@ export default class forest extends Phaser.Scene{
         // se conseguir chegar ao final do nivel entra no modo de BOSS
         this.boss = false;
         this.bossConfigs = false;
+        this.bossLevelX = 3850;
 
     }
 
@@ -328,7 +329,6 @@ export default class forest extends Phaser.Scene{
             this.archer.takeDamage();
         });
 
-
         // evento para o wizard disparar
         //this.enemyShootDelay = 600;
         this.enemyShootConfig = {
@@ -390,7 +390,7 @@ export default class forest extends Phaser.Scene{
         //this.knight.update(this.cursors);
 
         // defrontar o boss
-        if(this.archer.x > 3850){
+        if(this.archer.x > this.bossLevelX){
 
             // faz as configs do boss 1x
             if(this.boss == false && this.bossConfigs == false){

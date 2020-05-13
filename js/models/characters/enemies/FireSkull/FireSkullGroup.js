@@ -12,9 +12,11 @@ export default class FireSkullGroup extends Phaser.Physics.Arcade.Group {
 
         let child1 = new FireSkull(scene,1550,400,400);  
         let child2 = new FireSkull(scene,3050,400,150);      
+        let child3 = new FireSkull(scene,4120,400,50); 
  
         this.add(child1);
-        this.add(child2)
+        this.add(child2);
+        this.add(child3);
          
         this.setVelocityX(100);
     }
