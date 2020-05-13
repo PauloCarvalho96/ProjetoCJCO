@@ -83,7 +83,7 @@ export default class forest extends Phaser.Scene{
         });
 
         // bullet
-        this.load.spritesheet("mushroom_bullet", "assets/characters/enemies/Bullet/bullet.png", {
+        this.load.spritesheet("monsterbullet", "assets/characters/enemies/Bullet/bullet.png", {
             frameHeight: 11,
             frameWidth: 11,
           });

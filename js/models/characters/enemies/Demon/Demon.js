@@ -22,7 +22,7 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
         });
 
         this.hitboxes = this.scene.physics.add.group({
-            maxSize: 3
+            maxSize: 9
         });
 
         // animations
