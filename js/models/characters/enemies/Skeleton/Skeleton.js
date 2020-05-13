@@ -21,7 +21,7 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
         this.scene.anims.create({
             key: 'skeleton_run', 
             frames: this.scene.anims.generateFrameNumbers('skeleton_run', { start: 0, end: 3 }),
-            frameRate: 1,
+            frameRate: 6,
             repeat: -1,
         });
         /*
@@ -34,6 +34,11 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
         });
         */
        this.setVelocityX(this.velocity);
+    }
+
+    removeFromScreen() {
+        this.y = 700;
+        this.setVelocity(0, 0);
     }
 
     update(){

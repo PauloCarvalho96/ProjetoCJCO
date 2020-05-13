@@ -58,17 +58,14 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
     }
 
-    update(cursors,time){
+    update(cursors,time,width){
 
         this.setVelocityX(0);
-
-        // pos da seta
-        this.checkbulletpos();
-        
+        this.velocityY = -350;
         if (cursors.up.isDown && this.body.blocked.down) {
-            // saltar
-            this.setVelocityY(-350);	  
-        } else if (cursors.right.isDown) {
+            this.setVelocityY(this.velocityY);	  
+        }
+        else if (cursors.right.isDown && this.x < width) {
             this.setVelocityX(this.velocity);
             this.play('archer_run',true);
             this.flipX = false;
@@ -76,7 +73,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             this.setVelocityX(-this.velocity);
             this.play('archer_run',true);
             this.flipX = true;
-        }else if (cursors.space.isDown) {
+        }else if (cursors.space.isDown ) {
             this.play('archer_shoot',true);
             if(this.timeToShoot < time){
                 this.shoot(time);
@@ -85,16 +82,6 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             this.play('archer',true);
         }
 
-    }
-
-    // verifica pos da seta
-    checkbulletpos(){
-        this.archerBullets.children.iterate(function (bullet) {
-            if(bullet.x < 0){
-                this.archerBullets.killAndHide(bullet);
-                bullet.removeFromScreen();
-            }
-        },this);
     }
 
     shoot(time){
