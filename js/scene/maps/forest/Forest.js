@@ -19,6 +19,12 @@ export default class forest extends Phaser.Scene{
 
     preload(){
         
+        //variavel da barra de vida
+        var healthBar;
+        // carregar as imagens da vida;
+        this.load.image("green-bar","assets/green-bar.png");
+        this.load.image("red-bar","assets/red-bar.png");
+
         // tiles para mapa
         this.load.image("main_background","assets/maps/forest/tiles/main_background.png");
         this.load.image("bgrd_tree1","assets/maps/forest/tiles/bgrd_tree1.png");
@@ -124,7 +130,7 @@ export default class forest extends Phaser.Scene{
 
     create(){
         console.log("Starting game");
-
+ 
         // mapa (forest)
         this.map = this.make.tilemap({ key: "forest" });
  
@@ -193,6 +199,21 @@ export default class forest extends Phaser.Scene{
         camera.startFollow(this.archer);
         camera.setBounds(0,0,this.map.widthInPixels,this.map.heightInPixels);
 
+ //health bars
+ var backgroundBar = this.add.image(this.archer.x, 20, 'red-bar');
+ backgroundBar.setScrollFactor(0);
+ 
+ var healthBar = this.add.image(this.archer.x, 20, 'green-bar');
+ healthBar.setScrollFactor(0);
+ 
+ // add text label to left of bar
+ var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
+ healthLabel.setScrollFactor(0);
+ 
+
+
+
+
         this.cursors = this.input.keyboard.createCursorKeys();
 
         // collider
@@ -202,12 +223,14 @@ export default class forest extends Phaser.Scene{
         this.physics.add.collider(this.archer,this.plataforms);
         this.physics.add.collider(this.archer,this.spikes,() => {
             // se cair nos spikes morre
-            this.archer.archerHP--;
+            this.archer.archerHP--; 
+            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
             this.archer.takeDamage();
         });
 
         //inimigos (propriedades) 
         this.physics.add.collider(this.goblinGroup,this.rocks);
+        
         this.physics.add.collider(this.goblinGroup,this.ground);
         this.physics.add.collider(this.goblinGroup,this.plataforms);
 
@@ -220,22 +243,29 @@ export default class forest extends Phaser.Scene{
         // caso a personagem toque num enemy
         this.physics.add.overlap(this.archer, this.goblinGroup, () => {
             this.archer.archerHP--;
+            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
             this.archer.takeDamage();
         }); 
 
         this.physics.add.overlap(this.archer, this.mushGroup, () => {
             this.archer.archerHP--;
+            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
             this.archer.takeDamage();
         });
 
         // caso a personagem toque no boss
         this.physics.add.overlap(this.archer, this.wizard, () => {
             this.archer.archerHP--;
+            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
             this.archer.takeDamage();
         });
 
         // propriedas das balas
         this.mushGroup.children.iterate(function (mushroom) {
+           var mushr = this.add.image(mushroom.x, mushroom.y-60, 'red-bar');
+                mushr.setScale(0.1,0.1);
+                var mushh = this.add.image(mushroom.x, mushroom.y-60, 'green-bar');
+                mushh.setScale(0.1,0.1);
             //percorre as balas de cada inimigo e adiciona collider nas balas
             this.physics.add.collider(this.rocks, mushroom.mushroomBullets, (bullet) => {
                 mushroom.mushroomBullets.killAndHide(bullet);
@@ -259,6 +289,7 @@ export default class forest extends Phaser.Scene{
 
             this.physics.add.collider(this.archer,mushroom.mushroomBullets, (archer,bullet) => {
                 this.archer.archerHP--;
+                healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
                 this.archer.takeDamage();
                 bullet.removeFromScreen();
             }); 
@@ -317,6 +348,7 @@ export default class forest extends Phaser.Scene{
         // wizard (BOSS) monstros/propriedades
         this.physics.add.overlap(this.archer, this.wizard.wizardMonsters, (monster) => {
             this.archer.archerHP--;
+            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);       
             this.archer.takeDamage();
         });
         this.physics.add.collider(this.wizard.wizardMonsters,this.rocks);
@@ -326,6 +358,7 @@ export default class forest extends Phaser.Scene{
             this.wizard.wizardBullets.killAndHide(bullet);
             bullet.removeFromScreen();
             this.archer.archerHP--;
+            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
             this.archer.takeDamage();
         });
 
@@ -379,11 +412,25 @@ export default class forest extends Phaser.Scene{
             }
         };
 
+        this.goblinGroup.children.iterate(function (goblin) {
+            this.gobr = this.add.image(goblin.x+30, goblin.y+60, 'red-bar');
+                this.gobr.setScale(0.1,0.1);
+                this.gobh = this.add.image(goblin.x+30, goblin.y+60, 'green-bar');
+                this.gobh.setScale(0.1,0.1);
+        },this);
+       
+       
+
     }
 
     update(time,delta){
 
         console.log(this.archer.x);
+
+
+        
+
+
 
         this.archer.update(this.cursors,time);
         this.checkArcherHP();
@@ -448,11 +495,14 @@ export default class forest extends Phaser.Scene{
         } else {  
             
             this.goblinGroup.children.iterate(function (goblin) {
+                this.gobh.setVelocityX(goblin.velocity);
+                
                 goblin.update();
             },this);
     
             // percorre os inimigos
             this.mushGroup.children.iterate(function (mushroom) {
+                
                 mushroom.update(time,mushroom.x-this.archer.x);
             },this);
 
@@ -472,4 +522,9 @@ export default class forest extends Phaser.Scene{
             this.scene.restart();
         }
     }
+
+  
+
+    
+
 }

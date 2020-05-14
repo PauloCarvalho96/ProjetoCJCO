@@ -26,6 +26,7 @@ export default class bootGame extends Phaser.Scene{
         let playButton = this.add.image(this.game.renderer.width / 2 ,300,"play").setDepth(1).setScale(0.35,0.35);
         let optionsButton = this.add.image(this.game.renderer.width / 2 ,500 ,"options").setDepth(1).setScale(0.5,0.5);
         let loadgameButton = this.add.image(this.game.renderer.width / 2 ,400 ,"loadgame").setDepth(1).setScale(0.5,0.5);
+        
         this.add.image(0,0,"back").setOrigin(0).setDepth(0);
 
         // Aqui tornamos as imagens como interativas
