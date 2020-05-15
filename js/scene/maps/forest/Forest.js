@@ -176,9 +176,21 @@ export default class forest extends Phaser.Scene{
 
         // criação do grupo de goblins
         this.goblinGroup = new GoblinGroup(this.physics.world, this);
-
+        this.goblinGroup.children.iterate(function (goblin) {
+            this.gobred = this.add.image(goblin.x, goblin.y, 'red-bar');
+                this.gobred.setScale(0.1,0.1);
+                
+                this.gobgreen = this.add.image(goblin.x, goblin.y, 'green-bar');
+                this.gobgreen.setScale(0.1,0.1);
+        },this);
         // mushroom group
         this.mushGroup = new MushroomGroup(this.physics.world,this);
+        this.mushGroup.children.iterate(function (mushroom) {
+            this.mushred = this.add.image(mushroom.x, mushroom.y, 'red-bar');
+                this.mushred.setScale(0.1,0.1);
+                this.mushgreen = this.add.image(mushroom.x, mushroom.y, 'green-bar');
+                this.mushgreen.setScale(0.1,0.1);
+        },this);
 
         // BOSS
         this.wizard = new Wizard(this,4500,500);
@@ -262,10 +274,7 @@ export default class forest extends Phaser.Scene{
 
         // propriedas das balas
         this.mushGroup.children.iterate(function (mushroom) {
-           var mushr = this.add.image(mushroom.x, mushroom.y-60, 'red-bar');
-                mushr.setScale(0.1,0.1);
-                var mushh = this.add.image(mushroom.x, mushroom.y-60, 'green-bar');
-                mushh.setScale(0.1,0.1);
+           
             //percorre as balas de cada inimigo e adiciona collider nas balas
             this.physics.add.collider(this.rocks, mushroom.mushroomBullets, (bullet) => {
                 mushroom.mushroomBullets.killAndHide(bullet);
@@ -305,6 +314,7 @@ export default class forest extends Phaser.Scene{
         });
 
         this.physics.add.overlap(this.archer.archerBullets, this.mushGroup, (bullet,mushroom) => {
+            
             this.mushGroup.killAndHide(mushroom);
             mushroom.removeFromScreen();
             this.archer.archerBullets.killAndHide(bullet);
@@ -412,12 +422,7 @@ export default class forest extends Phaser.Scene{
             }
         };
 
-        this.goblinGroup.children.iterate(function (goblin) {
-            this.gobr = this.add.image(goblin.x+30, goblin.y+60, 'red-bar');
-                this.gobr.setScale(0.1,0.1);
-                this.gobh = this.add.image(goblin.x+30, goblin.y+60, 'green-bar');
-                this.gobh.setScale(0.1,0.1);
-        },this);
+     
        
        
 
@@ -495,9 +500,9 @@ export default class forest extends Phaser.Scene{
         } else {  
             
             this.goblinGroup.children.iterate(function (goblin) {
-                this.gobh.setVelocityX(goblin.velocity);
-                
+                                
                 goblin.update();
+                this.gobgreen.setVelocityX(goblin.velocity);
             },this);
     
             // percorre os inimigos
