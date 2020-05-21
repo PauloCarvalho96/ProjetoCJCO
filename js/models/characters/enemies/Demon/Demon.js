@@ -1,5 +1,5 @@
 import DemonBullet from "./DemonBullet.js";
-// import Goblin from "../Goblin/Goblin.js";
+import Skeleton from "../Skeleton/skeleton.js";
 
 export default class Demon extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
@@ -19,6 +19,12 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
             classType: DemonBullet,
             maxSize: this.bulletsMaxsize,
             allowGravity: false,
+        });
+
+        this.monstersMaxsize = 10;
+        this.demonMonsters = this.scene.physics.add.group({
+            classType: Skeleton,
+            maxSize: this.monstersMaxsize,
         });
 
         this.hitboxes = this.scene.physics.add.group({
@@ -146,6 +152,17 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
     removeFromScreen() {
         this.y = 700;
         this.setVelocity(0, 0);
+    }
+
+    spawn(){
+        let px = Math.floor(Math.random() * (4700 - 4600 + 1) + 4600);
+        let monster = this.demonMonsters.getFirstDead(true,px,100);
+        if(monster){
+            monster.setVelocity(-60,0);
+            monster.flipX = true;
+            monster.active = true;
+            monster.visible = true;
+        }
     }
 
 }
