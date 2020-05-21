@@ -211,15 +211,16 @@ export default class forest extends Phaser.Scene{
         camera.setBounds(0,0,this.map.widthInPixels,this.map.heightInPixels);
 
  //health bars
- var backgroundBar = this.add.image(this.archer.x, 20, 'red-bar');
+ var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
  backgroundBar.setScrollFactor(0);
- 
- var healthBar = this.add.image(this.archer.x, 20, 'green-bar');
+ backgroundBar.setOrigin(0,0);
+ var healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
+ healthBar.setOrigin(0,0);
  healthBar.setScrollFactor(0);
- 
  // add text label to left of bar
  var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
  healthLabel.setScrollFactor(0);
+
  
 
 
@@ -276,6 +277,7 @@ export default class forest extends Phaser.Scene{
            
             //percorre as balas de cada inimigo e adiciona collider nas balas
             this.physics.add.collider(this.rocks, mushroom.mushroomBullets, (bullet) => {
+                
                 mushroom.mushroomBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
             });
@@ -296,7 +298,7 @@ export default class forest extends Phaser.Scene{
             });
 
             this.physics.add.collider(this.archer,mushroom.mushroomBullets, (archer,bullet) => {
-                this.archer.archerHP--;
+                this.archer.archerHP= this.archer.archerHP - mushroom.mushDamage;
                 healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
                 this.archer.takeDamage();
                 bullet.removeFromScreen();
@@ -306,16 +308,25 @@ export default class forest extends Phaser.Scene{
 
         // archer arrow (propriedades)
         this.physics.add.overlap(this.archer.archerBullets, this.goblinGroup, (bullet,goblin) => {
-            this.goblinGroup.killAndHide(goblin);
+            goblin.gobHP = goblin.gobHP - this.archer.archerDamage;
+            if(goblin.gobHP <= 0){
+                this.goblinGroup.killAndHide(goblin);
             goblin.removeFromScreen();
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+            }
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
         });
 
         this.physics.add.overlap(this.archer.archerBullets, this.mushGroup, (bullet,mushroom) => {
-            
-            this.mushGroup.killAndHide(mushroom);
-            mushroom.removeFromScreen();
+            mushroom.mushHP = mushroom.mushHP - this.archer.archerDamage;
+            if(mushroom.mushHP <= 0){
+                this.mushGroup.killAndHide(mushroom);
+                mushroom.removeFromScreen();
+                this.archer.archerBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
+            }
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
         });
@@ -340,18 +351,33 @@ export default class forest extends Phaser.Scene{
             bullet.removeFromScreen();
         });
 
-        this.physics.add.collider(this.archer.archerBullets, this.wizard.wizardMonsters, (bullet,monster) => {
+        this.physics.add.overlap(this.archer.archerBullets, this.wizard.wizardMonsters, (bullet,monster) => {
+            monster.gobHP = monster.gobHP - this.archer.archerDamage;
+            if(monster.gobHP <= 0){
+                this.wizard.wizardMonsters.killAndHide(monster);
+                monster.removeFromScreen();
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
-            this.wizard.wizardMonsters.killAndHide(monster);
-            monster.removeFromScreen();
+            }
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+           
+           
         });
 
-        this.physics.add.collider(this.archer.archerBullets, this.wizard, (bullet) => {
+        this.physics.add.overlap(this.archer.archerBullets, this.wizard, (wizard,bullet) => {
+            this.wizard.wizardHP = this.wizard.wizardHP - this.archer.archerDamage;
+            if(this.wizard.wizardHP <= 0){
+                this.archer.archerBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
+                this.wizard.removeFromScreen();
+                //this.wizard.destroy();
+                this.scene.pause();
+            }
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
-            this.add.text(4250,300,"WINNER!");
-            this.scene.pause();
+            //this.add.text(4250,300,"WINNER!");
+            
         });
 
         // wizard (BOSS) monstros/propriedades
@@ -431,7 +457,7 @@ export default class forest extends Phaser.Scene{
     update(time,delta){
 
         console.log(this.archer.x);
-
+        console.log(this.wizard.wizardHP);
 
         
 
@@ -502,7 +528,7 @@ export default class forest extends Phaser.Scene{
             this.goblinGroup.children.iterate(function (goblin) {
                                 
                 goblin.update();
-                this.gobgreen.setVelocityX(goblin.velocity);
+               // this.gobgreen.setVelocityX(goblin.velocity);
             },this);
     
             // percorre os inimigos

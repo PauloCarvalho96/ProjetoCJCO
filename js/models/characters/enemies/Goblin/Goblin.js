@@ -10,6 +10,9 @@ export default class Goblin extends Phaser.Physics.Arcade.Sprite {
 
         this.setSize(30, 38);
         this.setOffset(60,60);
+        
+        this.gobHP=100;
+        this.gobDamage = 5;
 
         this.velocity = 100;
         // valor recebido para quanto o inimigo pode andar de um lado para o outro

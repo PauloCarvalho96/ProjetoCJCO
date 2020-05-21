@@ -15,6 +15,8 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
         
 
         this.bulletsMaxsize = 5;
+        this.mushHP = 100;
+        this.mushDamage= 5;
         this.mushroomBullets = this.scene.physics.add.group({
             classType: Bullet,
             maxSize: this.bulletsMaxsize,
