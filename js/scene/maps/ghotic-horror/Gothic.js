@@ -56,7 +56,7 @@ export default class Gothic extends Phaser.Scene {
         });
 
         // bullet
-        this.load.spritesheet("mushroom_bullet", "assets/characters/enemies/Bullet/bullet.png", {
+        this.load.spritesheet("monsterbullet", "assets/characters/enemies/Bullet/bullet.png", {
             frameHeight: 11,
             frameWidth: 11,
           });
@@ -67,6 +67,10 @@ export default class Gothic extends Phaser.Scene {
             frameWidth: 150,
           });
 
+        // se conseguir chegar ao final do nivel entra no modo de BOSS
+        this.boss = false;
+        this.bossConfigs = false;
+        this.bossLevelX = 5000;
 
     }
 
@@ -92,7 +96,7 @@ export default class Gothic extends Phaser.Scene {
         this.map.createStaticLayer("ground_dec",tiles,0,0);
 
         // criação da personagem
-        this.archer = new Archer(this, 3000, 400);
+        this.archer = new Archer(this, 100, 400);
 
         // grupos de inimigos
         this.fireskullGroup = new FireSkullGroup(this.physics.world, this);
@@ -136,27 +140,44 @@ export default class Gothic extends Phaser.Scene {
         this.archer.update(this.cursors,time);
         this.checkArcherHP();
 
-        // inimigos
-        this.fireskullGroup.children.iterate(function (fireskull) {
-            fireskull.update();
-        },this);
+        //boss
+        if(this.archer.x > this.bossLevelX){
+            
+            this.cameras.main.stopFollow(this.archer);
+            this.cameras.main.setBounds(5000,0,this.map.widthInPixels,this.map.heightInPixels);
 
-        // percorre os inimigos
-        this.mushroomGroup.children.iterate(function (mushroom) {
-            mushroom.update(time,mushroom.x-this.archer.x);
-        },this);
-
-        // itera as balas para as destruir dps de se afastarem do arqueiro
-        this.archer.archerBullets.children.iterate(function (bullet) {
-            if(bullet.x > this.archer.x + (this.game.config.width/2)){
-                this.archer.archerBullets.killAndHide(bullet);
-                bullet.removeFromScreen();
+            // limites do arqueiro
+            if(this.archer.x < 5010){
+                this.archer.x = 5010;
+            } else if(this.archer.x > 5790){
+                this.archer.x = 5790;
             }
-        },this);
+        
+        } else {    // nivel
+
+            // inimigos
+            this.fireskullGroup.children.iterate(function (fireskull) {
+                fireskull.update();
+            },this);
+
+            // percorre os inimigos
+            this.mushroomGroup.children.iterate(function (mushroom) {
+                mushroom.update(time,mushroom.x-this.archer.x);
+            },this);
+
+            // itera as balas para as destruir dps de se afastarem do arqueiro
+            this.archer.archerBullets.children.iterate(function (bullet) {
+                if(bullet.x > this.archer.x + (this.game.config.width/2)){
+                    this.archer.archerBullets.killAndHide(bullet);
+                    bullet.removeFromScreen();
+                }
+            },this);
+
+        }
 
     }
 
-    checkArcherHP(){
+    checkArcherHP() {
         if(this.archer.archerHP <= 0){
             this.scene.restart();
         }

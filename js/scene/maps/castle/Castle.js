@@ -1,10 +1,9 @@
-import SkeletonGroup from "../../../models/characters/enemies/Skeleton/SkeletonGroup.js";
+import GhostGroup from "../../../models/characters/enemies/Ghost/GhostGroup.js";
 import EyeGroup from "../../../models/characters/enemies/Eye/EyeGroup.js";
 import Archer from "../../../models/characters/main/archer/Archer.js";
 import Demon from "../../../models/characters/enemies/Demon/Demon.js";
 import Knight from "../../../models/characters/main/knight/Knight.js";
-import Skeleton from "../../../models/characters/enemies/Skeleton/Skeleton.js";
-import Bullet from "../../../models/bullet/bullet.js";
+import Skeleton from "../../../models/characters/enemies/Ghost/Ghost.js";
 
 let count = 0;
 
@@ -55,10 +54,29 @@ export default class Castle extends Phaser.Scene {
       frameHeight: 128
     });
 
-    // spritesheet inimigos
+/*  // spritesheet inimigos
     this.load.spritesheet("skeleton_run", "assets/characters/enemies/Skeleton/Walk.png", {
       frameWidth: 150,
       frameHeight: 150
+    }); */
+
+    // spritesheet inimigos
+      this.load.spritesheet("ghost_idle", "assets/characters/enemies/Ghost/ghost_idle.png", {
+        frameWidth: 64,
+        frameHeight: 80
+      });
+      
+
+    // spritesheet inimigos
+    this.load.spritesheet("ghost_appears", "assets/characters/enemies/Ghost/ghost_appears.png", {
+      frameWidth: 64,
+      frameHeight: 48
+    });
+
+    // spritesheet inimigos
+    this.load.spritesheet("ghost_vanish", "assets/characters/enemies/Ghost/ghost_vanish.png", {
+      frameWidth: 64,
+      frameHeight: 64
     });
 
     // spritesheet inimigos
@@ -94,7 +112,11 @@ export default class Castle extends Phaser.Scene {
       frameWidth: 160,
     });
 
-    this.load.image("bullet", "assets/bullet/bullet.png");
+    // bullet
+    this.load.spritesheet("monsterbullet", "assets/characters/enemies/Bullet/bullet.png", {
+      frameHeight: 11,
+      frameWidth: 11,
+    });
 
     // se conseguir chegar ao final do nivel entra no modo de BOSS
     this.boss = false;
@@ -136,20 +158,19 @@ export default class Castle extends Phaser.Scene {
       const front = this.map.createStaticLayer("piso", tileset, 0, 0);
       const front1 = this.map.createStaticLayer("lava", dec1, 0, 0);
     
-      // this.archer = new Archer(this, 100, 300);
-      this.archer = new Archer(this, 3960, 500);
+      this.archer = new Archer(this, 100, 300);
+      //this.archer = new Archer(this, 3960, 500);
        /** 
          * create a new EnemiesGroup (new class to handle group of Enemy) that can hold 100 enemies
-         */
-      this.skeletons = new SkeletonGroup(this.physics.world,this);
-      this.skeletons.setVelocityX(50);
+        */
+      this.ghosts = new GhostGroup(this.physics.world,this);
+      this.ghosts.setVelocityX(60);
 
       this.eyes = new EyeGroup(this.physics.world,this);
-      this.eyes.setVelocityX(50);
+      this.eyes.setVelocityX(10);
 
       // BOSS
       this.demon = new Demon(this,4412,480);
-      this.demon.setVelocityX(50);
       //get the scene camera
       const camera = this.cameras.main;
       //make camera follow mario
@@ -164,7 +185,7 @@ export default class Castle extends Phaser.Scene {
       front1.setCollisionByProperty({ "colides": true }, true);
       //set collision between collidable tiles from front and mario
       this.physics.add.collider(this.archer, front);
-      this.physics.add.collider(this.skeletons,front);
+      this.physics.add.collider(this.ghosts,front);
       this.physics.add.collider(this.eyes,front);
       this.physics.add.collider(this.demon,front);
 
@@ -173,7 +194,7 @@ export default class Castle extends Phaser.Scene {
       });
 
       // caso a personagem toque num goblin
-      this.physics.add.overlap(this.archer, this.skeletons, () => {
+      this.physics.add.overlap(this.archer, this.ghosts, () => {
         this.scene.restart();
       }); 
 
@@ -200,9 +221,9 @@ export default class Castle extends Phaser.Scene {
          });
 
         // archer arrow (propriedades)
-        this.physics.add.overlap(this.archer.archerBullets, this.skeletons, (bullet,skeleton) => {
-            this.skeletons.killAndHide(skeleton);
-            skeleton.removeFromScreen();
+        this.physics.add.overlap(this.archer.archerBullets, this.ghosts, (bullet,ghost) => {
+            this.ghosts.killAndHide(ghost);
+            ghost.removeFromScreen();
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
         });
@@ -212,7 +233,7 @@ export default class Castle extends Phaser.Scene {
             eye.removeFromScreen();
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
-        }); 
+        });   
 
         this.physics.add.collider(this.archer.archerBullets, front, (bullet) => {
           this.archer.archerBullets.killAndHide(bullet);
@@ -223,7 +244,8 @@ export default class Castle extends Phaser.Scene {
           this.archer.archerBullets.killAndHide(bullet);
           bullet.removeFromScreen();
         });
-
+        
+        // ataques do Boss
          this.physics.add.collider(this.demon.DemonBullets, front, (bullet) => {
           this.demon.DemonBullets.killAndHide(bullet);
           bullet.removeFromScreen();
@@ -299,11 +321,11 @@ export default class Castle extends Phaser.Scene {
   }
 
   update(time,delta) {
-    console.log(this.archer.x);
-    console.log(this.archer.y);
-   // console.log(count);
-    this.archer.update(this.cursors,time,this.map.widthInPixels);
+    //console.log(this.archer.x);
+    //console.log(this.archer.y);
+    this.archer.update(this.cursors,time);
 
+    // Mapa do Boss
     if(this.archer.x >= 4000){
       let espaco = this.demon.x-this.archer.x;
       if( espaco <= 10 && espaco >= -10  ){
@@ -319,18 +341,35 @@ export default class Castle extends Phaser.Scene {
         this.boss = true;
         this.bossConfigs = true;
     }
+    if(this.archer.x < 4020 && this.boss == true){
+        this.archer.x = 4020;
+    }
+     // elimina as balas do arqueiro caso passem os limites da parte do boss
+     this.archer.archerBullets.children.iterate(function (bullet) {
+        if(bullet.x < 4020 || bullet.x > this.map.widthInPixels){
+          this.archer.archerBullets.killAndHide(bullet);
+          bullet.removeFromScreen();
+        } 
+      },this);
 
       this.cameras.main.stopFollow(this.archer);
       this.cameras.main.setBounds(4000,0,this.map.widthInPixels,this.map.heightInPixels);
 
+    }else if(this.boss == false){
+       // elimina as balas do arqueiro caso passem os limites do mapa
+     this.archer.archerBullets.children.iterate(function (bullet) {
+      if(bullet.x > 4020 || bullet.x < 0){
+        this.archer.archerBullets.killAndHide(bullet);
+        bullet.removeFromScreen();
+      } 
+    },this);
 
-    }else{
-      this.skeletons.children.iterate(function (skeleton) {
-        skeleton.update()
+      this.ghosts.children.iterate(function (ghost) {
+        ghost.update(time); 
       },this);
 
       this.eyes.children.iterate(function (eye) {
-         eye.update(time,eye.x-this.archer.x)
+         eye.update(time,eye.x-this.archer.x);
         },this);
     }
   }
