@@ -18,6 +18,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         this.archerDamage = 50;
         
         this.velocity = 200;
+        this.velocityY = -350;
 
         this.bulletsMaxsize = 5;
         this.archerBullets = this.scene.physics.add.group({
@@ -64,6 +65,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
     update(cursors,time){
 
         this.setVelocityX(0);
+        
 
         // pos da seta
         this.checkbulletpos();

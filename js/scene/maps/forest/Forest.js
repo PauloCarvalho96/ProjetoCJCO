@@ -310,6 +310,7 @@ export default class forest extends Phaser.Scene{
         // archer arrow (propriedades)
         this.physics.add.overlap(this.archer.archerBullets, this.goblinGroup, (bullet,goblin) => {
             goblin.gobHP = goblin.gobHP - this.archer.archerDamage;
+            goblin.takeDamage();
             if(goblin.gobHP <= 0){
                 this.goblinGroup.killAndHide(goblin);
             goblin.removeFromScreen();
@@ -322,6 +323,7 @@ export default class forest extends Phaser.Scene{
 
         this.physics.add.overlap(this.archer.archerBullets, this.mushGroup, (bullet,mushroom) => {
             mushroom.mushHP = mushroom.mushHP - this.archer.archerDamage;
+            mushroom.takeDamage();
             if(mushroom.mushHP <= 0){
                 this.mushGroup.killAndHide(mushroom);
                 mushroom.removeFromScreen();
