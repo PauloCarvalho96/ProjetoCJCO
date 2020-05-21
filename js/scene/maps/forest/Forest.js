@@ -7,7 +7,7 @@ import Mushroom from "../../../models/characters/enemies/Mushroom/Mushroom.js";
 import MushroomGroup from "../../../models/characters/enemies/Mushroom/MushroomGroup.js";
 
 
-export default class forest extends Phaser.Scene{
+export default class Forest extends Phaser.Scene{
     
     constructor(){
         super("Forest");
@@ -18,9 +18,7 @@ export default class forest extends Phaser.Scene{
     } */
 
     preload(){
-        
-        //variavel da barra de vida
-        var healthBar;
+ 
         // carregar as imagens da vida;
         this.load.image("green-bar","assets/green-bar.png");
         this.load.image("red-bar","assets/red-bar.png");
@@ -170,26 +168,25 @@ export default class forest extends Phaser.Scene{
         
         // personagens
         this.archer = new Archer(this, 100, 400);
-        //this.knight = new Knight(this,75,500);
 
         // *inimigos*
 
         // criação do grupo de goblins
         this.goblinGroup = new GoblinGroup(this.physics.world, this);
         this.goblinGroup.children.iterate(function (goblin) {
-            this.gobred = this.add.image(goblin.x, goblin.y, 'red-bar');
-                this.gobred.setScale(0.1,0.1);
+            /* this.gobred = this.add.image(goblin.x, goblin.y, 'red-bar');
+            this.gobred.setScale(0.1,0.1);
                 
-                this.gobgreen = this.add.image(goblin.x, goblin.y, 'green-bar');
-                this.gobgreen.setScale(0.1,0.1);
+            this.gobgreen = this.add.image(goblin.x, goblin.y, 'green-bar');
+            this.gobgreen.setScale(0.1,0.1);  */   
         },this);
         // mushroom group
         this.mushGroup = new MushroomGroup(this.physics.world,this);
         this.mushGroup.children.iterate(function (mushroom) {
-            this.mushred = this.add.image(mushroom.x, mushroom.y, 'red-bar');
+            /* this.mushred = this.add.image(mushroom.x, mushroom.y, 'red-bar');
                 this.mushred.setScale(0.1,0.1);
                 this.mushgreen = this.add.image(mushroom.x, mushroom.y, 'green-bar');
-                this.mushgreen.setScale(0.1,0.1);
+                this.mushgreen.setScale(0.1,0.1); */
         },this);
 
         // BOSS
@@ -211,21 +208,17 @@ export default class forest extends Phaser.Scene{
         camera.startFollow(this.archer);
         camera.setBounds(0,0,this.map.widthInPixels,this.map.heightInPixels);
 
- //health bars
- var backgroundBar = this.add.image(this.archer.x, 20, 'red-bar');
- backgroundBar.setScrollFactor(0);
- 
- var healthBar = this.add.image(this.archer.x, 20, 'green-bar');
- healthBar.setScrollFactor(0);
- 
- // add text label to left of bar
- var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
- healthLabel.setScrollFactor(0);
- 
-
-
-
-
+        //health bars (adiciona health bar ao arqueiro)
+        var backgroundBar = this.add.image(this.archer.x-75, 20, 'red-bar').setOrigin(0,0);
+        backgroundBar.setScrollFactor(0);
+        
+        var healthBar = this.add.image(this.archer.x-75, 20, 'green-bar').setOrigin(0,0);
+        healthBar.setScrollFactor(0);
+        
+        // add text label to left of bar
+        var healthLabel = this.add.text(this.archer.x-20, 20, 'Health', {fontSize:'20px', fill:'#ffffff'});
+        healthLabel.setScrollFactor(0);
+  
         this.cursors = this.input.keyboard.createCursorKeys();
 
         // collider
@@ -314,7 +307,6 @@ export default class forest extends Phaser.Scene{
         });
 
         this.physics.add.overlap(this.archer.archerBullets, this.mushGroup, (bullet,mushroom) => {
-            
             this.mushGroup.killAndHide(mushroom);
             mushroom.removeFromScreen();
             this.archer.archerBullets.killAndHide(bullet);
@@ -422,20 +414,11 @@ export default class forest extends Phaser.Scene{
             }
         };
 
-     
-       
-       
-
     }
 
     update(time,delta){
 
         console.log(this.archer.x);
-
-
-        
-
-
 
         this.archer.update(this.cursors,time);
         this.checkArcherHP();
@@ -499,15 +482,13 @@ export default class forest extends Phaser.Scene{
         //senao trata se do nivel 
         } else {  
             
-            this.goblinGroup.children.iterate(function (goblin) {
-                                
+            this.goblinGroup.children.iterate(function (goblin) {                 
                 goblin.update();
-                this.gobgreen.setVelocityX(goblin.velocity);
+                //this.gobgreen.setVelocityX(goblin.velocity);
             },this);
     
             // percorre os inimigos
             this.mushGroup.children.iterate(function (mushroom) {
-                
                 mushroom.update(time,mushroom.x-this.archer.x);
             },this);
 
