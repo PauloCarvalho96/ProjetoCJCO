@@ -12,7 +12,8 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
         this.setSize(60, 90);
         this.setOffset(90,50);
         this.flipX = true;
-
+        this.wizardHP = 500;
+        this.wizardDamage= 10;
         this.bulletsMaxsize = 10;
         this.wizardBullets = this.scene.physics.add.group({
             classType: Bullet,
@@ -82,6 +83,7 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
         if(monster){
             monster.setVelocityX(-100);
             monster.flipX = true;
+            monster.wizardHP = 100;
             monster.active = true;
             monster.visible = true;
         }
