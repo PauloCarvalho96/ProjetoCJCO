@@ -22,6 +22,10 @@ export default class Gothic extends Phaser.Scene {
         // carregamento do mapa
         this.load.tilemapTiledJSON("gothic","assets/maps/gothic-horror/gothic-horror.json");
 
+        // carregar as imagens da vida
+        this.load.image("green-bar","assets/green-bar.png");
+        this.load.image("red-bar","assets/red-bar.png");
+
         // spritesheet (archer)
         this.load.spritesheet("archer", "assets/characters/main/archer/ArcherIdle.png", {
             frameWidth: 128,
@@ -96,7 +100,7 @@ export default class Gothic extends Phaser.Scene {
         this.map.createStaticLayer("ground_dec",tiles,0,0);
 
         // criação da personagem
-        this.archer = new Archer(this, 100, 400);
+        this.archer = new Archer(this, 100, 500);
 
         // grupos de inimigos
         this.fireskullGroup = new FireSkullGroup(this.physics.world, this);
@@ -109,6 +113,17 @@ export default class Gothic extends Phaser.Scene {
 
         // cursors
         this.cursors = this.input.keyboard.createCursorKeys();
+
+        /** Health bar */
+        var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
+        backgroundBar.setScrollFactor(0);
+        backgroundBar.setOrigin(0,0);
+        var healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
+        healthBar.setOrigin(0,0);
+        healthBar.setScrollFactor(0);
+        // add text label to left of bar
+        var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
+        healthLabel.setScrollFactor(0);
 
         // collides
         this.ground.setCollisionByProperty({"collides":true},true);
@@ -131,6 +146,54 @@ export default class Gothic extends Phaser.Scene {
         this.physics.add.collider(this.mushroomGroup,this.ground);
         this.physics.add.collider(this.mushroomGroup,this.plataforms);
         
+        /** Propriedades (overlap) Monstros -> Archer */
+        this.physics.add.overlap(this.archer, this.fireskullGroup, () => {
+            this.archer.archerHP--;
+            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.archer.takeDamage();
+        }); 
+
+        this.physics.add.overlap(this.archer, this.mushroomGroup, () => {
+            this.archer.archerHP--;
+            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.archer.takeDamage();
+        }); 
+
+        /** Propriedades balas mushroom -> archer */
+        this.mushroomGroup.children.iterate(function (mushroom) {
+            this.physics.add.collider(this.archer,mushroom.mushroomBullets, (archer,bullet) => {
+                this.archer.archerHP= this.archer.archerHP - mushroom.mushDamage;
+                healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+                this.archer.takeDamage();
+                bullet.removeFromScreen();
+            });      
+        },this);
+
+        /** Propriedades arrow */
+        this.physics.add.overlap(this.archer.archerBullets, this.mushroomGroup, (bullet,mushroom) => {
+            mushroom.mushHP = mushroom.mushHP - this.archer.archerDamage;
+            if(mushroom.mushHP <= 0){
+                this.mushroomGroup.killAndHide(mushroom);
+                mushroom.removeFromScreen();
+                this.archer.archerBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
+            }
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
+
+        this.physics.add.overlap(this.archer.archerBullets, this.fireskullGroup, (bullet,fireskull) => {
+            fireskull.fireskullHP -= this.archer.archerDamage;
+            if(fireskull.fireskullHP <= 0){
+                this.fireskullGroup.killAndHide(fireskull);
+                fireskull.removeFromScreen();
+                this.archer.archerBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
+            }
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
+
     }
 
     update(time,delta){

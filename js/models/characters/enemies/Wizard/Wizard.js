@@ -81,7 +81,7 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
 
         let monster = this.wizardMonsters.getFirstDead(true,px,200);
         if(monster){
-            monster.setVelocityX(-100);
+            monster.setVelocity(-100,0);
             monster.flipX = true;
             monster.wizardHP = 100;
             monster.active = true;

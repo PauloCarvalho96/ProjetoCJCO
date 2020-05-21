@@ -19,10 +19,6 @@ export default class Forest extends Phaser.Scene{
 
     preload(){
  
-        // carregar as imagens da vida;
-        this.load.image("green-bar","assets/green-bar.png");
-        this.load.image("red-bar","assets/red-bar.png");
-
         // tiles para mapa
         this.load.image("main_background","assets/maps/forest/tiles/main_background.png");
         this.load.image("bgrd_tree1","assets/maps/forest/tiles/bgrd_tree1.png");
@@ -40,6 +36,10 @@ export default class Forest extends Phaser.Scene{
 
         // mapa (forest)
         this.load.tilemapTiledJSON("forest","assets/maps/forest/forest.json");
+
+        // carregar as imagens da vida
+        this.load.image("green-bar","assets/green-bar.png");
+        this.load.image("red-bar","assets/red-bar.png");
 
         // spritesheet (Archer)
         this.load.spritesheet("archer", "assets/characters/main/archer/ArcherIdle.png", {
@@ -208,21 +208,16 @@ export default class Forest extends Phaser.Scene{
         camera.startFollow(this.archer);
         camera.setBounds(0,0,this.map.widthInPixels,this.map.heightInPixels);
 
- //health bars
- var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
- backgroundBar.setScrollFactor(0);
- backgroundBar.setOrigin(0,0);
- var healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
- healthBar.setOrigin(0,0);
- healthBar.setScrollFactor(0);
- // add text label to left of bar
- var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
- healthLabel.setScrollFactor(0);
-
- 
-
-
-
+        //health bars
+        var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
+        backgroundBar.setScrollFactor(0);
+        backgroundBar.setOrigin(0,0);
+        var healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
+        healthBar.setOrigin(0,0);
+        healthBar.setScrollFactor(0);
+        // add text label to left of bar
+        var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
+        healthLabel.setScrollFactor(0);
 
         this.cursors = this.input.keyboard.createCursorKeys();
 

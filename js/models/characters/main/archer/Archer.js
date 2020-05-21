@@ -58,8 +58,6 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             repeat: 0,
         });
 
-
-
     }
 
     update(cursors,time){
@@ -124,7 +122,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
     takeDamage(){
         let i = 0;
-        let repetition = 200
+        let repetition = 100
         let changeTint = true;
 
         this.scene.time.addEvent({
