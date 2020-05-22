@@ -64,6 +64,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
     update(cursors,time){
 
         this.setVelocityX(0);
+        
 
         // pos da seta
         this.checkbulletpos();

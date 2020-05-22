@@ -101,7 +101,34 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
             this.play('mushroom_idle',true);         
         }
     }
+takeDamage(){
+        let i = 0;
+        let repetition = 100;
+        let changeTint = true;
 
+        this.scene.time.addEvent({
+            repeat: repetition,
+            loop: false,
+            callback: () => {
+                //in the last repetition replace the normal color (tint) and re-enables collision
+                if (i >= repetition) {
+                    this.tint = 0xFFFFFF
+                } else {
+
+                    if (changeTint) {
+                        this.tint = 0xFF0000
+                    } else {
+                        this.tint = 0xFFFFFF
+                    }
+                    if (i % 20 == 0) {
+                        changeTint = !changeTint;
+                    }
+                }
+                i++
+            }
+        });
+
+    }
     removeFromScreen() {
         this.y = 700;
         this.setVelocity(0, 0);

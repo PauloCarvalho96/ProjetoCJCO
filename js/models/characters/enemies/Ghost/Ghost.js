@@ -8,7 +8,8 @@ export default class Ghost extends Phaser.Physics.Arcade.Sprite {
 
         this.setSize(30, 50);
         this.setOffset(15,20);
-
+        this.ghostHP = 100;
+        this.ghostDamage = 5;
         this.count=0;
         this.velocity = 60;
         this.positionx = this.x;
