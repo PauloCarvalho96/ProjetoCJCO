@@ -167,7 +167,7 @@ export default class Forest extends Phaser.Scene{
         this.spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
         
         // personagens
-        this.archer = new Archer(this, 100, 400);
+        this.archer = new Archer(this, 3800, 400);
 
         // *inimigos*
 
@@ -353,9 +353,7 @@ export default class Forest extends Phaser.Scene{
             bullet.removeFromScreen();
             }
             this.archer.archerBullets.killAndHide(bullet);
-            bullet.removeFromScreen();
-           
-           
+            bullet.removeFromScreen();    
         });
 
         this.physics.add.overlap(this.archer.archerBullets, this.wizard, (wizard,bullet) => {
@@ -449,7 +447,14 @@ export default class Forest extends Phaser.Scene{
 
         this.archer.update(this.cursors,time);
         this.checkArcherHP();
-        //this.knight.update(this.cursors);
+
+        // itera as balas para as destruir dps de se afastarem do arqueiro
+        this.archer.archerBullets.children.iterate(function (bullet) {
+            if(bullet.x > this.archer.x + (this.game.config.width/2)){
+                this.archer.archerBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
+            }
+        },this);
 
         // defrontar o boss
         if(this.archer.x > this.bossLevelX){
@@ -462,49 +467,17 @@ export default class Forest extends Phaser.Scene{
                 this.boss = true;
                 this.bossConfigs = true;
                 this.wizard.setVelocityX(-50);
+                this.cameras.main.stopFollow(this.archer);
+                this.cameras.main.setBounds(3860,0,this.map.widthInPixels,this.map.heightInPixels);
             }
 
-            this.cameras.main.stopFollow(this.archer);
-            this.cameras.main.setBounds(3860,0,this.map.widthInPixels,this.map.heightInPixels);
-
+            //limites do arqueiro
             if(this.boss == true && this.archer.x < 3880){
                 this.archer.x = 3880;
             }   
-            
-            // itera as balas do wizard
-            this.wizard.wizardBullets.children.iterate(function (bullet) {
-                if(bullet.x < 3900 || bullet.y < 100){
-                    this.wizard.wizardBullets.killAndHide(bullet);
-                    bullet.removeFromScreen();
-                }
-            },this);
 
-            // itera os monstros do wizard
-            this.wizard.wizardMonsters.children.iterate(function(monster) {
-                if(monster.x < 3900){
-                    monster.setVelocityX(monster.velocity);
-                    monster.flipX = false;
-                }
-                if(monster.x > 4500){
-                    monster.setVelocityX(-monster.velocity);
-                    monster.flipX = true;
-                }
-            },this);
-
-            this.archer.archerBullets.children.iterate(function (bullet) {
-                if(bullet.x < 3850){
-                    this.archer.archerBullets.killAndHide(bullet);
-                    bullet.removeFromScreen();
-                }
-            },this);
-
-            if(this.wizard.x < 3850){
-                this.wizard.setVelocityX(50);
-                this.wizard.flipX = false;
-            } else if(this.wizard.x > 4500){
-                this.wizard.setVelocityX(-50);
-                this.wizard.flipX = true;
-            }
+            // update do boss
+            this.wizard.update();
 
         //senao trata se do nivel 
         } else {  
@@ -534,9 +507,5 @@ export default class Forest extends Phaser.Scene{
             this.scene.restart();
         }
     }
-
-  
-
-    
 
 }

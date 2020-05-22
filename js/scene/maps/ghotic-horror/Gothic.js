@@ -3,6 +3,8 @@ import FireSkull from "../../../models/characters/enemies/FireSkull/FireSkull.js
 import Mushroom from "../../../models/characters/enemies/Mushroom/Mushroom.js";
 import FireSkullGroup from "../../../models/characters/enemies/FireSkull/FireSkullGroup.js";
 import MushroomGroupGothic from "../../../models/characters/enemies/Mushroom/MushroomGroupGothic.js";
+import GhostBoss from "../../../models/characters/enemies/Nightmare/Nightmare.js";
+import Nightmare from "../../../models/characters/enemies/Nightmare/Nightmare.js";
 
 export default class Gothic extends Phaser.Scene {
     
@@ -63,19 +65,30 @@ export default class Gothic extends Phaser.Scene {
         this.load.spritesheet("monsterbullet", "assets/characters/enemies/Bullet/bullet.png", {
             frameHeight: 11,
             frameWidth: 11,
-          });
+        });
 
           // disparo mushroom
-          this.load.spritesheet("mushroom_fire", "assets/characters/enemies/Mushroom/Attack.png", {
+        this.load.spritesheet("mushroom_fire", "assets/characters/enemies/Mushroom/Attack.png", {
             frameHeight: 150,
             frameWidth: 150,
-          });
+        });
+
+        /** Spritesheet Nightmare */
+        this.load.spritesheet("nightmare_idle", "assets/characters/enemies/Nightmare/nightmare_idle.png", {
+            frameHeight: 96,
+            frameWidth: 128,
+        });
+
+        this.load.spritesheet("nightmare_run", "assets/characters/enemies/Nightmare/nightmare_run.png", {
+            frameHeight: 96,
+            frameWidth: 144,
+        });
+
 
         // se conseguir chegar ao final do nivel entra no modo de BOSS
         this.boss = false;
         this.bossConfigs = false;
         this.bossLevelX = 5000;
-
     }
 
     create(){
@@ -100,7 +113,10 @@ export default class Gothic extends Phaser.Scene {
         this.map.createStaticLayer("ground_dec",tiles,0,0);
 
         // criação da personagem
-        this.archer = new Archer(this, 100, 500);
+        this.archer = new Archer(this, 4900, 500);
+
+        /** TESTES */
+        this.nightmare = new Nightmare(this,5500,100);
 
         // grupos de inimigos
         this.fireskullGroup = new FireSkullGroup(this.physics.world, this);
@@ -137,6 +153,9 @@ export default class Gothic extends Phaser.Scene {
             this.archer.archerHP--;
             this.archer.takeDamage();
         });
+
+        /** TESTES */
+        this.physics.add.collider(this.nightmare,this.ground);
 
         // collider fireskull
         this.physics.add.collider(this.fireskullGroup,this.ground);
@@ -203,11 +222,24 @@ export default class Gothic extends Phaser.Scene {
         this.archer.update(this.cursors,time);
         this.checkArcherHP();
 
+        // itera as balas para as destruir dps de se afastarem do arqueiro
+        this.archer.archerBullets.children.iterate(function (bullet) {
+            if(bullet.x > this.archer.x + (this.game.config.width/2)){
+                this.archer.archerBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
+            }
+        },this);
+
         //boss
         if(this.archer.x > this.bossLevelX){
             
-            this.cameras.main.stopFollow(this.archer);
-            this.cameras.main.setBounds(5000,0,this.map.widthInPixels,this.map.heightInPixels);
+            if(this.boss == false && this.bossConfigs == false){
+                this.boss = true;
+                this.bossConfigs = true;
+                this.nightmare.setVelocityX(-100);
+                this.cameras.main.stopFollow(this.archer);
+                this.cameras.main.setBounds(5000,0,this.map.widthInPixels,this.map.heightInPixels);
+            }
 
             // limites do arqueiro
             if(this.archer.x < 5010){
@@ -215,8 +247,12 @@ export default class Gothic extends Phaser.Scene {
             } else if(this.archer.x > 5790){
                 this.archer.x = 5790;
             }
+
+            // update do boss
+            this.nightmare.update();
         
-        } else {    // nivel
+        // nivel
+        } else {    
 
             // inimigos
             this.fireskullGroup.children.iterate(function (fireskull) {
@@ -228,16 +264,7 @@ export default class Gothic extends Phaser.Scene {
                 mushroom.update(time,mushroom.x-this.archer.x);
             },this);
 
-            // itera as balas para as destruir dps de se afastarem do arqueiro
-            this.archer.archerBullets.children.iterate(function (bullet) {
-                if(bullet.x > this.archer.x + (this.game.config.width/2)){
-                    this.archer.archerBullets.killAndHide(bullet);
-                    bullet.removeFromScreen();
-                }
-            },this);
-
         }
-
     }
 
     checkArcherHP() {
