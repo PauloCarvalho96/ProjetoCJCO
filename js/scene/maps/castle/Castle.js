@@ -14,6 +14,9 @@ export default class Castle extends Phaser.Scene {
   }
 
   preload() {
+    // carregar as imagens da vida;
+    this.load.image("green-bar","assets/green-bar.png");
+    this.load.image("red-bar","assets/red-bar.png");
     // Mapa
     this.load.image("back1", "assets/maps/castle/tiles/background1.png");
     this.load.image("back2", "assets/maps/castle/tiles/background2.png");
@@ -119,6 +122,8 @@ export default class Castle extends Phaser.Scene {
       frameWidth: 11,
     });
 
+
+
     // se conseguir chegar ao final do nivel entra no modo de BOSS
     this.boss = false;
     this.bossConfigs = false;
@@ -127,6 +132,9 @@ export default class Castle extends Phaser.Scene {
 
     create() {
       this.map = this.make.tilemap({ key: "map" }); // crio o mapa 
+
+
+
 
       // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
       // Phaser's cache (i.e. the name you used in preload)
@@ -160,6 +168,22 @@ export default class Castle extends Phaser.Scene {
       const front1 = this.map.createStaticLayer("lava", dec1, 0, 0);
     
       this.archer = new Archer(this, 100, 300);
+
+
+
+
+      //health bars
+var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
+backgroundBar.setScrollFactor(0);
+backgroundBar.setOrigin(0,0);
+var healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
+healthBar.setOrigin(0,0);
+healthBar.setScrollFactor(0);
+// add text label to left of bar
+var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
+healthLabel.setScrollFactor(0);
+
+
       //this.archer = new Archer(this, 4010, 500);
        /** 
          * create a new EnemiesGroup (new class to handle group of Enemy) that can hold 100 enemies
@@ -195,10 +219,7 @@ export default class Castle extends Phaser.Scene {
         this.scene.restart();
       });
 
-      // caso a personagem toque num goblin
-      this.physics.add.overlap(this.archer, this.ghosts, () => {
-        this.scene.restart();
-      }); 
+      
 
       this.eyes.children.iterate(function (eye) {
         this.physics.add.collider(front, eye.bullets,(bullet) =>{
@@ -207,7 +228,14 @@ export default class Castle extends Phaser.Scene {
         });
          // adiciona collider da bala com personagem
          this.physics.add.collider(this.archer, eye.bullets, (bullet) => {
-          this.scene.restart();
+          this.archer.archerHP = this.archer.archerHP - eye.eyeDamage;
+          healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+        this.archer.takeDamage();
+         // console.log(eye.eyeDamage);
+          eye.bullets.killAndHide(bullet);
+          
+          //bullet.removeFromScreen();
+
          });
       },this);
         // demon (BOSS) monstros/propriedades
@@ -230,12 +258,24 @@ export default class Castle extends Phaser.Scene {
 
         // archer arrow (propriedades)
         this.physics.add.overlap(this.archer.archerBullets, this.ghosts, (bullet,ghost) => {
+          ghost.ghostHP = ghost.ghostHP - this.archer.archerDamage;
+          if(ghost.ghostHP <= 0){
             this.ghosts.killAndHide(ghost);
             ghost.removeFromScreen();
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
+          }  
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
         });
-
+// caso a personagem toque num goblin
+this.physics.add.overlap(this.archer, this.ghosts, (ghost) => {
+  console.log("VIDA ARCHER" + ghost.ghostDamage);
+  this.archer.archerHP = this.archer.archerHP - ghost.ghostDamage;
+  healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+  this.archer.takeDamage();
+  
+}); 
         this.physics.add.collider(this.archer.archerBullets, this.demon.demonMonsters, (bullet,demon) => {
           this.archer.archerBullets.killAndHide(bullet);
           bullet.removeFromScreen();
@@ -331,7 +371,7 @@ export default class Castle extends Phaser.Scene {
     //console.log(this.archer.x);
     //console.log(this.archer.y);
     //console.log(this.map.widthInPixels-20);
-    
+    this.checkArcherHP();
     this.archer.update(this.cursors,time);
 
     // Mapa do Boss
@@ -399,5 +439,13 @@ export default class Castle extends Phaser.Scene {
         },this);
     }
   }
+  checkArcherHP(){
+    if(this.archer.archerHP <= 0){
+        this.scene.restart();
+    }
+  }
+
 
 }
+
+
