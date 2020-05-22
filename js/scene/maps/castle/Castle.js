@@ -228,15 +228,27 @@ healthLabel.setScrollFactor(0);
         });
          // adiciona collider da bala com personagem
          this.physics.add.collider(this.archer, eye.bullets, (bullet) => {
+           //console.log("SLIM SHADY " + eye.eyeDamage);
           this.archer.archerHP = this.archer.archerHP - eye.eyeDamage;
           healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
         this.archer.takeDamage();
-         // console.log(eye.eyeDamage);
-          eye.bullets.killAndHide(bullet);
+         
+          //eye.bullets.killAndHide(bullet);
           
           //bullet.removeFromScreen();
 
          });
+         this.physics.add.overlap(this.archer, eye, (bullet) => {
+          //console.log("SLIM SHADY " + eye.eyeDamage);
+         this.archer.archerHP = this.archer.archerHP - eye.eyeDamage;
+         healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+       this.archer.takeDamage();
+        
+         //eye.bullets.killAndHide(bullet);
+         
+         //bullet.removeFromScreen();
+
+        });
       },this);
         // demon (BOSS) monstros/propriedades
         this.physics.add.overlap(this.archer, this.demon.demonMonsters, (archer,monsterBullet) => {
@@ -269,8 +281,8 @@ healthLabel.setScrollFactor(0);
             bullet.removeFromScreen();
         });
 // caso a personagem toque num goblin
-this.physics.add.overlap(this.archer, this.ghosts, (ghost) => {
-  console.log("VIDA ARCHER" + ghost.ghostDamage);
+this.physics.add.overlap(this.archer, this.ghosts, (bullet,ghost) => {
+  
   this.archer.archerHP = this.archer.archerHP - ghost.ghostDamage;
   healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
   this.archer.takeDamage();
@@ -285,9 +297,14 @@ this.physics.add.overlap(this.archer, this.ghosts, (ghost) => {
 
 
         this.physics.add.overlap(this.archer.archerBullets, this.eyes, (bullet,eye) => {
+          eye.eyeHP = eye.eyeHP - this.archer.archerDamage;
+          if(eye.eyeHP <= 0){
             this.eyes.killAndHide(eye);
             eye.removeFromScreen();
             this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+          }  
+          this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
         });   
 
