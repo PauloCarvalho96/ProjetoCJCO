@@ -16,6 +16,8 @@ export default class FireSkull extends Phaser.Physics.Arcade.Sprite {
         // pos de criaçao
         this.pos = this.x;
 
+        this.fireskullHP = 100;
+
         // animations
         this.scene.anims.create({
             key: 'fireskull', 

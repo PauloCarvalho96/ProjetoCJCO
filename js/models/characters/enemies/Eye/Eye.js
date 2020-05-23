@@ -11,6 +11,9 @@ export default class Eye extends Phaser.Physics.Arcade.Sprite {
         this.setSize(30, 40);
         this.setOffset(66,56);
 
+        this.eyeHP = 100;
+        this.eyeDamage = 5;
+
         this.velocity = 10;
         this.position = this.x;
         this.offset = offset;
@@ -118,6 +121,37 @@ export default class Eye extends Phaser.Physics.Arcade.Sprite {
         if(space > this.spaceToShoot || space < -this.spaceToShoot){
             this.play('eye_fly',true);      
         }
+    }
+
+
+
+    takeDamage(){
+        let i = 0;
+        let repetition = 100;
+        let changeTint = true;
+
+        this.scene.time.addEvent({
+            repeat: repetition,
+            loop: false,
+            callback: () => {
+                //in the last repetition replace the normal color (tint) and re-enables collision
+                if (i >= repetition) {
+                    this.tint = 0xFFFFFF
+                } else {
+
+                    if (changeTint) {
+                        this.tint = 0xFF0000
+                    } else {
+                        this.tint = 0xFFFFFF
+                    }
+                    if (i % 20 == 0) {
+                        changeTint = !changeTint;
+                    }
+                }
+                i++
+            }
+        });
+
     }
 
 }

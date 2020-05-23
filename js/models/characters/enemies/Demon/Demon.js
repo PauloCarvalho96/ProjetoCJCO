@@ -16,6 +16,8 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
 
         this.timeToShoot = 5000;
         this.fireRate = 5000;
+        this.demonHP = 500;
+        this.demonDamage = 5;
 
         this.bulletsMaxsize = 2;
         this.DemonBullets = this.scene.physics.add.group({
@@ -165,6 +167,36 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
             monster.active = true;
             monster.visible = true;
         }
+    }
+
+
+    takeDamage(){
+        let i = 0;
+        let repetition = 100;
+        let changeTint = true;
+
+        this.scene.time.addEvent({
+            repeat: repetition,
+            loop: false,
+            callback: () => {
+                //in the last repetition replace the normal color (tint) and re-enables collision
+                if (i >= repetition) {
+                    this.tint = 0xFFFFFF
+                } else {
+
+                    if (changeTint) {
+                        this.tint = 0xFF0000
+                    } else {
+                        this.tint = 0xFFFFFF
+                    }
+                    if (i % 20 == 0) {
+                        changeTint = !changeTint;
+                    }
+                }
+                i++
+            }
+        });
+
     }
 
 }

@@ -27,7 +27,5 @@ export default class EnemiesGroup extends Phaser.Physics.Arcade.Group {
         this.add(child6);
         this.add(child7);
 
-        console.log(child1);
-        console.log(this);
     }
 }
