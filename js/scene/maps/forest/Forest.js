@@ -5,7 +5,7 @@ import GoblinGroup from "../../../models/characters/enemies/Goblin/GoblinGroup.j
 import Wizard from "../../../models/characters/enemies/Wizard/Wizard.js";
 import Mushroom from "../../../models/characters/enemies/Mushroom/Mushroom.js";
 import MushroomGroup from "../../../models/characters/enemies/Mushroom/MushroomGroup.js";
-import Castle from "../castle/Castle.js"
+
 
 export default class Forest extends Phaser.Scene{
     
@@ -375,10 +375,8 @@ export default class Forest extends Phaser.Scene{
                 this.archer.archerBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
                 this.wizard.removeFromScreen();
-                this.scene.start('Castle');
                 //this.wizard.destroy();
-                //this.scene.pause();
-
+                this.scene.pause();
             }
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
