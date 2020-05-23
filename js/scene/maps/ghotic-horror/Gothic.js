@@ -126,7 +126,7 @@ export default class Gothic extends Phaser.Scene {
         this.map.createStaticLayer("ground_dec",tiles,0,0);
 
         // criação da personagem
-        this.archer = new Archer(this, 100, 500);
+        this.archer = new Archer(this, 3000, 500);
 
         /** TESTES */
         this.nightmare = new Nightmare(this,5500,400);
@@ -267,6 +267,14 @@ export default class Gothic extends Phaser.Scene {
         });
 
         this.physics.add.overlap(this.archer.archerBullets, this.nightmare, (nightmare,bullet) => {
+            this.nightmare.nightmareHP = this.nightmare.nightmareHP - this.archer.archerHP;
+            console.log(this.nightmare.nightmareHP);
+            if(this.nightmare.nightmareHP <= 0){
+                this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+            this.scene.pause();
+            }
+            this.nightmare.takeDamage();
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
         });
