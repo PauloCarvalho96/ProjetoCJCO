@@ -158,7 +158,7 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
     }
 
     spawn(){
-        let px = Math.floor(Math.random() * (4700 - 4600 + 1) + 4600);
+        let px = Math.floor(Math.random() * (4700 - 4050 + 1) + 4050);
         let monster = this.demonMonsters.getFirstDead(true,px,100);
         if(monster){
             monster.setVelocity(-60,0);

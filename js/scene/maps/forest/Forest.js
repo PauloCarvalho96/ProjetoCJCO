@@ -7,7 +7,7 @@ import Mushroom from "../../../models/characters/enemies/Mushroom/Mushroom.js";
 import MushroomGroup from "../../../models/characters/enemies/Mushroom/MushroomGroup.js";
 
 
-export default class forest extends Phaser.Scene{
+export default class Forest extends Phaser.Scene{
     
     constructor(){
         super("Forest");
@@ -18,13 +18,7 @@ export default class forest extends Phaser.Scene{
     } */
 
     preload(){
-        
-        //variavel da barra de vida
-        var healthBar;
-        // carregar as imagens da vida;
-        this.load.image("green-bar","assets/green-bar.png");
-        this.load.image("red-bar","assets/red-bar.png");
-
+ 
         // tiles para mapa
         this.load.image("main_background","assets/maps/forest/tiles/main_background.png");
         this.load.image("bgrd_tree1","assets/maps/forest/tiles/bgrd_tree1.png");
@@ -42,6 +36,10 @@ export default class forest extends Phaser.Scene{
 
         // mapa (forest)
         this.load.tilemapTiledJSON("forest","assets/maps/forest/forest.json");
+
+        // carregar as imagens da vida
+        this.load.image("green-bar","assets/green-bar.png");
+        this.load.image("red-bar","assets/red-bar.png");
 
         // spritesheet (Archer)
         this.load.spritesheet("archer", "assets/characters/main/archer/ArcherIdle.png", {
@@ -169,27 +167,26 @@ export default class forest extends Phaser.Scene{
         this.spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
         
         // personagens
-        this.archer = new Archer(this, 100, 400);
-        //this.knight = new Knight(this,75,500);
+        this.archer = new Archer(this, 3800, 400);
 
         // *inimigos*
 
         // criação do grupo de goblins
         this.goblinGroup = new GoblinGroup(this.physics.world, this);
         this.goblinGroup.children.iterate(function (goblin) {
-            this.gobred = this.add.image(goblin.x, goblin.y, 'red-bar');
-                this.gobred.setScale(0.1,0.1);
+            /* this.gobred = this.add.image(goblin.x, goblin.y, 'red-bar');
+            this.gobred.setScale(0.1,0.1);
                 
-                this.gobgreen = this.add.image(goblin.x, goblin.y, 'green-bar');
-                this.gobgreen.setScale(0.1,0.1);
+            this.gobgreen = this.add.image(goblin.x, goblin.y, 'green-bar');
+            this.gobgreen.setScale(0.1,0.1);  */   
         },this);
         // mushroom group
         this.mushGroup = new MushroomGroup(this.physics.world,this);
         this.mushGroup.children.iterate(function (mushroom) {
-            this.mushred = this.add.image(mushroom.x, mushroom.y, 'red-bar');
+            /* this.mushred = this.add.image(mushroom.x, mushroom.y, 'red-bar');
                 this.mushred.setScale(0.1,0.1);
                 this.mushgreen = this.add.image(mushroom.x, mushroom.y, 'green-bar');
-                this.mushgreen.setScale(0.1,0.1);
+                this.mushgreen.setScale(0.1,0.1); */
         },this);
 
         // BOSS
@@ -211,21 +208,16 @@ export default class forest extends Phaser.Scene{
         camera.startFollow(this.archer);
         camera.setBounds(0,0,this.map.widthInPixels,this.map.heightInPixels);
 
- //health bars
- var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
- backgroundBar.setScrollFactor(0);
- backgroundBar.setOrigin(0,0);
- var healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
- healthBar.setOrigin(0,0);
- healthBar.setScrollFactor(0);
- // add text label to left of bar
- var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
- healthLabel.setScrollFactor(0);
-
- 
-
-
-
+        //health bars
+        var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
+        backgroundBar.setScrollFactor(0);
+        backgroundBar.setOrigin(0,0);
+        var healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
+        healthBar.setOrigin(0,0);
+        healthBar.setScrollFactor(0);
+        // add text label to left of bar
+        var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
+        healthLabel.setScrollFactor(0);
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
@@ -278,7 +270,6 @@ export default class forest extends Phaser.Scene{
            
             //percorre as balas de cada inimigo e adiciona collider nas balas
             this.physics.add.collider(this.rocks, mushroom.mushroomBullets, (bullet) => {
-                
                 mushroom.mushroomBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
             });
@@ -363,9 +354,7 @@ export default class forest extends Phaser.Scene{
             bullet.removeFromScreen();
             }
             this.archer.archerBullets.killAndHide(bullet);
-            bullet.removeFromScreen();
-           
-           
+            bullet.removeFromScreen();    
         });
 
         this.physics.add.overlap(this.archer.archerBullets, this.wizard, (wizard,bullet) => {
@@ -450,10 +439,6 @@ export default class forest extends Phaser.Scene{
             }
         };
 
-     
-       
-       
-
     }
 
     update(time,delta){
@@ -461,13 +446,16 @@ export default class forest extends Phaser.Scene{
         console.log(this.archer.x);
         console.log(this.wizard.wizardHP);
 
-        
-
-
-
         this.archer.update(this.cursors,time);
         this.checkArcherHP();
-        //this.knight.update(this.cursors);
+
+        // itera as balas para as destruir dps de se afastarem do arqueiro
+        this.archer.archerBullets.children.iterate(function (bullet) {
+            if(bullet.x > this.archer.x + (this.game.config.width/2) || bullet.x < this.archer.x - (this.game.config.width/2)){
+                this.archer.archerBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
+            }
+        },this); 
 
         // defrontar o boss
         if(this.archer.x > this.bossLevelX){
@@ -480,62 +468,27 @@ export default class forest extends Phaser.Scene{
                 this.boss = true;
                 this.bossConfigs = true;
                 this.wizard.setVelocityX(-50);
+                this.cameras.main.stopFollow(this.archer);
+                this.cameras.main.setBounds(3860,0,this.map.widthInPixels,this.map.heightInPixels);
             }
 
-            this.cameras.main.stopFollow(this.archer);
-            this.cameras.main.setBounds(3860,0,this.map.widthInPixels,this.map.heightInPixels);
-
+            //limites do arqueiro
             if(this.boss == true && this.archer.x < 3880){
                 this.archer.x = 3880;
             }   
-            
-            // itera as balas do wizard
-            this.wizard.wizardBullets.children.iterate(function (bullet) {
-                if(bullet.x < 3900 || bullet.y < 100){
-                    this.wizard.wizardBullets.killAndHide(bullet);
-                    bullet.removeFromScreen();
-                }
-            },this);
 
-            // itera os monstros do wizard
-            this.wizard.wizardMonsters.children.iterate(function(monster) {
-                if(monster.x < 3900){
-                    monster.setVelocityX(monster.velocity);
-                    monster.flipX = false;
-                }
-                if(monster.x > 4500){
-                    monster.setVelocityX(-monster.velocity);
-                    monster.flipX = true;
-                }
-            },this);
-
-            this.archer.archerBullets.children.iterate(function (bullet) {
-                if(bullet.x < 3850){
-                    this.archer.archerBullets.killAndHide(bullet);
-                    bullet.removeFromScreen();
-                }
-            },this);
-
-            if(this.wizard.x < 3850){
-                this.wizard.setVelocityX(50);
-                this.wizard.flipX = false;
-            } else if(this.wizard.x > 4500){
-                this.wizard.setVelocityX(-50);
-                this.wizard.flipX = true;
-            }
+            // update do boss
+            this.wizard.update();
 
         //senao trata se do nivel 
         } else {  
             
-            this.goblinGroup.children.iterate(function (goblin) {
-                                
+            this.goblinGroup.children.iterate(function (goblin) {                 
                 goblin.update();
-               // this.gobgreen.setVelocityX(goblin.velocity);
             },this);
     
             // percorre os inimigos
             this.mushGroup.children.iterate(function (mushroom) {
-                
                 mushroom.update(time,mushroom.x-this.archer.x);
             },this);
 
@@ -555,9 +508,5 @@ export default class forest extends Phaser.Scene{
             this.scene.restart();
         }
     }
-
-  
-
-    
 
 }

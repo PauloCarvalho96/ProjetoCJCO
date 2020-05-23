@@ -1,4 +1,11 @@
 { "compressionlevel":-1,
+ "editorsettings":
+    {
+     "export":
+        {
+         "target":"."
+        }
+    },
  "height":30,
  "infinite":false,
  "layers":[
@@ -96,7 +103,7 @@
         {
          "columns":12,
          "firstgid":1,
-         "image":"clouds.png",
+         "image":"tiles\/clouds.png",
          "imageheight":176,
          "imagewidth":256,
          "margin":0,
@@ -109,7 +116,7 @@
         {
          "columns":12,
          "firstgid":97,
-         "image":"town.png",
+         "image":"tiles\/town.png",
          "imageheight":176,
          "imagewidth":256,
          "margin":0,
@@ -122,7 +129,7 @@
         {
          "columns":52,
          "firstgid":193,
-         "image":"tiles.png",
+         "image":"tiles\/tiles.png",
          "imageheight":176,
          "imagewidth":1056,
          "margin":0,
@@ -316,7 +323,7 @@
         {
          "columns":21,
          "firstgid":609,
-         "image":"tree_bck.png",
+         "image":"tiles\/tree_bck.png",
          "imageheight":384,
          "imagewidth":426,
          "margin":0,
@@ -329,7 +336,7 @@
         {
          "columns":1,
          "firstgid":1008,
-         "image":"water.png",
+         "image":"tiles\/water.png",
          "imageheight":32,
          "imagewidth":32,
          "margin":0,

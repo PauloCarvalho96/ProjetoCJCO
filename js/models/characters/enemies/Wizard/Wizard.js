@@ -62,6 +62,49 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
         this.setVelocityX(0);
     }
 
+    update(){
+        //check bullet pos
+        this.checkBullets();
+        //check wizard pos
+        this.pos();
+        //check monster pos
+        this.checkMonsters();
+    }
+
+    pos(){
+        if(this.x < 3850){
+            this.setVelocityX(50);
+            this.flipX = false;
+        } else if(this.x > 4500){
+            this.setVelocityX(-50);
+            this.flipX = true;
+        }
+    }
+
+    checkMonsters(){
+        // itera os monstros do wizard
+        this.wizardMonsters.children.iterate(function(monster) {
+            if(monster.x < 3900){
+                monster.setVelocityX(monster.velocity);
+                monster.flipX = false;
+            }
+            if(monster.x > 4500){
+                monster.setVelocityX(-monster.velocity);
+                monster.flipX = true;
+            }
+        },this);
+    }
+
+    checkBullets(){
+        // itera as balas do wizard
+        this.wizardBullets.children.iterate(function (bullet) {
+            if(bullet.x < 3900 || bullet.y < 100){
+                this.wizardBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
+            }
+        },this);
+    }
+
     shoot(){
         let bullet = this.wizardBullets.getFirstDead(true,this.x,this.y);
         if(bullet){
@@ -81,7 +124,7 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
 
         let monster = this.wizardMonsters.getFirstDead(true,px,200);
         if(monster){
-            monster.setVelocityX(-100);
+            monster.setVelocity(-100,0);
             monster.flipX = true;
             monster.wizardHP = 100;
             monster.active = true;

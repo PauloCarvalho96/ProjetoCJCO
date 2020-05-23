@@ -220,7 +220,14 @@ healthLabel.setScrollFactor(0);
       this.archer.takeDamage();
       });
 
-      
+      // caso a personagem toque num goblin
+      this.physics.add.overlap(this.archer, this.ghosts, (ghost) => {
+        console.log("VIDA ARCHER" + ghost.ghostDamage);
+        this.archer.archerHP = this.archer.archerHP - ghost.ghostDamage;
+        healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+        this.archer.takeDamage();
+        
+      }); 
 
       this.eyes.children.iterate(function (eye) {
         this.physics.add.collider(front, eye.bullets,(bullet) =>{

@@ -17,6 +17,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         this.archerMaxHP = 100;
         this.archerDamage = 50;
         
+        this.velocityY = -350;
         this.velocity = 200;
         this.velocityY = -350;
 
@@ -57,8 +58,6 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             frameRate: 5,
             repeat: 0,
         });
-
-
 
     }
 
@@ -125,7 +124,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
     takeDamage(){
         let i = 0;
-        let repetition = 200
+        let repetition = 100
         let changeTint = true;
 
         this.scene.time.addEvent({
