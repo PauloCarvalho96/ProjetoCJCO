@@ -78,4 +78,36 @@ export default class Ghost extends Phaser.Physics.Arcade.Sprite {
             this.play('ghost_appears',true);
         }
     }
+
+    takeDamage(){
+        let i = 0;
+        let repetition = 100;
+        let changeTint = true;
+
+        this.scene.time.addEvent({
+            repeat: repetition,
+            loop: false,
+            callback: () => {
+                //in the last repetition replace the normal color (tint) and re-enables collision
+                if (i >= repetition) {
+                    this.tint = 0xFFFFFF
+                } else {
+
+                    if (changeTint) {
+                        this.tint = 0xFF0000
+                    } else {
+                        this.tint = 0xFFFFFF
+                    }
+                    if (i % 20 == 0) {
+                        changeTint = !changeTint;
+                    }
+                }
+                i++
+            }
+        });
+
+    }
+
+
+
 }
