@@ -171,7 +171,6 @@ export default class Castle extends Phaser.Scene {
 
 
 
-
       //health bars
 var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
 backgroundBar.setScrollFactor(0);
@@ -216,7 +215,9 @@ healthLabel.setScrollFactor(0);
       this.physics.add.collider(this.demon.demonMonsters,front);
 
       this.physics.add.collider(this.archer,front1,() => {
-        this.scene.restart();
+        this.archer.archerHP--;
+        healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+      this.archer.takeDamage();
       });
 
       
@@ -227,45 +228,56 @@ healthLabel.setScrollFactor(0);
           bullet.removeFromScreen();
         });
          // adiciona collider da bala com personagem
-         this.physics.add.collider(this.archer, eye.bullets, (bullet) => {
-           //console.log("SLIM SHADY " + eye.eyeDamage);
+         this.physics.add.collider(this.archer, eye.bullets,(bullet) => {
+           
           this.archer.archerHP = this.archer.archerHP - eye.eyeDamage;
           healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
         this.archer.takeDamage();
          
-          //eye.bullets.killAndHide(bullet);
+          eye.bullets.killAndHide(bullet);
           
-          //bullet.removeFromScreen();
+          bullet.removeFromScreen();
 
          });
          this.physics.add.overlap(this.archer, eye, (bullet) => {
-          //console.log("SLIM SHADY " + eye.eyeDamage);
+         
          this.archer.archerHP = this.archer.archerHP - eye.eyeDamage;
          healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
        this.archer.takeDamage();
         
-         //eye.bullets.killAndHide(bullet);
          
-         //bullet.removeFromScreen();
 
         });
       },this);
         // demon (BOSS) monstros/propriedades
         this.physics.add.overlap(this.archer, this.demon.demonMonsters, (archer,monsterBullet) => {
-          //this.archer.archerHP--;
-          //this.archer.takeDamage();
-          this.scene.restart();
+          this.archer.archerHP--;
+         healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+       this.archer.takeDamage();
+          
        });
 
         // Collider dos ataques do Boss com o arqueiro
         // adiciona collider da bala com personagem
         this.physics.add.collider(this.archer, this.demon.DemonBullets, (bullet) => {
-          this.scene.restart();
+          this.archer.archerHP--;
+          healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+        this.archer.takeDamage();
          });
 
          // adiciona collider da bala com personagem
-         this.physics.add.collider(this.archer, this.demon.hitboxes, (bullet) => {
-          this.scene.restart();
+         this.physics.add.overlap(this.archer, this.demon.hitboxes, (bullet) => {
+          
+          this.archer.archerHP= this.archer.archerHP - this.demon.demonDamage;
+         healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+       this.archer.takeDamage();
+         });
+
+         this.physics.add.overlap(this.archer, this.demon, (bullet) => {
+          
+          this.archer.archerHP= this.archer.archerHP - this.demon.demonDamage;
+         healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+       this.archer.takeDamage();
          });
 
         // archer arrow (propriedades)
@@ -279,6 +291,7 @@ healthLabel.setScrollFactor(0);
           }  
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
+            ghost.takeDamage();
         });
 // caso a personagem toque num goblin
 this.physics.add.overlap(this.archer, this.ghosts, (bullet,ghost) => {
@@ -295,6 +308,22 @@ this.physics.add.overlap(this.archer, this.ghosts, (bullet,ghost) => {
           demon.removeFromScreen();
       });
 
+      this.physics.add.collider(this.archer.archerBullets, this.demon, (archer,bullet) => {
+       
+       this.demon.demonHP = this.demon.demonHP - this.archer.archerDamage;
+       if(this.demon.demonHP <= 0){
+        this.archer.archerBullets.killAndHide(bullet);
+          bullet.removeFromScreen(); 
+        this.demon.killAndHide();
+         this.scene.pause();
+       }
+        this.archer.archerBullets.killAndHide(bullet);
+          bullet.removeFromScreen();
+          this.demon.takeDamage();
+        
+        
+    });
+
 
         this.physics.add.overlap(this.archer.archerBullets, this.eyes, (bullet,eye) => {
           eye.eyeHP = eye.eyeHP - this.archer.archerDamage;
@@ -306,6 +335,7 @@ this.physics.add.overlap(this.archer, this.ghosts, (bullet,ghost) => {
           }  
           this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
+            eye.takeDamage();
         });   
 
      
