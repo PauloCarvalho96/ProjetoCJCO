@@ -28,6 +28,7 @@ export default class Castle extends Phaser.Scene {
     this.load.image("decorative", "assets/maps/castle/tiles/other_and_decorative.png");
     this.load.image("tocha", "assets/maps/castle/tiles/torch-C-03.png");
     this.load.image("lava", "assets/maps/castle/tiles/lava.png");
+    this.load.image("potion_hp","assets/potions/potions_gradient.png");
 
     this.load.tilemapTiledJSON("map", "assets/maps/castle/map2_v3.json");
 
@@ -147,6 +148,7 @@ export default class Castle extends Phaser.Scene {
       const tileset = this.map.addTilesetImage("main_lev_build", "tiles");
       const castle = this.map.addTilesetImage("main_lev_build", "tiles");
       const windows = this.map.addTilesetImage("main_lev_build", "tiles");
+      const boss_map = this.map.addTilesetImage("main_lev_build", "tiles");
       const tochas = this.map.addTilesetImage("torch-C-03", "tocha");
       const dec = this.map.addTilesetImage("other_and_decorative", "decorative");
       const dec1 = this.map.addTilesetImage("lava", "lava");
@@ -166,21 +168,22 @@ export default class Castle extends Phaser.Scene {
 
       const front = this.map.createStaticLayer("piso", tileset, 0, 0);
       const front1 = this.map.createStaticLayer("lava", dec1, 0, 0);
-    
+      const boss_m = this.map.createStaticLayer("piso_boss",boss_map, 0, 0);
+
       this.archer = new Archer(this, 100, 300);
-
-
+      //this.archer = new Archer(this, 2012, 117);
+      //this.archer = new Archer(this, 4010, 500);
 
       //health bars
-var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
-backgroundBar.setScrollFactor(0);
-backgroundBar.setOrigin(0,0);
-var healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
-healthBar.setOrigin(0,0);
-healthBar.setScrollFactor(0);
-// add text label to left of bar
-var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
-healthLabel.setScrollFactor(0);
+      var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
+      backgroundBar.setScrollFactor(0);
+      backgroundBar.setOrigin(0,0);
+      var healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
+      healthBar.setOrigin(0,0);
+      healthBar.setScrollFactor(0);
+      // add text label to left of bar
+      var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
+      healthLabel.setScrollFactor(0);
 
 
       //this.archer = new Archer(this, 4010, 500);
@@ -207,12 +210,15 @@ healthLabel.setScrollFactor(0);
       //set tiles from front tilemap that have collides property true as collidable
       front.setCollisionByProperty({ "colides": true }, true); // escrevi mal eu sei mas agora fica assim !!!
       front1.setCollisionByProperty({ "colides": true }, true);
+      boss_m.setCollisionByProperty({ "colides": true }, true);
       //set collision between collidable tiles from front and mario
       this.physics.add.collider(this.archer, front);
+      this.physics.add.collider(this.archer, boss_m);
       this.physics.add.collider(this.ghosts,front);
       this.physics.add.collider(this.eyes,front);
       this.physics.add.collider(this.demon,front);
       this.physics.add.collider(this.demon.demonMonsters,front);
+      this.physics.add.collider(this.demon.demonMonsters,boss_m);
 
       this.physics.add.collider(this.archer,front1,() => {
         this.archer.archerHP--;
@@ -221,37 +227,36 @@ healthLabel.setScrollFactor(0);
       });
 
       // caso a personagem toque num goblin
-      this.physics.add.overlap(this.archer, this.ghosts, (ghost) => {
-        console.log("VIDA ARCHER" + ghost.ghostDamage);
+      this.physics.add.overlap(this.archer, this.ghosts, (archer,ghost) => {
         this.archer.archerHP = this.archer.archerHP - ghost.ghostDamage;
         healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
-        this.archer.takeDamage();
-        
+        this.archer.takeDamage(); 
       }); 
 
       this.eyes.children.iterate(function (eye) {
+
         this.physics.add.collider(front, eye.bullets,(bullet) =>{
           eye.bullets.killAndHide(bullet);
           bullet.removeFromScreen();
         });
+
          // adiciona collider da bala com personagem
-          this.physics.add.collider(this.archer, eye.bullets,(archer,bullet) => {
+         this.physics.add.collider(this.archer, eye.bullets,(archer,bullet) => {      
           this.archer.archerHP = this.archer.archerHP - eye.eyeDamage;
           healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
-          this.archer.takeDamage();
-          eye.bullets.killAndHide(bullet);
+          this.archer.takeDamage();  
+          eye.bullets.killAndHide(bullet);  
           bullet.removeFromScreen();
          });
-         this.physics.add.overlap(this.archer, eye, (bullet) => {
-         
-         this.archer.archerHP = this.archer.archerHP - eye.eyeDamage;
-         healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
-       this.archer.takeDamage();
-        
-         
 
+        this.physics.add.overlap(this.archer, eye, (bullet) => { 
+          this.archer.archerHP = this.archer.archerHP - eye.eyeDamage;
+          healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+          this.archer.takeDamage();  
         });
+
       },this);
+
         // demon (BOSS) monstros/propriedades
         this.physics.add.overlap(this.archer, this.demon.demonMonsters, (archer,monsterBullet) => {
           this.archer.archerHP--;
@@ -296,14 +301,14 @@ healthLabel.setScrollFactor(0);
             bullet.removeFromScreen();
             ghost.takeDamage();
         });
-// caso a personagem toque num goblin
-this.physics.add.overlap(this.archer, this.ghosts, (bullet,ghost) => {
-  
-  this.archer.archerHP = this.archer.archerHP - ghost.ghostDamage;
-  healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
-  this.archer.takeDamage();
-  
-}); 
+        // caso a personagem toque num goblin
+        this.physics.add.overlap(this.archer, this.ghosts, (bullet,ghost) => {
+          
+          this.archer.archerHP = this.archer.archerHP - ghost.ghostDamage;
+          healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+          this.archer.takeDamage();
+          
+        }); 
         this.physics.add.collider(this.archer.archerBullets, this.demon.demonMonsters, (bullet,demon) => {
           this.archer.archerBullets.killAndHide(bullet);
           bullet.removeFromScreen();
@@ -312,20 +317,17 @@ this.physics.add.overlap(this.archer, this.ghosts, (bullet,ghost) => {
       });
 
       this.physics.add.collider(this.archer.archerBullets, this.demon, (archer,bullet) => {
-       
-       this.demon.demonHP = this.demon.demonHP - this.archer.archerDamage;
-       if(this.demon.demonHP <= 0){
-        this.archer.archerBullets.killAndHide(bullet);
-          bullet.removeFromScreen(); 
-        this.demon.killAndHide();
-         this.scene.pause();
-       }
-        this.archer.archerBullets.killAndHide(bullet);
-          bullet.removeFromScreen();
-          this.demon.takeDamage();
-        
-        
-    });
+        this.demon.demonHP = this.demon.demonHP - this.archer.archerDamage;
+        if(this.demon.demonHP <= 0){
+          this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen(); 
+          this.demon.killAndHide();
+          this.scene.pause();
+        }
+          this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+            this.demon.takeDamage();
+      });
 
 
         this.physics.add.overlap(this.archer.archerBullets, this.eyes, (bullet,eye) => {
@@ -424,6 +426,10 @@ this.physics.add.overlap(this.archer, this.ghosts, (bullet,ghost) => {
     this.checkArcherHP();
     this.archer.update(this.cursors,time);
 
+    if(this.cursors.shift.isDown){
+      this.store();
+    }
+
     // Mapa do Boss
     if(this.archer.x >= 4000){
       let espaco = this.demon.x-this.archer.x;
@@ -493,6 +499,10 @@ this.physics.add.overlap(this.archer, this.ghosts, (bullet,ghost) => {
     if(this.archer.archerHP <= 0){
         this.scene.restart();
     }
+  }
+
+  store(){
+    this.add.image(this.archer.x, this.archer.y, 'potion_hp');   
   }
 
 
