@@ -126,7 +126,7 @@ export default class Gothic extends Phaser.Scene {
         this.map.createStaticLayer("ground_dec",tiles,0,0);
 
         // criação da personagem
-        this.archer = new Archer(this, 5100, 500);
+        this.archer = new Archer(this, 100, 500);
 
         /** TESTES */
         this.nightmare = new Nightmare(this,5500,400);
@@ -222,6 +222,9 @@ export default class Gothic extends Phaser.Scene {
                 this.archer.archerHP= this.archer.archerHP - mushroom.mushDamage;
                 healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
                 this.archer.takeDamage();
+                bullet.explosion();
+                this.sound.play('explosion_sound'); 
+                mushroom.mushroomBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
             });      
         },this);

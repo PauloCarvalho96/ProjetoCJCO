@@ -1,3 +1,4 @@
+import Explosion from "../Explosion/Explosion.js";
 
 export default class Bullet extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
@@ -17,6 +18,10 @@ export default class Bullet extends Phaser.Physics.Arcade.Sprite {
     removeFromScreen() {
         this.y = 700;
         this.setVelocity(0, 0);
+    }
+
+    explosion(){
+        new Explosion(this.scene,this.x,this.y);
     }
 
 }

@@ -181,7 +181,7 @@ export default class Forest extends Phaser.Scene{
         this.spikes = this.map.createStaticLayer("spikes",castle_env,0,0);
         
         // personagens
-        this.archer = new Archer(this, 3800, 400);
+        this.archer = new Archer(this, 100, 400);
 
         // *inimigos*
 
@@ -284,26 +284,36 @@ export default class Forest extends Phaser.Scene{
            
             //percorre as balas de cada inimigo e adiciona collider nas balas
             this.physics.add.collider(this.rocks, mushroom.mushroomBullets, (bullet) => {
+                bullet.explosion();
+                this.sound.play('explosion_sound'); 
                 mushroom.mushroomBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
             });
 
             this.physics.add.collider(this.ground, mushroom.mushroomBullets, (bullet) => {
+                bullet.explosion();
+                this.sound.play('explosion_sound'); 
                 mushroom.mushroomBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
             });
 
             this.physics.add.collider(this.plataforms, mushroom.mushroomBullets, (bullet) => {
+                bullet.explosion();
+                this.sound.play('explosion_sound'); 
                 mushroom.mushroomBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
             });
 
             this.physics.add.collider(this.wall, mushroom.mushroomBullets, (bullet) => {
+                bullet.explosion();
+                this.sound.play('explosion_sound'); 
                 mushroom.mushroomBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
             });
 
             this.physics.add.collider(this.archer,mushroom.mushroomBullets, (archer,bullet) => {
+                bullet.explosion();
+                this.sound.play('explosion_sound'); 
                 this.archer.archerHP= this.archer.archerHP - mushroom.mushDamage;
                 healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
                 this.archer.takeDamage();
