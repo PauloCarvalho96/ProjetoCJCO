@@ -187,21 +187,9 @@ export default class Forest extends Phaser.Scene{
 
         // criação do grupo de goblins
         this.goblinGroup = new GoblinGroup(this.physics.world, this);
-        this.goblinGroup.children.iterate(function (goblin) {
-            /* this.gobred = this.add.image(goblin.x, goblin.y, 'red-bar');
-            this.gobred.setScale(0.1,0.1);
-                
-            this.gobgreen = this.add.image(goblin.x, goblin.y, 'green-bar');
-            this.gobgreen.setScale(0.1,0.1);  */   
-        },this);
+
         // mushroom group
         this.mushGroup = new MushroomGroup(this.physics.world,this);
-        this.mushGroup.children.iterate(function (mushroom) {
-            /* this.mushred = this.add.image(mushroom.x, mushroom.y, 'red-bar');
-                this.mushred.setScale(0.1,0.1);
-                this.mushgreen = this.add.image(mushroom.x, mushroom.y, 'green-bar');
-                this.mushgreen.setScale(0.1,0.1); */
-        },this);
 
         // BOSS
         this.wizard = new Wizard(this,4500,500);
@@ -455,8 +443,6 @@ export default class Forest extends Phaser.Scene{
             // faz as configs do boss 1x
             if(this.boss == false && this.bossConfigs == false){
                 //evento de disparo do boss
-                //this.time.addEvent(this.eventShootConfig);
-                //this.time.addEvent(this.eventSpawnConfig);
                 this.boss = true;
                 this.bossConfigs = true;
                 this.wizard.setVelocityX(-50);

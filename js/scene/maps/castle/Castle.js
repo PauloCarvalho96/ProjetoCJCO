@@ -221,41 +221,36 @@ healthLabel.setScrollFactor(0);
       });
 
       // caso a personagem toque num goblin
-      this.physics.add.overlap(this.archer, this.ghosts, (ghost) => {
-        console.log("VIDA ARCHER" + ghost.ghostDamage);
+      this.physics.add.overlap(this.archer, this.ghosts, (archer,ghost) => {
         this.archer.archerHP = this.archer.archerHP - ghost.ghostDamage;
         healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
-        this.archer.takeDamage();
-        
+        this.archer.takeDamage(); 
       }); 
 
       this.eyes.children.iterate(function (eye) {
+
         this.physics.add.collider(front, eye.bullets,(bullet) =>{
           eye.bullets.killAndHide(bullet);
           bullet.removeFromScreen();
         });
+
          // adiciona collider da bala com personagem
-         this.physics.add.collider(this.archer, eye.bullets,(bullet) => {
-           
+         this.physics.add.collider(this.archer, eye.bullets,(archer,bullet) => {      
           this.archer.archerHP = this.archer.archerHP - eye.eyeDamage;
           healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
-        this.archer.takeDamage();
-         
-          eye.bullets.killAndHide(bullet);
-          
+          this.archer.takeDamage();  
+          eye.bullets.killAndHide(bullet);  
           bullet.removeFromScreen();
-
          });
-         this.physics.add.overlap(this.archer, eye, (bullet) => {
-         
-         this.archer.archerHP = this.archer.archerHP - eye.eyeDamage;
-         healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
-       this.archer.takeDamage();
-        
-         
 
+        this.physics.add.overlap(this.archer, eye, (bullet) => { 
+          this.archer.archerHP = this.archer.archerHP - eye.eyeDamage;
+          healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+          this.archer.takeDamage();  
         });
+
       },this);
+
         // demon (BOSS) monstros/propriedades
         this.physics.add.overlap(this.archer, this.demon.demonMonsters, (archer,monsterBullet) => {
           this.archer.archerHP--;
