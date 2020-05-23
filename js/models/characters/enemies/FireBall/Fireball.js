@@ -8,7 +8,7 @@ export default class Fireball extends Phaser.Physics.Arcade.Sprite {
         scene.physics.add.existing(this); 
         scene.physics.world.enable(this);
 
-        this.setSize(15, 15);
+        this.setSize(20, 20);
         this.setOffset(0,0);
 
         this.baseVelocity = 300;
@@ -34,8 +34,7 @@ export default class Fireball extends Phaser.Physics.Arcade.Sprite {
     }
     
     explosion(){
-        this.explosion_scene = new Explosion(this.scene,this.x,this.y);
-        this.explosion_scene.removeFromScreen();
+        new Explosion(this.scene,this.x,this.y);
     }
 
 }

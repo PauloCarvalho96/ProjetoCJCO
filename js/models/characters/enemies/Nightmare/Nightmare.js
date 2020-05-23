@@ -1,4 +1,5 @@
 import Fireball from "../FireBall/Fireball.js";
+import FireSkull from "../FireSkull/FireSkull.js";
 
 export default class Nightmare extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
@@ -13,6 +14,7 @@ export default class Nightmare extends Phaser.Physics.Arcade.Sprite {
 
         this.velocity = 100;
 
+        // grupo de balas
         this.bulletsMaxsize = 10;
         this.nightmarebullets = this.scene.physics.add.group({
             classType: Fireball,
@@ -21,6 +23,16 @@ export default class Nightmare extends Phaser.Physics.Arcade.Sprite {
         this.timeToShoot = 0;
         this.fireRate = 5000;
         this.bulletsOnShoot = 5;
+
+        // grupo de monstros
+        this.monstersMaxsize = 3;
+        this.nightmaremonsters = this.scene.physics.add.group({
+            classType: FireSkull,
+            maxSize: this.monstersMaxsize,
+        });
+        this.timeToSpawn = 0;
+        this.spawnRate = 6000;
+        this.enemiesToSpawn = 3;
 
         // animations
         this.scene.anims.create({
@@ -46,6 +58,10 @@ export default class Nightmare extends Phaser.Physics.Arcade.Sprite {
         this.checkPos();
         //shoot
         this.shoot(time);
+        //spawn enemies
+        this.spawn(time);
+        //verify monsters pos
+        this.checkMonsters();
     }
 
     checkPos(){
@@ -58,7 +74,6 @@ export default class Nightmare extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    // para disparar
     shoot(time){
         if(this.timeToShoot < time){
             for(let i=0;i<this.bulletsOnShoot;i++){
@@ -72,6 +87,36 @@ export default class Nightmare extends Phaser.Physics.Arcade.Sprite {
                 }
             }  
         }
+    }
+
+    spawn(time){
+        if(this.timeToSpawn < time){
+            for(let i=0;i<this.enemiesToSpawn;i++){
+                let px = Math.floor(Math.random() * (5700 - 5100 + 1) + 5100);
+                let monster = this.nightmaremonsters.getFirstDead(true, px, 500);
+                if(monster){
+                    monster.setVelocity(monster.velocity,0);
+                    monster.setScale(0.5);
+                    monster.active = true;
+                    monster.visible = true;
+                    this.timeToSpawn = time + this.spawnRate;
+                }
+            }  
+        }
+    }
+
+    checkMonsters(){
+        // itera os monstros do wizard
+        this.nightmaremonsters.children.iterate(function(monster) {
+            if(monster.x < 5000){
+                monster.setVelocityX(monster.velocity);
+                monster.flipX = true;
+            }
+            if(monster.x > 5800){
+                monster.setVelocityX(-monster.velocity);
+                monster.flipX = false;
+            }
+        },this);
     }
 
 }

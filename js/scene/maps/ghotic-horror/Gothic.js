@@ -129,7 +129,7 @@ export default class Gothic extends Phaser.Scene {
         this.archer = new Archer(this, 5100, 500);
 
         /** TESTES */
-        this.nightmare = new Nightmare(this,5500,100);
+        this.nightmare = new Nightmare(this,5500,400);
 
         // grupos de inimigos
         this.fireskullGroup = new FireSkullGroup(this.physics.world, this);
@@ -193,12 +193,16 @@ export default class Gothic extends Phaser.Scene {
         });
 
         this.physics.add.collider(this.nightmare.nightmarebullets, this.archer, (archer,bullet) => {
+            this.archer.takeDamage();
             bullet.explosion();
-            this.sound.play('explosion_sound'); 
+            this.sound.play('explosion_sound');
             this.nightmare.nightmarebullets.killAndHide(bullet);
             bullet.removeFromScreen();
         });
-        
+
+        // colliders monsters nightmare
+        this.physics.add.collider(this.nightmare.nightmaremonsters, this.ground);
+
         /** Propriedades (overlap) Monstros -> Archer */
         this.physics.add.overlap(this.archer, this.fireskullGroup, () => {
             this.archer.archerHP--;
@@ -243,6 +247,23 @@ export default class Gothic extends Phaser.Scene {
                 this.archer.archerBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
             }
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
+
+        this.physics.add.overlap(this.archer.archerBullets, this.nightmare.nightmaremonsters, (bullet,fireskull) => {
+            fireskull.fireskullHP -= this.archer.archerDamage;
+            if(fireskull.fireskullHP <= 0){
+                this.nightmare.nightmaremonsters.killAndHide(fireskull);
+                fireskull.removeFromScreen();
+                this.archer.archerBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
+            }
+            this.archer.archerBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
+
+        this.physics.add.overlap(this.archer.archerBullets, this.nightmare, (nightmare,bullet) => {
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
         });
