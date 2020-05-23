@@ -270,7 +270,6 @@ export default class Forest extends Phaser.Scene{
            
             //percorre as balas de cada inimigo e adiciona collider nas balas
             this.physics.add.collider(this.rocks, mushroom.mushroomBullets, (bullet) => {
-                
                 mushroom.mushroomBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
             });

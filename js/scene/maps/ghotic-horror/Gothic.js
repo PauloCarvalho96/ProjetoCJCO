@@ -5,6 +5,7 @@ import FireSkullGroup from "../../../models/characters/enemies/FireSkull/FireSku
 import MushroomGroupGothic from "../../../models/characters/enemies/Mushroom/MushroomGroupGothic.js";
 import GhostBoss from "../../../models/characters/enemies/Nightmare/Nightmare.js";
 import Nightmare from "../../../models/characters/enemies/Nightmare/Nightmare.js";
+import Explosion from "../../../models/characters/enemies/Explosion/Explosion.js";
 
 export default class Gothic extends Phaser.Scene {
     
@@ -84,6 +85,18 @@ export default class Gothic extends Phaser.Scene {
             frameWidth: 144,
         });
 
+        this.load.spritesheet("fireball", "assets/characters/enemies/Fireball/fireball.png", {
+            frameHeight: 16,
+            frameWidth: 19,
+        });
+
+        //explosion
+        this.load.spritesheet("explosion", "assets/characters/enemies/Explosion/explosion.png", {
+            frameHeight: 64,
+            frameWidth: 64,
+        });
+
+        this.load.audio('explosion_sound','assets/characters/enemies/Explosion/explosion.mp3');
 
         // se conseguir chegar ao final do nivel entra no modo de BOSS
         this.boss = false;
@@ -113,7 +126,7 @@ export default class Gothic extends Phaser.Scene {
         this.map.createStaticLayer("ground_dec",tiles,0,0);
 
         // criação da personagem
-        this.archer = new Archer(this, 4900, 500);
+        this.archer = new Archer(this, 5100, 500);
 
         /** TESTES */
         this.nightmare = new Nightmare(this,5500,100);
@@ -154,7 +167,6 @@ export default class Gothic extends Phaser.Scene {
             this.archer.takeDamage();
         });
 
-        /** TESTES */
         this.physics.add.collider(this.nightmare,this.ground);
 
         // collider fireskull
@@ -164,6 +176,28 @@ export default class Gothic extends Phaser.Scene {
         // collider mushroom
         this.physics.add.collider(this.mushroomGroup,this.ground);
         this.physics.add.collider(this.mushroomGroup,this.plataforms);
+
+        // colliders fireball
+        this.physics.add.collider(this.nightmare.nightmarebullets, this.ground, (bullet) => {
+            bullet.explosion();
+            this.sound.play('explosion_sound'); 
+            this.nightmare.nightmarebullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
+
+        this.physics.add.collider(this.nightmare.nightmarebullets, this.plataforms, (bullet) => {
+            bullet.explosion();
+            this.sound.play('explosion_sound'); 
+            this.nightmare.nightmarebullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
+
+        this.physics.add.collider(this.nightmare.nightmarebullets, this.archer, (archer,bullet) => {
+            bullet.explosion();
+            this.sound.play('explosion_sound'); 
+            this.nightmare.nightmarebullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
         
         /** Propriedades (overlap) Monstros -> Archer */
         this.physics.add.overlap(this.archer, this.fireskullGroup, () => {
@@ -249,7 +283,7 @@ export default class Gothic extends Phaser.Scene {
             }
 
             // update do boss
-            this.nightmare.update();
+            this.nightmare.update(time);
         
         // nivel
         } else {    

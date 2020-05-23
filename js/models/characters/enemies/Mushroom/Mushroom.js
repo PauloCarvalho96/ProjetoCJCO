@@ -101,7 +101,8 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
             this.play('mushroom_idle',true);         
         }
     }
-takeDamage(){
+
+    takeDamage(){
         let i = 0;
         let repetition = 100;
         let changeTint = true;
@@ -129,6 +130,7 @@ takeDamage(){
         });
 
     }
+    
     removeFromScreen() {
         this.y = 700;
         this.setVelocity(0, 0);
