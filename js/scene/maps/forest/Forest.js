@@ -450,11 +450,11 @@ export default class Forest extends Phaser.Scene{
 
         // itera as balas para as destruir dps de se afastarem do arqueiro
         this.archer.archerBullets.children.iterate(function (bullet) {
-            if(bullet.x > this.archer.x + (this.game.config.width/2)){
+            if(bullet.x > this.archer.x + (this.game.config.width/2) || bullet.x < this.archer.x - (this.game.config.width/2)){
                 this.archer.archerBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
             }
-        },this);
+        },this); 
 
         // defrontar o boss
         if(this.archer.x > this.bossLevelX){
