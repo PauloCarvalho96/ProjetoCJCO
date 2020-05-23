@@ -2,7 +2,6 @@ import GhostGroup from "../../../models/characters/enemies/Ghost/GhostGroup.js";
 import EyeGroup from "../../../models/characters/enemies/Eye/EyeGroup.js";
 import Archer from "../../../models/characters/main/archer/Archer.js";
 import Demon from "../../../models/characters/enemies/Demon/Demon.js";
-import Knight from "../../../models/characters/main/knight/Knight.js";
 import Skeleton from "../../../models/characters/enemies/Skeleton/skeleton.js";
 
 let count = 0;
