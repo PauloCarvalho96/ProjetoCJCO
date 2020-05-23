@@ -424,7 +424,6 @@ export default class Castle extends Phaser.Scene {
   }
 
   store(){
-
     this.add.image(this.archer.x, this.archer.y, 'potion_hp');   
   }
 
