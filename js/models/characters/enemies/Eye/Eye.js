@@ -11,6 +11,9 @@ export default class Eye extends Phaser.Physics.Arcade.Sprite {
         this.setSize(30, 40);
         this.setOffset(66,56);
 
+        this.eyeHP = 100;
+        this.eyeDamage = 5;
+
         this.velocity = 10;
         this.position = this.x;
         this.offset = offset;

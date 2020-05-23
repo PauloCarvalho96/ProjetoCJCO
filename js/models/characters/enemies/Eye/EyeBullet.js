@@ -18,4 +18,10 @@ export default class EyeBullet extends Phaser.Physics.Arcade.Sprite {
         return this.x > 100 || this.y > 100 || this.x < 0 || this.y < 0;
     }
 
+
+    removeFromScreen() {
+        this.y = 700;
+        this.setVelocity(0, 0);
+    }
+
 }
