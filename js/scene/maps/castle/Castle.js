@@ -163,9 +163,9 @@ export default class Castle extends Phaser.Scene {
       const front1 = this.map.createStaticLayer("lava", dec1, 0, 0);
       const boss_m = this.map.createStaticLayer("piso_boss",boss_map, 0, 0);
     
-      this.archer = new Archer(this, 100, 300);
+      //this.archer = new Archer(this, 100, 300);
       //this.archer = new Archer(this, 2012, 117);
-      //this.archer = new Archer(this, 4010, 500);
+      this.archer = new Archer(this, 4010, 500);
 
       //this.store.setVisible = false; //////////////////////////////////////////////////////////////////////////////////////////////
       //this.store.setActive = false;
