@@ -486,5 +486,4 @@ export default class Forest extends Phaser.Scene{
             this.scene.restart();
         }
     }
-
 }
