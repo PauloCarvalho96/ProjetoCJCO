@@ -6,20 +6,13 @@ export default class bootGame extends Phaser.Scene{
     }
     preload() {
         /// carrega imagens para o menu
-
-
-        this.load.image("play", "./assets/play.png");
-        this.load.image("back", "./assets/back.png");
-        this.load.image("loadgame", "./assets/loadgame.png");
-        this.load.image("options", "./assets/options.png");
-
-
+        this.load.image("play", "./assets/menu/play.png");
+        this.load.image("back", "./assets/menu/back.png");
+        this.load.image("loadgame", "./assets/menu/loadgame.png");
+        this.load.image("options", "./assets/menu/options.png");
     }
 
-    create(){
-
-
-        
+    create(){  
         ///setDepth -> valor 1 vai sempre estar acima do valor 0 , valor 2 vai sempre estar em cima do valor 1;
         //setOrigin -> defina o ponto de origem
         this.add.image(this.game.renderer.width / 2 ,this.game.renderer.height * 0.20,"play").setDepth(1);

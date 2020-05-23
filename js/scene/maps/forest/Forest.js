@@ -5,7 +5,7 @@ import GoblinGroup from "../../../models/characters/enemies/Goblin/GoblinGroup.j
 import Wizard from "../../../models/characters/enemies/Wizard/Wizard.js";
 import Mushroom from "../../../models/characters/enemies/Mushroom/Mushroom.js";
 import MushroomGroup from "../../../models/characters/enemies/Mushroom/MushroomGroup.js";
-
+import Castle from "../castle/Castle.js"
 
 export default class forest extends Phaser.Scene{
     
@@ -24,7 +24,7 @@ export default class forest extends Phaser.Scene{
         // carregar as imagens da vida;
         this.load.image("green-bar","assets/green-bar.png");
         this.load.image("red-bar","assets/red-bar.png");
-
+        this.scene.add('Castle',Castle);
         // tiles para mapa
         this.load.image("main_background","assets/maps/forest/tiles/main_background.png");
         this.load.image("bgrd_tree1","assets/maps/forest/tiles/bgrd_tree1.png");
@@ -372,8 +372,10 @@ export default class forest extends Phaser.Scene{
                 this.archer.archerBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
                 this.wizard.removeFromScreen();
+                this.scene.start('Castle');
                 //this.wizard.destroy();
-                this.scene.pause();
+                //this.scene.pause();
+
             }
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
@@ -458,10 +460,6 @@ export default class forest extends Phaser.Scene{
 
         console.log(this.archer.x);
         console.log(this.wizard.wizardHP);
-
-        
-
-
 
         this.archer.update(this.cursors,time);
         this.checkArcherHP();
@@ -553,9 +551,4 @@ export default class forest extends Phaser.Scene{
             this.scene.restart();
         }
     }
-
-  
-
-    
-
 }

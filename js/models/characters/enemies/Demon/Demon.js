@@ -14,6 +14,9 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
         this.setOffset(40,30);
         this.flipX = true;
 
+        this.timeToShoot = 5000;
+        this.fireRate = 5000;
+
         this.bulletsMaxsize = 2;
         this.DemonBullets = this.scene.physics.add.group({
             classType: DemonBullet,
@@ -65,7 +68,7 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
         this.play('walk',true);
     }
 
-    update(space){
+    update(space,time){
         // verificar para que lado o inimigo vira
         this.side(space);
     }
@@ -105,7 +108,6 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
             bullet.visible = true;
         }
     }
-
     // 2 ataque
     secondShoot(space){
         this.play('demon_2attack',true);

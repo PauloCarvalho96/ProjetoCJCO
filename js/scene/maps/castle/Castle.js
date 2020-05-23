@@ -2,6 +2,7 @@ import GhostGroup from "../../../models/characters/enemies/Ghost/GhostGroup.js";
 import EyeGroup from "../../../models/characters/enemies/Eye/EyeGroup.js";
 import Archer from "../../../models/characters/main/archer/Archer.js";
 import Demon from "../../../models/characters/enemies/Demon/Demon.js";
+import Store from "../../../models/store/Store.js";
 import Knight from "../../../models/characters/main/knight/Knight.js";
 import Skeleton from "../../../models/characters/enemies/Skeleton/skeleton.js";
 
@@ -25,6 +26,7 @@ export default class Castle extends Phaser.Scene {
     this.load.image("decorative", "assets/maps/castle/tiles/other_and_decorative.png");
     this.load.image("tocha", "assets/maps/castle/tiles/torch-C-03.png");
     this.load.image("lava", "assets/maps/castle/tiles/lava.png");
+    this.load.image("potion_hp","assets/potions/potions_gradient.png");
 
     this.load.tilemapTiledJSON("map", "assets/maps/castle/map2_v3.json");
 
@@ -164,6 +166,9 @@ export default class Castle extends Phaser.Scene {
       this.archer = new Archer(this, 100, 300);
       //this.archer = new Archer(this, 2012, 117);
       //this.archer = new Archer(this, 4010, 500);
+
+      //this.store.setVisible = false; //////////////////////////////////////////////////////////////////////////////////////////////
+      //this.store.setActive = false;
        /** 
          * create a new EnemiesGroup (new class to handle group of Enemy) that can hold 100 enemies
        **/
@@ -183,6 +188,7 @@ export default class Castle extends Phaser.Scene {
       camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
       this.cursors = this.input.keyboard.createCursorKeys();
+ 
 
       //set tiles from front tilemap that have collides property true as collidable
       front.setCollisionByProperty({ "colides": true }, true); // escrevi mal eu sei mas agora fica assim !!!
@@ -249,15 +255,12 @@ export default class Castle extends Phaser.Scene {
           demon.removeFromScreen();
       });
 
-
         this.physics.add.overlap(this.archer.archerBullets, this.eyes, (bullet,eye) => {
             this.eyes.killAndHide(eye);
             eye.removeFromScreen();
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
         });   
-
-     
 
         this.physics.add.collider(this.archer.archerBullets, front, (bullet) => {
           this.archer.archerBullets.killAndHide(bullet);
@@ -336,16 +339,20 @@ export default class Castle extends Phaser.Scene {
     //console.log(this.archer.x);
     //console.log(this.archer.y);
     //console.log(this.map.widthInPixels-20);
-    
+
+    if(this.cursors.shift.isDown){
+      this.store();
+    }
+
     this.archer.update(this.cursors,time);
 
     // itera as balas para as destruir dps de se afastarem do arqueiro
     this.archer.archerBullets.children.iterate(function (bullet) {
-      if(bullet.x > this.archer.x + (this.game.config.width/2)){
+      if(bullet.x > this.archer.x + (this.game.config.width/2) || bullet.x < this.archer.x - (this.game.config.width/2)){
           this.archer.archerBullets.killAndHide(bullet);
           bullet.removeFromScreen();
       }
-    },this);
+  },this);
 
     // Mapa do Boss
     if(this.archer.x >= 4000){
@@ -354,7 +361,7 @@ export default class Castle extends Phaser.Scene {
         this.demon.setVelocityX(0);
         this.demon.play("demon_idle",true);
       }else{
-        this.demon.update(this.demon.x-this.archer.x);
+        this.demon.update(this.demon.x-this.archer.x,time);
       }
       if(this.boss == false && this.bossConfigs == false){
         //evento de disparo do boss
@@ -400,7 +407,6 @@ export default class Castle extends Phaser.Scene {
         this.archer.x = 885;
         this.archer.y = 0;
       }
-
       if(bullet.x > 4020 || bullet.x < 0){
         this.archer.archerBullets.killAndHide(bullet);
         bullet.removeFromScreen();
@@ -416,4 +422,9 @@ export default class Castle extends Phaser.Scene {
       },this);
     }
   }
+
+  store(){
+    this.add.image(this.archer.x, this.archer.y, 'potion_hp');   
+  }
+
 }
