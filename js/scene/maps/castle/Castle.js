@@ -235,16 +235,12 @@ healthLabel.setScrollFactor(0);
           bullet.removeFromScreen();
         });
          // adiciona collider da bala com personagem
-         this.physics.add.collider(this.archer, eye.bullets,(bullet) => {
-           
+          this.physics.add.collider(this.archer, eye.bullets,(archer,bullet) => {
           this.archer.archerHP = this.archer.archerHP - eye.eyeDamage;
           healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
-        this.archer.takeDamage();
-         
+          this.archer.takeDamage();
           eye.bullets.killAndHide(bullet);
-          
           bullet.removeFromScreen();
-
          });
          this.physics.add.overlap(this.archer, eye, (bullet) => {
          
