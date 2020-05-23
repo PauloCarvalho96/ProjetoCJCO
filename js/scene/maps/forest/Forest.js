@@ -119,6 +119,20 @@ export default class Forest extends Phaser.Scene{
             frameHeight: 190
         });
 
+        // fireball
+        this.load.spritesheet("fireball", "assets/characters/enemies/Fireball/fireball.png", {
+            frameHeight: 16,
+            frameWidth: 19,
+        });
+
+        //explosion
+        this.load.spritesheet("explosion", "assets/characters/enemies/Explosion/explosion.png", {
+            frameHeight: 64,
+            frameWidth: 64,
+        });
+
+        this.load.audio('explosion_sound','assets/characters/enemies/Explosion/explosion.mp3');
+
         // se conseguir chegar ao final do nivel entra no modo de BOSS
         this.boss = false;
         this.bossConfigs = false;
@@ -381,7 +395,10 @@ export default class Forest extends Phaser.Scene{
         this.physics.add.collider(this.wizard.wizardMonsters,this.rocks);
         this.physics.add.collider(this.wizard.wizardMonsters,this.ground);
         this.physics.add.collider(this.wizard.wizardMonsters,this.plataforms);
+
         this.physics.add.collider(this.wizard.wizardBullets,this.archer,(archer,bullet) => {
+            bullet.explosion();
+            this.sound.play('explosion_sound'); 
             this.wizard.wizardBullets.killAndHide(bullet);
             bullet.removeFromScreen();
             this.archer.archerHP--;
@@ -389,62 +406,27 @@ export default class Forest extends Phaser.Scene{
             this.archer.takeDamage();
         });
 
-        // evento para o wizard disparar
-        //this.enemyShootDelay = 600;
-        this.enemyShootConfig = {
-            delay: this.enemyShootDelay,
-            repeat: 4,
-            callback: () => {
-                // dispara 
-                this.wizard.play('wizard_attack1',true);
-                this.wizard.shoot();
-            }
-        };
+        // colliders fireball (wizard)
+        this.physics.add.collider(this.wizard.wizardBullets, this.ground, (bullet) => {
+            bullet.explosion();
+            this.sound.play('explosion_sound'); 
+            this.wizard.wizardBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
 
-        // evento para duraçao de cada rajada de disparos
-        this.eventShootDelay = 6000;
-        this.eventShootConfig = {
-            delay: this.eventShootDelay,
-            repeat: -1,
-            callback: () => {  
-                // quando acaba a animaçao de disparo entao volta a idle
-                this.wizard.on("animationcomplete", ()=>{
-                    this.wizard.play('wizard_run',true);
-                });
-                this.time.addEvent(this.enemyShootConfig);
-            }
-        };
-
-        // evento para o wizard spawnar inimigos
-        this.enemySpawnDelay = 0;
-        this.enemySpawnConfig = {
-            delay: this.enemySpawnDelay,
-            repeat: 0,
-            callback: () => {
-                this.wizard.play('wizard_attack2',true);
-                this.wizard.spawn();
-            }
-        };
-
-        // evento para duraçao de cada spawn de inimigos
-        this.eventSpawnDelay = 5000;
-        this.eventSpawnConfig = {
-            delay: this.eventSpawnDelay,
-            repeat: -1,
-            callback: () => {  
-                this.wizard.on("animationcomplete", ()=>{
-                    this.wizard.play('wizard_run',true);
-                });
-                this.time.addEvent(this.enemySpawnConfig);
-            }
-        };
+        this.physics.add.collider(this.wizard.wizardBullets, this.plataforms, (bullet) => {
+            bullet.explosion();
+            this.sound.play('explosion_sound'); 
+            this.wizard.wizardBullets.killAndHide(bullet);
+            bullet.removeFromScreen();
+        });
 
     }
 
     update(time,delta){
 
         console.log(this.archer.x);
-        console.log(this.wizard.wizardHP);
+        //console.log(this.wizard.wizardHP);
 
         this.archer.update(this.cursors,time);
         this.checkArcherHP();
@@ -463,8 +445,8 @@ export default class Forest extends Phaser.Scene{
             // faz as configs do boss 1x
             if(this.boss == false && this.bossConfigs == false){
                 //evento de disparo do boss
-                this.time.addEvent(this.eventShootConfig);
-                this.time.addEvent(this.eventSpawnConfig);
+                //this.time.addEvent(this.eventShootConfig);
+                //this.time.addEvent(this.eventSpawnConfig);
                 this.boss = true;
                 this.bossConfigs = true;
                 this.wizard.setVelocityX(-50);
@@ -478,7 +460,7 @@ export default class Forest extends Phaser.Scene{
             }   
 
             // update do boss
-            this.wizard.update();
+            this.wizard.update(time);
 
         //senao trata se do nivel 
         } else {  
