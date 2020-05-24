@@ -191,15 +191,6 @@ export default class Forest extends Phaser.Scene{
         this.archer = new Archer(this, 100, 400);
 
         /** Sounds */
-        this.forest_song_level = this.sound.add('forest_song_level',{
-            volume:0.5,
-        });
-        this.forest_song_level.play();
-
-        this.forest_song_boss = this.sound.add('forest_song_boss',{
-            volume:0.5,
-        });
-
         this.explosion = this.sound.add('explosion_sound',{
             volume:0.1,
         });
@@ -216,6 +207,17 @@ export default class Forest extends Phaser.Scene{
             volume:0.1,
         });
         this.archer.hitSound = this.hitSound;
+
+        this.forest_song_level = this.sound.add('forest_song_level',{
+            loop:true,
+            volume:0.5,
+        });
+        this.forest_song_level.play();
+
+        this.forest_song_boss = this.sound.add('forest_song_boss',{
+            loop:true,
+            volume:0.5,
+        });
 
 
         // *inimigos*

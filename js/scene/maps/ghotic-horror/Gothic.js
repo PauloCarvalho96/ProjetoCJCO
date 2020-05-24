@@ -29,7 +29,7 @@ export default class Gothic extends Phaser.Scene {
         this.load.image("green-bar","assets/green-bar.png");
         this.load.image("red-bar","assets/red-bar.png");
 
-        // spritesheet (archer)
+        // spritesheet (Archer)
         this.load.spritesheet("archer", "assets/characters/main/archer/ArcherIdle.png", {
             frameWidth: 128,
             frameHeight: 128
@@ -41,6 +41,16 @@ export default class Gothic extends Phaser.Scene {
         });
 
         this.load.spritesheet("archer_shoot", "assets/characters/main/archer/ArcherAttack.png", {
+            frameWidth: 128,
+            frameHeight: 128
+        });
+
+        this.load.spritesheet("archer_jump", "assets/characters/main/archer/ArcherJump.png", {
+            frameWidth: 128,
+            frameHeight: 128
+        });
+
+        this.load.spritesheet("archer_death", "assets/characters/main/archer/ArcherDeath.png", {
             frameWidth: 128,
             frameHeight: 128
         });
@@ -96,12 +106,22 @@ export default class Gothic extends Phaser.Scene {
             frameWidth: 64,
         });
 
+        // sounds
         this.load.audio('explosion_sound','assets/characters/enemies/Explosion/explosion.mp3');
+        this.load.audio('fire_arrow','assets/characters/main/archer/fire_arrow.mp3');
+        this.load.audio('jump_sound','assets/characters/main/archer/Jump.wav');
+        this.load.audio('hit_sound','assets/characters/main/archer/Hit.wav');
+        this.load.audio('gothic_song_level','assets/maps/gothic-horror/gothic_song_level.wav');
+        this.load.audio('gothic_song_boss','assets/maps/gothic-horror/gothic_song_boss.wav');
 
         // se conseguir chegar ao final do nivel entra no modo de BOSS
         this.boss = false;
         this.bossConfigs = false;
         this.bossLevelX = 5000;
+
+        // archer death
+        this.archerDeath = false;
+        this.archerDeathConfigs = false;
     }
 
     create(){
@@ -126,9 +146,38 @@ export default class Gothic extends Phaser.Scene {
         this.map.createStaticLayer("ground_dec",tiles,0,0);
 
         // criação da personagem
-        this.archer = new Archer(this, 3000, 500);
+        this.archer = new Archer(this, 100, 500);
 
-        /** TESTES */
+        /** Sounds */
+        this.explosion = this.sound.add('explosion_sound',{
+            volume:0.1,
+        });
+
+        this.fireSound = this.sound.add("fire_arrow",{
+            volume:0.1,
+        });
+        this.archer.fireSound = this.fireSound;
+        this.jumpSound = this.sound.add("jump_sound",{
+            volume:0.1,
+        });
+        this.archer.jumpSound = this.jumpSound;
+        this.hitSound = this.sound.add("hit_sound",{
+            volume:0.1,
+        });
+        this.archer.hitSound = this.hitSound;
+
+        this.gothic_song_level = this.sound.add('gothic_song_level',{
+            loop:true,
+            volume:0.5,
+        });
+        this.gothic_song_level.play();
+
+        this.gothic_song_boss = this.sound.add('gothic_song_boss',{
+            loop:true,
+            volume:0.5,
+        });
+
+
         this.nightmare = new Nightmare(this,5500,400);
 
         // grupos de inimigos
@@ -180,14 +229,14 @@ export default class Gothic extends Phaser.Scene {
         // colliders fireball
         this.physics.add.collider(this.nightmare.nightmarebullets, this.ground, (bullet) => {
             bullet.explosion();
-            this.sound.play('explosion_sound'); 
+            this.explosion.play(); 
             this.nightmare.nightmarebullets.killAndHide(bullet);
             bullet.removeFromScreen();
         });
 
         this.physics.add.collider(this.nightmare.nightmarebullets, this.plataforms, (bullet) => {
             bullet.explosion();
-            this.sound.play('explosion_sound'); 
+            this.explosion.play(); 
             this.nightmare.nightmarebullets.killAndHide(bullet);
             bullet.removeFromScreen();
         });
@@ -195,7 +244,7 @@ export default class Gothic extends Phaser.Scene {
         this.physics.add.collider(this.nightmare.nightmarebullets, this.archer, (archer,bullet) => {
             this.archer.takeDamage();
             bullet.explosion();
-            this.sound.play('explosion_sound');
+            this.explosion.play();
             this.nightmare.nightmarebullets.killAndHide(bullet);
             bullet.removeFromScreen();
         });
@@ -223,7 +272,7 @@ export default class Gothic extends Phaser.Scene {
                 healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
                 this.archer.takeDamage();
                 bullet.explosion();
-                this.sound.play('explosion_sound'); 
+                this.explosion.play(); 
                 mushroom.mushroomBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
             });      
@@ -279,14 +328,35 @@ export default class Gothic extends Phaser.Scene {
             bullet.removeFromScreen();
         });
 
+        this.delayDeathRestart = 2000;
+        this.deathAnim = {
+        delay: this.delayDeathRestart,
+        repeat: 0,
+        callback: () => {
+            this.scene.restart();
+        }
+        };
+
     }
+
 
     update(time,delta){
 
         console.log(this.archer.x);
 
-        this.archer.update(this.cursors,time);
-        this.checkArcherHP();
+        // verifica HP do archer
+        if(this.archer.archerHP > 0){
+            this.archer.update(this.cursors,time);
+        } else {
+            this.archer.isDeath();
+            this.archerDeath = true;
+        }
+
+        // gameover
+        if(this.archerDeath == true && this.archerDeathConfigs == false){
+            this.time.addEvent(this.deathAnim);
+            this.archerDeathConfigs = true;
+        }
 
         // itera as balas para as destruir dps de se afastarem do arqueiro
         this.archer.archerBullets.children.iterate(function (bullet) {
@@ -300,6 +370,8 @@ export default class Gothic extends Phaser.Scene {
         if(this.archer.x > this.bossLevelX){
             
             if(this.boss == false && this.bossConfigs == false){
+                this.gothic_song_level.stop();
+                this.gothic_song_boss.play();
                 this.boss = true;
                 this.bossConfigs = true;
                 this.nightmare.setVelocityX(-100);
@@ -330,12 +402,6 @@ export default class Gothic extends Phaser.Scene {
                 mushroom.update(time,mushroom.x-this.archer.x);
             },this);
 
-        }
-    }
-
-    checkArcherHP() {
-        if(this.archer.archerHP <= 0){
-            this.scene.restart();
         }
     }
 
