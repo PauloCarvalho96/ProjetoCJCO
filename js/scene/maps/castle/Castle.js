@@ -32,7 +32,7 @@ export default class Castle extends Phaser.Scene {
     this.load.tilemapTiledJSON("map", "assets/maps/castle/map2_v3.json");
 
      // spritesheet (Archer)
-     this.load.spritesheet("archer", "assets/characters/main/archer/ArcherIdle.png", {
+    this.load.spritesheet("archer", "assets/characters/main/archer/ArcherIdle.png", {
       frameWidth: 128,
       frameHeight: 128
     });
@@ -42,33 +42,38 @@ export default class Castle extends Phaser.Scene {
       frameHeight: 128
     });
 
-    this.load.spritesheet("archer_jump", "assets/characters/main/archer/ArcherJump.png", {
-      frameWidth: 128,
-      frameHeight: 128
+    this.load.spritesheet("archer_shoot", "assets/characters/main/archer/ArcherAttack.png", {
+        frameWidth: 128,
+        frameHeight: 128
     });
 
-    this.load.spritesheet("archer_shoot", "assets/characters/main/archer/ArcherAttack.png", {
-      frameWidth: 128,
-      frameHeight: 128 
+    this.load.spritesheet("archer_jump", "assets/characters/main/archer/ArcherJump.png", {
+        frameWidth: 128,
+        frameHeight: 128
+    });
+
+    this.load.spritesheet("archer_death", "assets/characters/main/archer/ArcherDeath.png", {
+        frameWidth: 128,
+        frameHeight: 128
     });
 
     this.load.spritesheet("archer_arrow", "assets/characters/main/archer/arrow.png", {
-      frameWidth: 128,
-      frameHeight: 128
+        frameWidth: 128,
+        frameHeight: 128
     });
 
     
-  // spritesheet inimigos
+    // spritesheet inimigos
     this.load.spritesheet("skeleton_run", "assets/characters/enemies/Skeleton/Walk.png", {
       frameWidth: 150,
       frameHeight: 150
     }); 
 
     // spritesheet inimigos
-      this.load.spritesheet("ghost_idle", "assets/characters/enemies/Ghost/ghost_idle.png", {
-        frameWidth: 64,
-        frameHeight: 80
-      });
+    this.load.spritesheet("ghost_idle", "assets/characters/enemies/Ghost/ghost_idle.png", {
+      frameWidth: 64,
+      frameHeight: 80
+    });
       
 
     // spritesheet inimigos
@@ -122,19 +127,32 @@ export default class Castle extends Phaser.Scene {
       frameWidth: 11,
     });
 
+    //explosion
+    this.load.spritesheet("explosion", "assets/characters/enemies/Explosion/explosion.png", {
+      frameHeight: 64,
+      frameWidth: 64,
+  });
 
+    // sounds
+    this.load.audio('explosion_sound','assets/characters/enemies/Explosion/explosion.mp3');
+    this.load.audio('fire_arrow','assets/characters/main/archer/fire_arrow.mp3');
+    this.load.audio('jump_sound','assets/characters/main/archer/Jump.wav');
+    this.load.audio('hit_sound','assets/characters/main/archer/Hit.wav');
+    this.load.audio('castle_song_level','assets/maps/castle/castle_song_level.wav');
+    this.load.audio('castle_song_boss','assets/maps/castle/castle_song_boss.wav');
 
     // se conseguir chegar ao final do nivel entra no modo de BOSS
     this.boss = false;
     this.bossConfigs = false;
 
-    }
+    // archer death
+    this.archerDeath = false;
+    this.archerDeathConfigs = false;
 
-    create() {
+  }
+
+  create() {
       this.map = this.make.tilemap({ key: "map" }); // crio o mapa 
-
-
-
 
       // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
       // Phaser's cache (i.e. the name you used in preload)
@@ -154,12 +172,12 @@ export default class Castle extends Phaser.Scene {
 
 
       // Parameters: layer name (or index) from Tiled, tileset, x, y
-      this.map.createStaticLayer("background1", back1, 0, 0); // tem que ter o mesmo nome do cenas do tiler 
-      this.map.createStaticLayer("background2", back2, 0, 0); // tem que ter o mesmo nome do cenas do tiler 
-      this.map.createStaticLayer("background3_a", back3, 0, 0); // tem que ter o mesmo nome do cenas do tiler 
-      this.map.createStaticLayer("background3_b", back3_b, 0, 0); // tem que ter o mesmo nome do cenas do tiler 
-      this.map.createStaticLayer("background4", back4, 0, 0); // tem que ter o mesmo nome do cenas do tiler 
-      this.map.createStaticLayer("background5", back5, 0, 0); // tem que ter o mesmo nome do cenas do tiler 
+      this.map.createStaticLayer("background1", back1, 0, 0);
+      this.map.createStaticLayer("background2", back2, 0, 0);  
+      this.map.createStaticLayer("background3_a", back3, 0, 0); 
+      this.map.createStaticLayer("background3_b", back3_b, 0, 0); 
+      this.map.createStaticLayer("background4", back4, 0, 0);  
+      this.map.createStaticLayer("background5", back5, 0, 0); 
       this.map.createStaticLayer("fundo_castelo", castle, 0, 0);
       this.map.createStaticLayer("decoracao", dec, 0, 0);
       this.map.createStaticLayer("tochas", tochas, 0, 0);
@@ -170,8 +188,35 @@ export default class Castle extends Phaser.Scene {
       const boss_m = this.map.createStaticLayer("piso_boss",boss_map, 0, 0);
 
       this.archer = new Archer(this, 100, 300);
-      //this.archer = new Archer(this, 2012, 117);
-      //this.archer = new Archer(this, 4010, 500);
+
+      /** Sounds */
+      this.explosion = this.sound.add('explosion_sound',{
+        volume:0.1,
+      });
+
+      this.fireSound = this.sound.add("fire_arrow",{
+          volume:0.1,
+      });
+      this.archer.fireSound = this.fireSound;
+      this.jumpSound = this.sound.add("jump_sound",{
+          volume:0.1,
+      });
+      this.archer.jumpSound = this.jumpSound;
+      this.hitSound = this.sound.add("hit_sound",{
+          volume:0.1,
+      });
+      this.archer.hitSound = this.hitSound;
+
+      this.castle_song_level = this.sound.add('castle_song_level',{
+          loop:true,
+          volume:0.5,
+      });
+      this.castle_song_level.play();
+
+      this.castle_song_boss = this.sound.add('castle_song_boss',{
+          loop:true,
+          volume:0.5,
+      });
 
       //health bars
       var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
@@ -185,15 +230,12 @@ export default class Castle extends Phaser.Scene {
       healthLabel.setScrollFactor(0);
 
 
-      //this.archer = new Archer(this, 4010, 500);
        /** 
-         * create a new EnemiesGroup (new class to handle group of Enemy) that can hold 100 enemies
+         * create a new EnemiesGroup 
         */
       this.ghosts = new GhostGroup(this.physics.world,this);
-      this.ghosts.setVelocityX(60);
 
       this.eyes = new EyeGroup(this.physics.world,this);
-      this.eyes.setVelocityX(10);
 
       // BOSS
       this.demon = new Demon(this,4412,480);
@@ -222,7 +264,7 @@ export default class Castle extends Phaser.Scene {
       this.physics.add.collider(this.archer,front1,() => {
         this.archer.archerHP--;
         healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
-      this.archer.takeDamage();
+        this.archer.takeDamage();
       });
 
       // caso a personagem toque num goblin
@@ -235,6 +277,8 @@ export default class Castle extends Phaser.Scene {
       this.eyes.children.iterate(function (eye) {
 
         this.physics.add.collider(front, eye.bullets,(bullet) =>{
+          bullet.explosion();
+          this.explosion.play();
           eye.bullets.killAndHide(bullet);
           bullet.removeFromScreen();
         });
@@ -243,6 +287,8 @@ export default class Castle extends Phaser.Scene {
          this.physics.add.collider(this.archer, eye.bullets,(archer,bullet) => {      
           this.archer.archerHP = this.archer.archerHP - eye.eyeDamage;
           healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+          bullet.explosion();
+          this.explosion.play();
           this.archer.takeDamage();  
           eye.bullets.killAndHide(bullet);  
           bullet.removeFromScreen();
@@ -259,9 +305,8 @@ export default class Castle extends Phaser.Scene {
         // demon (BOSS) monstros/propriedades
         this.physics.add.overlap(this.archer, this.demon.demonMonsters, (archer,monsterBullet) => {
           this.archer.archerHP--;
-         healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
-       this.archer.takeDamage();
-          
+          healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+          this.archer.takeDamage();  
        });
 
         // Collider dos ataques do Boss com o arqueiro
@@ -280,12 +325,12 @@ export default class Castle extends Phaser.Scene {
        this.archer.takeDamage();
          });
 
-         this.physics.add.overlap(this.archer, this.demon, (bullet) => {
+        this.physics.add.overlap(this.archer, this.demon, (bullet) => {
           
-          this.archer.archerHP= this.archer.archerHP - this.demon.demonDamage;
-         healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
-       this.archer.takeDamage();
-         });
+        this.archer.archerHP= this.archer.archerHP - this.demon.demonDamage;
+        healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+        this.archer.takeDamage();
+        });
 
         // archer arrow (propriedades)
         this.physics.add.overlap(this.archer.archerBullets, this.ghosts, (bullet,ghost) => {
@@ -296,9 +341,9 @@ export default class Castle extends Phaser.Scene {
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
           }  
-            this.archer.archerBullets.killAndHide(bullet);
-            bullet.removeFromScreen();
-            ghost.takeDamage();
+          this.archer.archerBullets.killAndHide(bullet);
+          bullet.removeFromScreen();
+          ghost.takeDamage();
         });
         // caso a personagem toque num goblin
         this.physics.add.overlap(this.archer, this.ghosts, (bullet,ghost) => {
@@ -319,13 +364,13 @@ export default class Castle extends Phaser.Scene {
         this.demon.demonHP = this.demon.demonHP - this.archer.archerDamage;
         if(this.demon.demonHP <= 0){
           this.archer.archerBullets.killAndHide(bullet);
-            bullet.removeFromScreen(); 
+          bullet.removeFromScreen(); 
           this.demon.killAndHide();
           this.scene.pause();
         }
           this.archer.archerBullets.killAndHide(bullet);
-            bullet.removeFromScreen();
-            this.demon.takeDamage();
+          bullet.removeFromScreen();
+          this.demon.takeDamage();
       });
 
 
@@ -338,11 +383,9 @@ export default class Castle extends Phaser.Scene {
             bullet.removeFromScreen();
           }  
           this.archer.archerBullets.killAndHide(bullet);
-            bullet.removeFromScreen();
-            eye.takeDamage();
+          bullet.removeFromScreen();
+          eye.takeDamage();
         });   
-
-     
 
         this.physics.add.collider(this.archer.archerBullets, front, (bullet) => {
           this.archer.archerBullets.killAndHide(bullet);
@@ -416,14 +459,32 @@ export default class Castle extends Phaser.Scene {
       }
     };
 
+    this.delayDeathRestart = 2000;
+        this.deathAnim = {
+        delay: this.delayDeathRestart,
+        repeat: 0,
+        callback: () => {
+            this.scene.restart();
+        }
+        };
+
   }
 
   update(time,delta) {
-    //console.log(this.archer.x);
-    //console.log(this.archer.y);
-    //console.log(this.map.widthInPixels-20);
-    this.checkArcherHP();
-    this.archer.update(this.cursors,time);
+
+    // verifica HP do archer
+      if(this.archer.archerHP > 0){
+        this.archer.update(this.cursors,time);
+      } else {
+        this.archer.isDeath();
+        this.archerDeath = true;
+      }
+
+      // gameover
+      if(this.archerDeath == true && this.archerDeathConfigs == false){
+        this.time.addEvent(this.deathAnim);
+        this.archerDeathConfigs = true;
+      }
 
     if(this.cursors.shift.isDown){
       this.store();
@@ -439,6 +500,8 @@ export default class Castle extends Phaser.Scene {
         this.demon.update(this.demon.x-this.archer.x);
       }
       if(this.boss == false && this.bossConfigs == false){
+        this.castle_song_level.stop();
+        this.castle_song_boss.play();
         //evento de disparo do boss
         this.time.addEvent(this.eventFirstShoot);
         this.time.addEvent(this.eventSecondShoot);
@@ -492,11 +555,6 @@ export default class Castle extends Phaser.Scene {
       this.eyes.children.iterate(function (eye) {
          eye.update(time,eye.x-this.archer.x);
         },this);
-    }
-  }
-  checkArcherHP(){
-    if(this.archer.archerHP <= 0){
-        this.scene.restart();
     }
   }
 
