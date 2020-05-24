@@ -1,11 +1,7 @@
 import Archer from "../../../models/characters/main/archer/Archer.js";
-import FireSkull from "../../../models/characters/enemies/FireSkull/FireSkull.js";
-import Mushroom from "../../../models/characters/enemies/Mushroom/Mushroom.js";
 import FireSkullGroup from "../../../models/characters/enemies/FireSkull/FireSkullGroup.js";
 import MushroomGroupGothic from "../../../models/characters/enemies/Mushroom/MushroomGroupGothic.js";
-import GhostBoss from "../../../models/characters/enemies/Nightmare/Nightmare.js";
 import Nightmare from "../../../models/characters/enemies/Nightmare/Nightmare.js";
-import Explosion from "../../../models/characters/enemies/Explosion/Explosion.js";
 import Store from "../../../models/Store.js";
 
 var archerLifes = 3;
@@ -18,10 +14,23 @@ export default class Gothic extends Phaser.Scene {
     }
 
     preload(){
-        
+        //loading
+        this.graphics = this.add.graphics();
+		this.newGraphics = this.add.graphics();
+		var progressBar = new Phaser.Geom.Rectangle(200, 200, 400, 50);
+		var progressBarFill = new Phaser.Geom.Rectangle(205, 205, 290, 40);
+
+		this.graphics.fillStyle(0xffffff, 1);
+		this.graphics.fillRectShape(progressBar);
+
+		this.newGraphics.fillStyle(0x3587e2, 1);
+		this.newGraphics.fillRectShape(progressBarFill);
+
+        var loadingText = this.add.text(250,260,"Loading: ", { fontSize: '32px', fill: '#FFF' });
+
         //tiles do mapa
         this.load.image("clouds","assets/maps/gothic-horror/tiles/clouds.png");
-        this.load.image("tiles","assets/maps/gothic-horror/tiles/tiles.png");
+        this.load.image("tiles_img","assets/maps/gothic-horror/tiles/tiles.png");
         this.load.image("town","assets/maps/gothic-horror/tiles/town.png");
         this.load.image("tree_bck","assets/maps/gothic-horror/tiles/tree_bck.png");
         this.load.image("water","assets/maps/gothic-horror/tiles/water.png");
@@ -133,16 +142,21 @@ export default class Gothic extends Phaser.Scene {
         // archer death
         this.archerDeath = false;
         this.archerDeathConfigs = false;
+
+        // loading
+        this.load.on('progress', this.updateBar, {newGraphics:this.newGraphics,loadingText:loadingText});
+        this.load.on('complete', this.complete, {scene:this.scene});
     }
 
     create(){
+        console.log(archerLifes);
 
         // carregamento do mapa
         this.map = this.make.tilemap({ key: "gothic" });
 
         //nome da tiles
         const clouds = this.map.addTilesetImage("clouds","clouds");
-        const tiles = this.map.addTilesetImage("tiles","tiles");
+        const tiles = this.map.addTilesetImage("tiles","tiles_img");
         const town = this.map.addTilesetImage("town","town");
         const tree_bck = this.map.addTilesetImage("tree_bck","tree_bck");
         const water = this.map.addTilesetImage("water","water");
@@ -237,6 +251,7 @@ export default class Gothic extends Phaser.Scene {
         this.physics.add.collider(this.archer,this.water,() => {
             this.archer.archerHP--;
             this.archer.takeDamage();
+            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
         });
 
         this.physics.add.collider(this.nightmare,this.ground);
@@ -366,11 +381,11 @@ export default class Gothic extends Phaser.Scene {
         callback: () => {
             archerLifes--;
             if(archerLifes == 0){
+                // se quiser voltar a jogar um novo jogo
+                archerLifes = 3;
                 this.sound.stopAll();
                 this.scene.stop();
-                this.scene.start('GameOver',{
-                    map: "Gothic"
-                });
+                this.scene.start('GameOver');
             } else {
                 this.sound.stopAll();
                 this.scene.restart();
@@ -504,5 +519,21 @@ export default class Gothic extends Phaser.Scene {
           this.image_coin2.setVisible(false);
           this.show_shop = true;
         }
-      }
+    }
+
+    updateBar(percentage) {
+        this.newGraphics.clear();
+        this.newGraphics.fillStyle(0x3587e2, 1);
+        this.newGraphics.fillRectShape(new Phaser.Geom.Rectangle(205, 205, percentage*390, 40));
+                
+        percentage = percentage * 100;
+        this.loadingText.setText("Loading: " + percentage.toFixed(2) + "%");
+        console.log("P:" + percentage);
+        
+    }
+
+    complete() {
+        console.log("COMPLETE!");
+    }
+
 }

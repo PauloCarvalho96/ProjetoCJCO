@@ -1,8 +1,6 @@
 import Archer from "../../../models/characters/main/archer/Archer.js";
-import Goblin from "../../../models/characters/enemies/Goblin/Goblin.js";
 import GoblinGroup from "../../../models/characters/enemies/Goblin/GoblinGroup.js";
 import Wizard from "../../../models/characters/enemies/Wizard/Wizard.js";
-import Mushroom from "../../../models/characters/enemies/Mushroom/Mushroom.js";
 import MushroomGroup from "../../../models/characters/enemies/Mushroom/MushroomGroup.js";
 import Store from "../../../models/Store.js";
 
@@ -30,6 +28,19 @@ export default class Forest extends Phaser.Scene{
     }
 
     preload(){
+        //loading
+        this.graphics = this.add.graphics();
+		this.newGraphics = this.add.graphics();
+		var progressBar = new Phaser.Geom.Rectangle(200, 200, 400, 50);
+		var progressBarFill = new Phaser.Geom.Rectangle(205, 205, 290, 40);
+
+		this.graphics.fillStyle(0xffffff, 1);
+		this.graphics.fillRectShape(progressBar);
+
+		this.newGraphics.fillStyle(0x3587e2, 1);
+		this.newGraphics.fillRectShape(progressBarFill);
+
+        var loadingText = this.add.text(250,260,"Loading: ", { fontSize: '32px', fill: '#FFF' });
  
         // tiles para mapa
         this.load.image("main_background","assets/maps/forest/tiles/main_background.png");
@@ -164,6 +175,9 @@ export default class Forest extends Phaser.Scene{
         this.archerDeath = false;
         this.archerDeathConfigs = false;
 
+        // loading
+        this.load.on('progress', this.updateBar, {newGraphics:this.newGraphics,loadingText:loadingText});
+        this.load.on('complete', this.complete, {scene:this.scene});
     }
 
     create(){
@@ -507,9 +521,7 @@ export default class Forest extends Phaser.Scene{
                 alreadyPass = false;
                 this.sound.stopAll();
                 this.scene.stop();
-                this.scene.start('GameOver',{
-                    map: "Forest",
-                });
+                this.scene.start('GameOver');
             } else {
                 this.sound.stopAll();
                 this.scene.restart();
@@ -646,5 +658,20 @@ export default class Forest extends Phaser.Scene{
           this.image_coin2.setVisible(false);
           this.show_shop = true;
         }
-      }
+    }
+
+    updateBar(percentage) {
+        this.newGraphics.clear();
+        this.newGraphics.fillStyle(0x3587e2, 1);
+        this.newGraphics.fillRectShape(new Phaser.Geom.Rectangle(205, 205, percentage*390, 40));
+                
+        percentage = percentage * 100;
+        this.loadingText.setText("Loading: " + percentage.toFixed(2) + "%");
+        console.log("P:" + percentage);
+        
+    }
+
+    complete() {
+        console.log("COMPLETE!");
+    }
 }
