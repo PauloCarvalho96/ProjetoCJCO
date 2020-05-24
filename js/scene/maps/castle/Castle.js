@@ -502,12 +502,13 @@ export default class Castle extends Phaser.Scene {
         callback: () => {
             archerLifes--;
             if(archerLifes == 0){
-                this.sound.stopAll();
-                this.scene.stop();
-                this.scene.start('GameOver');
+              alreadyPass = false;
+              this.sound.stopAll();
+              this.scene.stop();
+              this.scene.start('GameOver');
             } else {
-                this.sound.stopAll();
-                this.scene.restart();
+              this.sound.stopAll();
+              this.scene.restart();
             } 
         }
     };

@@ -486,6 +486,7 @@ export default class Forest extends Phaser.Scene{
         callback: () => {
             archerLifes--;
             if(archerLifes == 0){
+                alreadyPass = false;
                 this.sound.stopAll();
                 this.scene.stop();
                 this.scene.start('GameOver');

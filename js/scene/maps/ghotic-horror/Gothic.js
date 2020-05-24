@@ -358,6 +358,8 @@ export default class Gothic extends Phaser.Scene {
         callback: () => {
             archerLifes--;
             if(archerLifes == 0){
+                // se quiser voltar a jogar um novo jogo
+                archerLifes = 3;
                 this.sound.stopAll();
                 this.scene.stop();
                 this.scene.start('GameOver');
