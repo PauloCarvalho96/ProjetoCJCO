@@ -319,6 +319,7 @@ export default class Forest extends Phaser.Scene{
         this.press2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
         this.press3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
         this.pressQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+        this.pressP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
 
         // collider
         this.physics.add.collider(this.archer,this.ground);
@@ -567,6 +568,11 @@ export default class Forest extends Phaser.Scene{
             this.time.addEvent(this.deathAnim);
             this.archerDeathConfigs = true;
         }
+
+        // pause game
+        if(Phaser.Input.Keyboard.JustDown(this.pressP)){
+            this.pauseGame();
+        }
         
         if(Phaser.Input.Keyboard.JustDown(this.pressQ)){
             this.store();
@@ -703,4 +709,13 @@ export default class Forest extends Phaser.Scene{
     complete() {
         console.log("COMPLETE!");
     }
+
+    // pause game
+    pauseGame(){
+        this.scene.launch('Paused',{
+            map: 'Forest',
+        });
+        this.scene.pause();
+    }
+
 }

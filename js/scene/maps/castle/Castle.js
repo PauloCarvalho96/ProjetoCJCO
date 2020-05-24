@@ -310,6 +310,7 @@ export default class Castle extends Phaser.Scene {
       this.press2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
       this.press3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
       this.pressQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+      this.pressP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
       this.potion_hp.setVisible(false);
       this.potion_velocity.setVisible(false);
       this.potion_damage.setVisible(false);
@@ -572,9 +573,14 @@ export default class Castle extends Phaser.Scene {
         this.archerDeathConfigs = true;
       }
 
-    if(Phaser.Input.Keyboard.JustDown(this.pressQ)){
-      this.store();
-    }
+      // pause game
+      if(Phaser.Input.Keyboard.JustDown(this.pressP)){
+        this.pauseGame();
+      }
+
+      if(Phaser.Input.Keyboard.JustDown(this.pressQ)){
+        this.store();
+      }
     
     if(coins >= this.potion_hp.coins){
       this.potion_hp.hp_label1.setColor("#00ff00"); 
@@ -719,6 +725,14 @@ export default class Castle extends Phaser.Scene {
 
   complete() {
       console.log("COMPLETE!");
+  }
+
+  // pause game
+  pauseGame(){
+    this.scene.launch('Paused',{
+        map: 'Forest',
+    });
+    this.scene.pause();
   }
 
 }

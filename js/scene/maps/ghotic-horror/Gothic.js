@@ -215,7 +215,6 @@ export default class Gothic extends Phaser.Scene {
             volume:0.5,
         });
 
-
         this.nightmare = new Nightmare(this,5500,400);
 
         // grupos de inimigos
@@ -233,6 +232,7 @@ export default class Gothic extends Phaser.Scene {
         this.press2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
         this.press3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
         this.pressQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+        this.pressP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
 
         /** Health bar */
         var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
@@ -285,6 +285,8 @@ export default class Gothic extends Phaser.Scene {
         });
 
         this.physics.add.collider(this.nightmare.nightmarebullets, this.archer, (archer,bullet) => {
+            this.archer.archerHP--;
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
             this.archer.takeDamage();
             bullet.explosion();
             this.explosion.play();
@@ -308,6 +310,18 @@ export default class Gothic extends Phaser.Scene {
             this.archer.takeDamage();
         }); 
 
+        this.physics.add.overlap(this.archer, this.nightmare.nightmaremonsters, () => {
+            this.archer.archerHP--;
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.archer.takeDamage();
+        }); 
+
+        this.physics.add.overlap(this.archer, this.nightmare, () => {
+            this.archer.archerHP--;
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.archer.takeDamage();
+        }); 
+
         /** Propriedades balas mushroom -> archer */
         this.mushroomGroup.children.iterate(function (mushroom) {
             this.physics.add.collider(this.archer,mushroom.mushroomBullets, (archer,bullet) => {
@@ -324,7 +338,7 @@ export default class Gothic extends Phaser.Scene {
         /** Propriedades arrow */
         this.physics.add.overlap(this.archer.archerBullets, this.mushroomGroup, (bullet,mushroom) => {
             mushroom.mushHP = mushroom.mushHP - this.archer.archerDamage;
-            if(mushroom.mushHP <= 0){ /////////////////////////////////////////////////////////////////////////////////////////////
+            if(mushroom.mushHP <= 0){ 
                 coins += 3;
                 this.mushroomGroup.killAndHide(mushroom);
                 mushroom.removeFromScreen();
@@ -424,6 +438,12 @@ export default class Gothic extends Phaser.Scene {
             this.archerDeathConfigs = true;
         }
 
+        // pause game
+        if(Phaser.Input.Keyboard.JustDown(this.pressP)){
+            this.pauseGame();
+        }
+
+        // entrar na loja
         if(Phaser.Input.Keyboard.JustDown(this.pressQ)){
             this.store();
         }
@@ -535,6 +555,14 @@ export default class Gothic extends Phaser.Scene {
         }
     }
 
+    // pause game
+    pauseGame(){
+        this.scene.launch('Paused',{
+            map: 'Gothic-Horror',
+        });
+        this.scene.pause();
+    }
+
     updateBar(percentage) {
         this.newGraphics.clear();
         this.newGraphics.fillStyle(0x3587e2, 1);
@@ -543,7 +571,6 @@ export default class Gothic extends Phaser.Scene {
         percentage = percentage * 100;
         this.loadingText.setText("Loading: " + percentage.toFixed(2) + "%");
         console.log("P:" + percentage);
-        
     }
 
     complete() {

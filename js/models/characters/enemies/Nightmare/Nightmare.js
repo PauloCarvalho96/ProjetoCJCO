@@ -12,7 +12,7 @@ export default class Nightmare extends Phaser.Physics.Arcade.Sprite {
         this.setSize(95, 70);
         this.setOffset(15,25);
         
-        this.nightmareHP = 100;
+        this.nightmareHP = 2500;
         this.nightmareDamage = 20;
         this.velocity = 100;
 
