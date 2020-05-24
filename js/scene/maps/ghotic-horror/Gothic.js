@@ -338,8 +338,11 @@ export default class Gothic extends Phaser.Scene {
             if(archerLifes == 0){
                 this.sound.stopAll();
                 this.scene.stop();
-                this.scene.start('GameOver');
+                this.scene.start('GameOver',{
+                    map: "Gothic",
+                });
             } else {
+                this.sound.stopAll();
                 this.scene.restart();
             } 
         }

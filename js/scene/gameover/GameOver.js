@@ -5,6 +5,10 @@ export default class GameOver extends Phaser.Scene {
       super("GameOver");
     }
 
+    init(data){
+      this.map = data.map;
+    }
+
     preload(){
       this.load.spritesheet("gameover_anim", "assets/gameover/gameover.png", {
         frameWidth: 640,
@@ -40,7 +44,7 @@ export default class GameOver extends Phaser.Scene {
       if (Phaser.Input.Keyboard.JustDown(this.Enter)) {
         this.sound.stopAll();
         this.scene.stop();
-        this.scene.start('Forest');
+        this.scene.start(this.map);
       }
     }
 

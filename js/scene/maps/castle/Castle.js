@@ -469,8 +469,11 @@ export default class Castle extends Phaser.Scene {
             if(archerLifes == 0){
                 this.sound.stopAll();
                 this.scene.stop();
-                this.scene.start('GameOver');
+                this.scene.start('GameOver',{
+                  map: "Castle",
+                });
             } else {
+                this.sound.stopAll();
                 this.scene.restart();
             } 
         }

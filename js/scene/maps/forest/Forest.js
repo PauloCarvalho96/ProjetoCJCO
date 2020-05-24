@@ -465,8 +465,11 @@ export default class Forest extends Phaser.Scene{
             if(archerLifes == 0){
                 this.sound.stopAll();
                 this.scene.stop();
-                this.scene.start('GameOver');
+                this.scene.start('GameOver',{
+                    map: "Forest",
+                });
             } else {
+                this.sound.stopAll();
                 this.scene.restart();
             }  
         }
