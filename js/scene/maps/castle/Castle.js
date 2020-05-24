@@ -3,6 +3,7 @@ import EyeGroup from "../../../models/characters/enemies/Eye/EyeGroup.js";
 import Archer from "../../../models/characters/main/archer/Archer.js";
 import Demon from "../../../models/characters/enemies/Demon/Demon.js";
 import Skeleton from "../../../models/characters/enemies/Skeleton/skeleton.js";
+import Store from "../../../models/Store.js";
 
 let count = 0;
 var archerLifes;
@@ -32,7 +33,7 @@ export default class Castle extends Phaser.Scene {
     this.load.image("decorative", "assets/maps/castle/tiles/other_and_decorative.png");
     this.load.image("tocha", "assets/maps/castle/tiles/torch-C-03.png");
     this.load.image("lava", "assets/maps/castle/tiles/lava.png");
-    this.load.image("potion_hp","assets/potions/potions_gradient.png");
+    this.load.image("coin","assets/faceon_gold_coin.png");
 
     this.load.tilemapTiledJSON("map", "assets/maps/castle/map2_v3.json");
 
@@ -136,7 +137,13 @@ export default class Castle extends Phaser.Scene {
     this.load.spritesheet("explosion", "assets/characters/enemies/Explosion/explosion.png", {
       frameHeight: 64,
       frameWidth: 64,
-  });
+    });
+  
+    // Poções
+    this.load.spritesheet("potions","assets/potions/potions_gradient.png", {
+      frameWidth: 16,
+      frameHeight: 24,
+    });
 
     // sounds
     this.load.audio('explosion_sound','assets/characters/enemies/Explosion/explosion.mp3');
@@ -194,6 +201,27 @@ export default class Castle extends Phaser.Scene {
 
       this.archer = new Archer(this, 100, 300);
 
+	  this.potion_hp = new Store(this,this.archer.x + 525,this.map.heightInPixels-100,"potions",0).setScrollFactor(0); ////////////////////////////////////////////////////////////////////////////////////////
+      this.potion_velocity = new Store(this,this.archer.x + 530,this.map.heightInPixels-65,"potions",2).setScrollFactor(0);
+      this.potion_damage = new Store(this,this.archer.x + 525,this.map.heightInPixels-50,"potions",4).setScrollFactor(0);
+      this.image_coin=this.add.image(this.archer.x + 585,this.map.heightInPixels-100,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); // coin
+      this.image_coin1=this.add.image(this.archer.x + 585,this.map.heightInPixels-70,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); // coin
+      this.image_coin2=this.add.image(this.archer.x + 585,this.map.heightInPixels-40,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); // coin
+
+	  ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //health bars
+      this.show_shop = true;
+      var backgroundBar = this.add.image(this.archer.x-105, 10, 'red-bar');
+      backgroundBar.setScrollFactor(0);
+      backgroundBar.setOrigin(0,0);
+      var healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
+      healthBar.setOrigin(0,0);
+      healthBar.setScrollFactor(0);
+      // add text label to left of bar
+      var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
+      healthBar.setInteractive();
+      healthLabel.setScrollFactor(0);
+
       /** Sounds */
       this.explosion = this.sound.add('explosion_sound',{
         volume:0.1,
@@ -222,19 +250,6 @@ export default class Castle extends Phaser.Scene {
           loop:true,
           volume:0.5,
       });
-
-      //health bars
-      var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
-      backgroundBar.setScrollFactor(0);
-      backgroundBar.setOrigin(0,0);
-      var healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
-      healthBar.setOrigin(0,0);
-      healthBar.setScrollFactor(0);
-      // add text label to left of bar
-      var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
-      healthLabel.setScrollFactor(0);
-
-
        /** 
          * create a new EnemiesGroup 
         */
@@ -252,6 +267,16 @@ export default class Castle extends Phaser.Scene {
       camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
       this.cursors = this.input.keyboard.createCursorKeys();
+	  ////////////////////////////////////////////////////////////////////
+      this.press1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE);
+      this.press2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
+      this.press3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
+      this.pressQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+      this.potion_hp.setVisible(false);
+      this.potion_velocity.setVisible(false);
+      this.potion_damage.setVisible(false);
+///////////////////////////////////////////////////////////////////////////////////////////////
+		
 
       //set tiles from front tilemap that have collides property true as collidable
       front.setCollisionByProperty({ "colides": true }, true); // escrevi mal eu sei mas agora fica assim !!!
@@ -501,9 +526,30 @@ export default class Castle extends Phaser.Scene {
         this.archerDeathConfigs = true;
       }
 
-      if(this.cursors.shift.isDown){
-        this.store();
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+    if(Phaser.Input.Keyboard.JustDown(this.pressQ)){
+      this.store();
+    }
+    console.log(this.show_shop);
+    if(this.show_shop == false){
+      if(Phaser.Input.Keyboard.JustDown(this.press1)){
+        console.log(this.archer.archerHP);
+        console.log("hp aumentada");
+        this.archer.archerHP = this.archer.archerHP + this.potion_hp.coins[0];
+        console.log(this.archer.archerHP);
+      }else if(Phaser.Input.Keyboard.JustDown(this.press2)){
+        console.log(this.archer.velocity);
+        console.log("velocidade aumentada");
+        this.archer.velocity = this.archer.velocity + this.potion_velocity.coins[1];
+        console.log(this.archer.velocity);
+      }else if(Phaser.Input.Keyboard.JustDown(this.press3)){
+        console.log(this.archer.archerDamage);
+        console.log("ataque aumentado");
+        this.archer.archerDamage = this.archer.archerDamage + this.potion_damage.coins[2] ;
+        console.log(this.archer.archerDamage);
       }
+    }
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Mapa do Boss
     if(this.archer.x >= 4000){
@@ -573,8 +619,27 @@ export default class Castle extends Phaser.Scene {
     }
   }
 
-  store(){
-    this.add.image(this.archer.x, this.archer.y, 'potion_hp');   
+    //////////////////////////////////////////////////////////////
+  store(){ // loja
+    if(this.show_shop == true){
+      this.potion_hp.potions_text(this.show_shop);
+      this.potion_hp.setVisible(true);
+      this.potion_velocity.setVisible(true);
+      this.potion_damage.setVisible(true);
+      this.image_coin.setVisible(true);
+      this.image_coin1.setVisible(true);
+      this.image_coin2.setVisible(true);
+      this.show_shop = false;
+    }else{
+      this.potion_hp.potions_text(this.show_shop);
+      this.potion_hp.setVisible(false);
+      this.potion_velocity.setVisible(false);
+      this.potion_damage.setVisible(false);
+      this.image_coin.setVisible(false);
+      this.image_coin1.setVisible(false);
+      this.image_coin2.setVisible(false);
+      this.show_shop = true;
+    }
   }
 
 }

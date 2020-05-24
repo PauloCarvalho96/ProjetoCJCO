@@ -12,6 +12,8 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         this.setSize(30, 40);
         this.setOffset(48,35);
 
+        this.totalLifes = 3;
+
         // hp archer
         this.archerHP = 100;
         this.archerMaxHP = 100;
