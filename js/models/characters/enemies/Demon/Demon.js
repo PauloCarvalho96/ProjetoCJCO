@@ -14,7 +14,7 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
         this.setOffset(40,30);
         this.flipX = true;
 
-        this.demonHP = 500;
+        this.demonHP = 3500;
         this.demonDamage = 5;
 
         this.bulletsMaxsize = 2;

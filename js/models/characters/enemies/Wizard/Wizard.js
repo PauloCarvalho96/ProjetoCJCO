@@ -13,7 +13,7 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
         this.setOffset(90,50);
 
         this.flipX = true;
-        this.wizardHP = 500;
+        this.wizardHP = 3000;
         this.wizardDamage= 10;
 
         this.bulletsMaxsize = 10;

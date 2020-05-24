@@ -210,7 +210,6 @@ export default class Gothic extends Phaser.Scene {
             volume:0.5,
         });
 
-
         this.nightmare = new Nightmare(this,5500,400);
 
         // grupos de inimigos
@@ -228,6 +227,7 @@ export default class Gothic extends Phaser.Scene {
         this.press2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
         this.press3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
         this.pressQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+        this.pressP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
 
         /** Health bar */
         var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
@@ -319,7 +319,7 @@ export default class Gothic extends Phaser.Scene {
         /** Propriedades arrow */
         this.physics.add.overlap(this.archer.archerBullets, this.mushroomGroup, (bullet,mushroom) => {
             mushroom.mushHP = mushroom.mushHP - this.archer.archerDamage;
-            if(mushroom.mushHP <= 0){ /////////////////////////////////////////////////////////////////////////////////////////////
+            if(mushroom.mushHP <= 0){ 
                 coins += 2;
                 this.mushroomGroup.killAndHide(mushroom);
                 mushroom.removeFromScreen();
@@ -413,6 +413,12 @@ export default class Gothic extends Phaser.Scene {
             this.archerDeathConfigs = true;
         }
 
+        // pause game
+        if(Phaser.Input.Keyboard.JustDown(this.pressP)){
+            this.pauseGame();
+        }
+
+        // entrar na loja
         if(Phaser.Input.Keyboard.JustDown(this.pressQ)){
             this.store();
         }
@@ -519,6 +525,14 @@ export default class Gothic extends Phaser.Scene {
           this.image_coin2.setVisible(false);
           this.show_shop = true;
         }
+    }
+
+    // pause game
+    pauseGame(){
+        this.scene.launch('Paused',{
+            map: 'Gothic-Horror',
+        });
+        this.scene.pause();
     }
 
     updateBar(percentage) {
