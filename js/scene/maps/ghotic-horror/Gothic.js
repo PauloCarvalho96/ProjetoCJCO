@@ -216,9 +216,9 @@ export default class Gothic extends Phaser.Scene {
         var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
         backgroundBar.setScrollFactor(0);
         backgroundBar.setOrigin(0,0);
-        var healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
-        healthBar.setOrigin(0,0);
-        healthBar.setScrollFactor(0);
+        this.healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
+        this.healthBar.setOrigin(0,0);
+        this.healthBar.setScrollFactor(0);
         // add text label to left of bar
         var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
         healthLabel.setScrollFactor(0);
@@ -275,13 +275,13 @@ export default class Gothic extends Phaser.Scene {
         /** Propriedades (overlap) Monstros -> Archer */
         this.physics.add.overlap(this.archer, this.fireskullGroup, () => {
             this.archer.archerHP--;
-            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
             this.archer.takeDamage();
         }); 
 
         this.physics.add.overlap(this.archer, this.mushroomGroup, () => {
             this.archer.archerHP--;
-            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
             this.archer.takeDamage();
         }); 
 
@@ -289,7 +289,7 @@ export default class Gothic extends Phaser.Scene {
         this.mushroomGroup.children.iterate(function (mushroom) {
             this.physics.add.collider(this.archer,mushroom.mushroomBullets, (archer,bullet) => {
                 this.archer.archerHP= this.archer.archerHP - mushroom.mushDamage;
-                healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+                this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
                 this.archer.takeDamage();
                 bullet.explosion();
                 this.explosion.play(); 
@@ -344,8 +344,8 @@ export default class Gothic extends Phaser.Scene {
                 bullet.removeFromScreen();
                 this.sound.stopAll();
                 this.scene.stop();
-                this.scene.start('Forest',{
-                    acherLifes: archerLifes,
+                this.scene.start('Forest',{ 
+                    acherLifes: archerLifes, velocity: this.archer.velocity, damage: this.archer.archerDamage
                 });
             }
             this.nightmare.takeDamage();
@@ -363,7 +363,7 @@ export default class Gothic extends Phaser.Scene {
                 this.sound.stopAll();
                 this.scene.stop();
                 this.scene.start('GameOver',{
-                    map: "Gothic",
+                    map: "Gothic"
                 });
             } else {
                 this.sound.stopAll();
@@ -377,7 +377,7 @@ export default class Gothic extends Phaser.Scene {
 
     update(time,delta){
 
-        console.log(this.archer.x);
+        //console.log(this.archer.x);
 
         // verifica HP do archer
         if(this.archer.archerHP > 0){
@@ -400,17 +400,18 @@ export default class Gothic extends Phaser.Scene {
             if(Phaser.Input.Keyboard.JustDown(this.press1)){
               console.log(this.archer.archerHP);
               console.log("hp aumentada");
-              this.archer.archerHP = this.archer.archerHP + this.potion_hp.coins[0];
+              this.archer.archerHP = this.archer.archerHP + this.potion_hp.coins;
+              this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
               console.log(this.archer.archerHP);
             }else if(Phaser.Input.Keyboard.JustDown(this.press2)){
               console.log(this.archer.velocity);
               console.log("velocidade aumentada");
-              this.archer.velocity = this.archer.velocity + this.potion_velocity.coins[1];
+              this.archer.velocity = this.archer.velocity + this.potion_velocity.coins;
               console.log(this.archer.velocity);
             }else if(Phaser.Input.Keyboard.JustDown(this.press3)){
               console.log(this.archer.archerDamage);
               console.log("ataque aumentado");
-              this.archer.archerDamage = this.archer.archerDamage + this.potion_damage.coins[2] ;
+              this.archer.archerDamage = this.archer.archerDamage + this.potion_damage.coins;
               console.log(this.archer.archerDamage);
             }
         }

@@ -7,7 +7,8 @@ import MushroomGroup from "../../../models/characters/enemies/Mushroom/MushroomG
 import Store from "../../../models/Store.js";
 
 var archerLifes;
-
+var velocity;
+var damage;
 export default class Forest extends Phaser.Scene{
     
     constructor(){
@@ -16,6 +17,8 @@ export default class Forest extends Phaser.Scene{
 
     init(data){
         archerLifes = data.archerLifes;
+        velocity = data.velocity;
+        damage = data.damage;
     }
 
     preload(){
@@ -156,7 +159,7 @@ export default class Forest extends Phaser.Scene{
     }
 
     create(){
-        console.log("Starting game");
+        //console.log("Starting game");
  
         // mapa (forest)
         this.map = this.make.tilemap({ key: "forest" });
@@ -197,6 +200,9 @@ export default class Forest extends Phaser.Scene{
         
         // personagens
         this.archer = new Archer(this, 100, 400);
+        this.archer.velocity = velocity;
+        this.archer.archerDamage = damage;
+        console.log(this.archer.archerHP + " " +this.archer.velocity + " " + this.archer.archerDamage);
         this.potion_hp = new Store(this,this.archer.x + 525,this.map.heightInPixels-100,"potions",0).setScrollFactor(0).setVisible(false);
         this.potion_velocity = new Store(this,this.archer.x + 530,this.map.heightInPixels-65,"potions",2).setScrollFactor(0).setVisible(false);
         this.potion_damage = new Store(this,this.archer.x + 525,this.map.heightInPixels-50,"potions",4).setScrollFactor(0).setVisible(false);
@@ -265,9 +271,9 @@ export default class Forest extends Phaser.Scene{
         var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
         backgroundBar.setScrollFactor(0);
         backgroundBar.setOrigin(0,0);
-        var healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
-        healthBar.setOrigin(0,0);
-        healthBar.setScrollFactor(0);
+        this.healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
+        this.healthBar.setOrigin(0,0);
+        this.healthBar.setScrollFactor(0);
         // add text label to left of bar
         var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
         healthLabel.setScrollFactor(0);
@@ -286,7 +292,7 @@ export default class Forest extends Phaser.Scene{
         this.physics.add.collider(this.archer,this.spikes,() => {
             // se cair nos spikes morre
             this.archer.archerHP--; 
-            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
             this.archer.takeDamage();
         });
 
@@ -305,20 +311,20 @@ export default class Forest extends Phaser.Scene{
         // caso a personagem toque num enemy
         this.physics.add.overlap(this.archer, this.goblinGroup, () => {
             this.archer.archerHP--;
-            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
             this.archer.takeDamage();
         }); 
 
         this.physics.add.overlap(this.archer, this.mushGroup, () => {
             this.archer.archerHP--;
-            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
             this.archer.takeDamage();
         });
 
         // caso a personagem toque no boss
         this.physics.add.overlap(this.archer, this.wizard, () => {
             this.archer.archerHP--;
-            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
             this.archer.takeDamage();
         });
 
@@ -358,7 +364,7 @@ export default class Forest extends Phaser.Scene{
                 bullet.explosion();
                 this.explosion.play(); 
                 this.archer.archerHP= this.archer.archerHP - mushroom.mushDamage;
-                healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+                this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
                 this.archer.takeDamage();
                 bullet.removeFromScreen();
             }); 
@@ -434,7 +440,7 @@ export default class Forest extends Phaser.Scene{
                 this.sound.stopAll();
                 this.scene.stop();
                 this.scene.start('Castle',{
-                    acherLifes: archerLifes,
+                    acherLifes: archerLifes, velocity: this.archer.velocity, damage: this.archer.archerDamage
                 });
             }
             this.archer.archerBullets.killAndHide(bullet);
@@ -445,7 +451,7 @@ export default class Forest extends Phaser.Scene{
         // wizard (BOSS) monstros/propriedades
         this.physics.add.overlap(this.archer, this.wizard.wizardMonsters, (monster) => {
             this.archer.archerHP--;
-            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);       
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);       
             this.archer.takeDamage();
         });
         this.physics.add.collider(this.wizard.wizardMonsters,this.rocks);
@@ -458,7 +464,7 @@ export default class Forest extends Phaser.Scene{
             this.wizard.wizardBullets.killAndHide(bullet);
             bullet.removeFromScreen();
             this.archer.archerHP--;
-            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
             this.archer.takeDamage();
         });
 
@@ -499,9 +505,7 @@ export default class Forest extends Phaser.Scene{
     }
 
     update(time,delta){
-
-        console.log(this.archer.archerHP);
-        
+  
         // verifica HP do archer
         if(this.archer.archerHP > 0){
             this.archer.update(this.cursors,time);
@@ -523,17 +527,18 @@ export default class Forest extends Phaser.Scene{
             if(Phaser.Input.Keyboard.JustDown(this.press1)){
               console.log(this.archer.archerHP);
               console.log("hp aumentada");
-              this.archer.archerHP = this.archer.archerHP + this.potion_hp.coins[0];
+              this.archer.archerHP = this.archer.archerHP + this.potion_hp.coins;
+              this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
               console.log(this.archer.archerHP);
             }else if(Phaser.Input.Keyboard.JustDown(this.press2)){
               console.log(this.archer.velocity);
               console.log("velocidade aumentada");
-              this.archer.velocity = this.archer.velocity + this.potion_velocity.coins[1];
+              this.archer.velocity = this.archer.velocity + this.potion_velocity.coins;
               console.log(this.archer.velocity);
             }else if(Phaser.Input.Keyboard.JustDown(this.press3)){
               console.log(this.archer.archerDamage);
               console.log("ataque aumentado");
-              this.archer.archerDamage = this.archer.archerDamage + this.potion_damage.coins[2] ;
+              this.archer.archerDamage = this.archer.archerDamage + this.potion_damage.coins;
               console.log(this.archer.archerDamage);
             }
         }
