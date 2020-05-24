@@ -12,6 +12,8 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         this.setSize(30, 40);
         this.setOffset(48,35);
 
+        this.totalLifes = 3;
+
         // hp archer
         this.archerHP = 100;
         this.archerMaxHP = 100;
@@ -32,24 +34,38 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
 
         // animations
         this.scene.anims.create({
-            key: 'archer_run', 
-            frames: this.scene.anims.generateFrameNumbers('archer_run', { start: 0, end: 7 }),
-            frameRate: 15,
-            repeat: -1,
-        });
-
-        this.scene.anims.create({
             key: 'archer', 
             frames: this.scene.anims.generateFrameNumbers('archer', { start: 0, end: 7 }),
             frameRate: 15,
-            repeat: -1,
+            repeat: 0,
+        });
+
+        this.scene.anims.create({
+            key: 'archer_run', 
+            frames: this.scene.anims.generateFrameNumbers('archer_run', { start: 0, end: 7 }),
+            frameRate: 30,
+            repeat: 0,
         });
 
         this.scene.anims.create({
             key: 'archer_shoot', 
             frames: this.scene.anims.generateFrameNumbers('archer_shoot', { start: 0, end: 8 }),
             frameRate: 15,
-            repeat: -1,
+            repeat: 0,
+        });
+
+        this.scene.anims.create({
+            key: 'archer_jump', 
+            frames: this.scene.anims.generateFrameNumbers('archer_jump', { start: 0, end: 11 }),
+            frameRate: 7,
+            repeat: 0,
+        });
+
+        this.scene.anims.create({
+            key: 'archer_death', 
+            frames: this.scene.anims.generateFrameNumbers('archer_death', { start: 0, end: 23 }),
+            frameRate: 10,
+            repeat: 0,
         });
 
         this.scene.anims.create({
@@ -59,18 +75,21 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             repeat: 0,
         });
 
+        this.play('archer',true);
+
     }
 
     update(cursors,time){
 
         this.setVelocityX(0);
-        
 
         // pos da seta
         this.checkbulletpos();
         
         if (cursors.up.isDown && this.body.blocked.down) {
             this.setVelocityY(this.velocityY);	  
+            this.play('archer_jump',true);
+            this.jumpSound.play();
         }
         else if (cursors.right.isDown) {
             this.setVelocityX(this.velocity);
@@ -85,10 +104,16 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
             if(this.timeToShoot < time){
                 this.shoot(time);
             }
-        } else {
-            this.play('archer',true);
         }
 
+        this.on("animationcomplete", ()=>{
+            this.play('archer',true);
+        }); 
+    }
+
+    isDeath(){
+        this.archerHP = 0;
+        this.play('archer_death',true);
     }
 
     // verifica pos da seta
@@ -110,6 +135,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         }
         let bullet = this.archerBullets.getFirstDead(true, this.x, this.y-10,"archer_arrow",this.direction);
         if(bullet){ 
+            this.fireSound.play();
             //velocidade da bala
             if(this.flipX){
                 bullet.setVelocityX(-bullet.baseVelocity);
@@ -123,6 +149,9 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
     }
 
     takeDamage(){
+
+        this.hitSound.play();
+        
         let i = 0;
         let repetition = 100
         let changeTint = true;

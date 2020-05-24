@@ -132,7 +132,7 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
     }
     
     removeFromScreen() {
-        this.y = 700;
+        this.y = 1000;
         this.setVelocity(0, 0);
     }
 

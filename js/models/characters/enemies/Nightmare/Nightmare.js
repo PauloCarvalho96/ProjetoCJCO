@@ -27,7 +27,7 @@ export default class Nightmare extends Phaser.Physics.Arcade.Sprite {
         this.bulletsOnShoot = 5;
 
         // grupo de monstros
-        this.monstersMaxsize = 3;
+        this.monstersMaxsize = 6;
         this.nightmaremonsters = this.scene.physics.add.group({
             classType: FireSkull,
             maxSize: this.monstersMaxsize,
@@ -124,8 +124,9 @@ export default class Nightmare extends Phaser.Physics.Arcade.Sprite {
                 let px = Math.floor(Math.random() * (5700 - 5100 + 1) + 5100);
                 let monster = this.nightmaremonsters.getFirstDead(true, px, 500);
                 if(monster){
-                    monster.setVelocity(monster.velocity,0);
+                    monster.setVelocity(-monster.velocity,0);
                     monster.setScale(0.5);
+                    monster.flipX = false;
                     monster.active = true;
                     monster.visible = true;
                     this.timeToSpawn = time + this.spawnRate;
