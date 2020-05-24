@@ -6,6 +6,7 @@ import Store from "../../../models/Store.js";
 
 let count = 0;
 var archerLifes;
+var alreadyPass = false;
 
 export default class Castle extends Phaser.Scene {
   
@@ -14,7 +15,10 @@ export default class Castle extends Phaser.Scene {
   }
 
   init(data){
-    archerLifes = data.archerLifes;
+    if(alreadyPass == false){
+      archerLifes = data.archerLifes;
+      alreadyPass = true;
+    }
   }
 
   preload() {
@@ -164,6 +168,8 @@ export default class Castle extends Phaser.Scene {
   }
 
   create() {
+    console.log(archerLifes);
+
       this.map = this.make.tilemap({ key: "map" }); // crio o mapa 
 
       // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
@@ -494,7 +500,7 @@ export default class Castle extends Phaser.Scene {
         delay: this.delayDeathRestart,
         repeat: 0,
         callback: () => {
-          archerLifes--;
+            archerLifes--;
             if(archerLifes == 0){
                 this.sound.stopAll();
                 this.scene.stop();

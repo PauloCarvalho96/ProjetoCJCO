@@ -5,6 +5,7 @@ import MushroomGroup from "../../../models/characters/enemies/Mushroom/MushroomG
 import Store from "../../../models/Store.js";
 
 var archerLifes;
+var alreadyPass = false;
 
 export default class Forest extends Phaser.Scene{
     
@@ -13,7 +14,10 @@ export default class Forest extends Phaser.Scene{
     }
 
     init(data){
-        archerLifes = data.archerLifes;
+        if(alreadyPass == false){
+            archerLifes = data.archerLifes;
+            alreadyPass = true;
+        }
     }
 
     preload(){
@@ -154,6 +158,8 @@ export default class Forest extends Phaser.Scene{
     }
 
     create(){
+        console.log(archerLifes);
+
         // mapa (forest)
         this.map = this.make.tilemap({ key: "forest" });
  
@@ -430,7 +436,7 @@ export default class Forest extends Phaser.Scene{
                 this.sound.stopAll();
                 this.scene.stop();
                 this.scene.start('Castle',{
-                    acherLifes: archerLifes,
+                    archerLifes: archerLifes,
                 });
             }
             this.archer.archerBullets.killAndHide(bullet);
@@ -494,8 +500,6 @@ export default class Forest extends Phaser.Scene{
 
     update(time,delta){
 
-        console.log(this.archer.archerHP);
-        
         // verifica HP do archer
         if(this.archer.archerHP > 0){
             this.archer.update(this.cursors,time);

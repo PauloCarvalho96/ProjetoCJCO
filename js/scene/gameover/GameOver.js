@@ -41,7 +41,7 @@ export default class GameOver extends Phaser.Scene {
       if (Phaser.Input.Keyboard.JustDown(this.Enter)) {
         this.sound.stopAll();
         this.scene.stop();
-        this.scene.start('Bootgame');
+        this.scene.start('BootGame');
       }
     }
 

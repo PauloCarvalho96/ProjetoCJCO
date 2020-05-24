@@ -130,6 +130,7 @@ export default class Gothic extends Phaser.Scene {
     }
 
     create(){
+        console.log(archerLifes);
 
         // carregamento do mapa
         this.map = this.make.tilemap({ key: "gothic" });
@@ -342,7 +343,7 @@ export default class Gothic extends Phaser.Scene {
                 this.sound.stopAll();
                 this.scene.stop();
                 this.scene.start('Forest',{
-                    acherLifes: archerLifes,
+                    archerLifes: archerLifes,
                 });
             }
             this.nightmare.takeDamage();
@@ -371,8 +372,6 @@ export default class Gothic extends Phaser.Scene {
 
 
     update(time,delta){
-
-        console.log(this.archer.x);
 
         // verifica HP do archer
         if(this.archer.archerHP > 0){
