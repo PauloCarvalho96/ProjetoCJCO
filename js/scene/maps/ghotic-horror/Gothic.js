@@ -251,7 +251,7 @@ export default class Gothic extends Phaser.Scene {
         this.physics.add.collider(this.archer,this.water,() => {
             this.archer.archerHP--;
             this.archer.takeDamage();
-            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
         });
 
         this.physics.add.collider(this.nightmare,this.ground);

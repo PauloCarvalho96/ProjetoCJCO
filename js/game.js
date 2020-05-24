@@ -6,12 +6,14 @@ import Ghotic from './scene/maps/ghotic-horror/Gothic.js'
 import GameOver from './scene/gameover/GameOver.js';
 import Winning from './scene/winning/Winning.js';
 import Intro from './scene/Intro/Intro.js';
+import Controls from './scene/Controls.js';
 
 class Game extends Phaser.Game{
     constructor(){
         super(config);
 
-        this.scene.add('BootGame', bootGame);    
+        this.scene.add('BootGame', bootGame);  
+        this.scene.add('Controls',Controls);  
         this.scene.add('Intro',Intro);
         this.scene.add('Gothic-Horror',Ghotic);
         this.scene.add('Forest',Forest);
