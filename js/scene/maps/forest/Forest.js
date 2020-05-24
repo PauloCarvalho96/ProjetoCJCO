@@ -525,8 +525,8 @@ export default class Forest extends Phaser.Scene{
         callback: () => {
             archerLifes--;
             if(archerLifes == 0){
-                alreadyPass = false;
                 archerLifes = 3;
+                alreadyPass = false;
                 coins = 0;
                 this.sound.stopAll();
                 this.scene.stop();

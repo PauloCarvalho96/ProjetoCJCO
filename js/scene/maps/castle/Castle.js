@@ -248,16 +248,16 @@ export default class Castle extends Phaser.Scene {
       this.archer_coins = this.add.image(this.archer.x + 670,20,"coin").setScale(0.06,0.06).setVisible(true).setScrollFactor(0);  
       this.coin_text = this.add.text(this.archer.x + 610, 10,"x" +coins, {fontSize:'20px', fill:'#ffffff'}).setScrollFactor(0); 
       
-      /** Health bar */
-      var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
-      backgroundBar.setScrollFactor(0);
-      backgroundBar.setOrigin(0,0);
-      this.healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
-      this.healthBar.setOrigin(0,0);
-      this.healthBar.setScrollFactor(0);
-      // add text label to left of bar
-      var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
-      healthLabel.setScrollFactor(0);
+     /** Health bar */
+     var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
+     backgroundBar.setScrollFactor(0);
+     backgroundBar.setOrigin(0,0);
+     this.healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
+     this.healthBar.setOrigin(0,0);
+     this.healthBar.setScrollFactor(0);
+     // add text label to left of bar
+     var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
+     healthLabel.setScrollFactor(0);
 
       /** Sounds */
       this.explosion = this.sound.add('explosion_sound',{
@@ -534,8 +534,8 @@ export default class Castle extends Phaser.Scene {
         callback: () => {
             archerLifes--;
             if(archerLifes == 0){
-              alreadyPass = false;
               archerLifes = 3;
+              alreadyPass = false;
               coins = 0;
               this.sound.stopAll();
               this.scene.stop();
