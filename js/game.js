@@ -3,6 +3,7 @@ import Forest from './scene/maps/forest/Forest.js';
 import Castle from './scene/maps/castle/Castle.js';
 import bootGame from './scene/BootGame.js';
 import Ghotic from './scene/maps/ghotic-horror/Gothic.js'
+import GameOver from './scene/gameover/GameOver.js';
 
 class Game extends Phaser.Game{
     constructor(){
@@ -14,7 +15,7 @@ class Game extends Phaser.Game{
         
         //Mapa Forest 
         //this.scene.add('Forest',Forest);
-        //this.scene.start('Forest');
+       // this.scene.start('Forest');
 
         //Mapa Castle
         this.scene.add('Castle',Castle);
@@ -22,7 +23,10 @@ class Game extends Phaser.Game{
 
         //Mapa Ghost-Horror
         //this.scene.add('Gothic-Horror',Ghotic);
-        //this.scene.start('Gothic-Horror');
+        this.scene.start('Gothic-Horror');
+
+        //GameOver
+        this.scene.add('GameOver',GameOver);
 
     }
 }

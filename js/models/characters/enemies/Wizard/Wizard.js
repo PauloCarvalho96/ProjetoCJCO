@@ -30,7 +30,7 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
             classType: Goblin,
             maxSize: this.monstersMaxsize,
         });
-        this.enemiesToSpawn = 3;
+        this.enemiesToSpawn = 6;
         this.spawnRate = 10000;
         this.timeToSpawn = 0;
 
