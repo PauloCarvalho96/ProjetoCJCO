@@ -150,6 +150,7 @@ export default class Gothic extends Phaser.Scene {
 
     create(){
         console.log(archerLifes);
+        this.show_shop = true;
 
         // carregamento do mapa
         this.map = this.make.tilemap({ key: "gothic" });
@@ -398,6 +399,7 @@ export default class Gothic extends Phaser.Scene {
 
     update(time,delta){
         
+        console.log("hp: " +this.archer.archerHP + " update: "+ upgrades[0]);
         this.coin_text.setText("x" + coins);
         // verifica HP do archer
         if(this.archer.archerHP > 0){
@@ -422,7 +424,7 @@ export default class Gothic extends Phaser.Scene {
         if(Phaser.Input.Keyboard.JustDown(this.pressQ)){
             this.store();
         }
-        //////////////////////////////////////////// ESTA UM BOCADO ROTO MAS É O QUE SE ARRANJOU NAO VOU ALTERAR AGORA O CODIGO NAO DÁ TEMPO 
+         
         if(coins >= this.potion_hp.coins){
             this.potion_hp.hp_label1.setColor("#00ff00"); 
         }else{
@@ -438,26 +440,29 @@ export default class Gothic extends Phaser.Scene {
         }else{
             this.potion_hp.power1.setColor("#ff0000"); 
         }
-        ///////////////////////////////////////////
         if(this.show_shop == false){
             if(Phaser.Input.Keyboard.JustDown(this.press1) && coins >= this.potion_hp.coins){
               this.archer.archerMaxHP += this.potion_hp.coins;
               this.archer.archerHP = this.archer.archerMaxHP;
-              
               this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
               coins -= this.potion_hp.coins;
-              upgrades[0] += 1;
+              this.potion_hp.coins  *= 2 ; // para o preco dos upgrades aumentar sempre que se compra 
+              upgrades[0] = this.potion_hp.coins;
+              this.potion_hp.price_hp.setText('x'+this.potion_hp.coins) // atualiza o preco
             }else if(Phaser.Input.Keyboard.JustDown(this.press2) && coins >= this.potion_velocity.coins){
-              this.archer.velocity = this.archer.velocity + this.potion_velocity.coins;
+              this.archer.velocity += this.potion_velocity.coins;
               coins -= this.potion_velocity.coins;
-              upgrades[1] += 1;
+              this.potion_velocity.coins *= 2; // para o preco dos upgrades aumentar sempre que se compra 
+              upgrades[1] = this.potion_velocity.coins;
+              this.potion_hp.price_hp1.setText('x'+this.potion_velocity.coins) // atualiza o preco
             }else if(Phaser.Input.Keyboard.JustDown(this.press3) && coins >= this.potion_damage.coins){
-              this.archer.archerDamage = this.archer.archerDamage + this.potion_damage.coins;
+              this.archer.archerDamage += this.potion_damage.coins;
               coins -= this.potion_damage.coins;
-              upgrades[2] += 1;
+              this.potion_damage.coins *= 2; // para o preco dos upgrades aumentar sempre que se compra
+              upgrades[2] = this.potion_damage.coins; 
+              this.potion_hp.price_hp2.setText('x'+this.potion_damage.coins) // atualiza o preco
             }
         }
-        console.log(this.archer.archerDamage);
         // itera as balas para as destruir dps de se afastarem do arqueiro
         this.archer.archerBullets.children.iterate(function (bullet) {
             if(bullet.x > this.archer.x + (this.game.config.width/2) || bullet.x < this.archer.x - (this.game.config.width/2)){
