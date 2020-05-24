@@ -201,7 +201,7 @@ export default class Castle extends Phaser.Scene {
 
       this.archer = new Archer(this, 100, 300);
 
-	  this.potion_hp = new Store(this,this.archer.x + 525,this.map.heightInPixels-100,"potions",0).setScrollFactor(0); ////////////////////////////////////////////////////////////////////////////////////////
+	    this.potion_hp = new Store(this,this.archer.x + 525,this.map.heightInPixels-100,"potions",0).setScrollFactor(0); ////////////////////////////////////////////////////////////////////////////////////////
       this.potion_velocity = new Store(this,this.archer.x + 530,this.map.heightInPixels-65,"potions",2).setScrollFactor(0);
       this.potion_damage = new Store(this,this.archer.x + 525,this.map.heightInPixels-50,"potions",4).setScrollFactor(0);
       this.image_coin=this.add.image(this.archer.x + 585,this.map.heightInPixels-100,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); // coin
@@ -209,9 +209,8 @@ export default class Castle extends Phaser.Scene {
       this.image_coin2=this.add.image(this.archer.x + 585,this.map.heightInPixels-40,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); // coin
 
 	  ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-      //health bars
-      this.show_shop = true;
-      var backgroundBar = this.add.image(this.archer.x-105, 10, 'red-bar');
+      /** Health bar */
+      var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
       backgroundBar.setScrollFactor(0);
       backgroundBar.setOrigin(0,0);
       var healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
@@ -219,7 +218,6 @@ export default class Castle extends Phaser.Scene {
       healthBar.setScrollFactor(0);
       // add text label to left of bar
       var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
-      healthBar.setInteractive();
       healthLabel.setScrollFactor(0);
 
       /** Sounds */

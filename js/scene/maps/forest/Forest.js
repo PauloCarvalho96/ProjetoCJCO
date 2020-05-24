@@ -553,9 +553,4 @@ export default class Forest extends Phaser.Scene{
         }
     }
 
-    createMap(){
-
-    }
-
-
 }
