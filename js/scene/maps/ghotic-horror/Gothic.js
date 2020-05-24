@@ -8,6 +8,7 @@ import Nightmare from "../../../models/characters/enemies/Nightmare/Nightmare.js
 import Explosion from "../../../models/characters/enemies/Explosion/Explosion.js";
 import Store from "../../../models/Store.js";
 
+var archerLifes = 3;
 export default class Gothic extends Phaser.Scene {
     
     constructor(){
@@ -338,9 +339,14 @@ export default class Gothic extends Phaser.Scene {
             this.nightmare.nightmareHP = this.nightmare.nightmareHP - this.archer.archerHP;
             console.log(this.nightmare.nightmareHP);
             if(this.nightmare.nightmareHP <= 0){
+                /** Próximo nível */
                 this.archer.archerBullets.killAndHide(bullet);
-            bullet.removeFromScreen();
-            this.scene.pause();
+                bullet.removeFromScreen();
+                this.sound.stopAll();
+                this.scene.stop();
+                this.scene.start('Forest',{
+                    acherLifes: archerLifes,
+                });
             }
             this.nightmare.takeDamage();
             this.archer.archerBullets.killAndHide(bullet);
@@ -352,9 +358,17 @@ export default class Gothic extends Phaser.Scene {
         delay: this.delayDeathRestart,
         repeat: 0,
         callback: () => {
-            this.sound.stopAll();
-            this.scene.stop();
-            this.scene.start('GameOver');
+            archerLifes--;
+            if(archerLifes == 0){
+                this.sound.stopAll();
+                this.scene.stop();
+                this.scene.start('GameOver',{
+                    map: "Gothic",
+                });
+            } else {
+                this.sound.stopAll();
+                this.scene.restart();
+            } 
         }
         };
 

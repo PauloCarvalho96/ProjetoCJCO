@@ -12,9 +12,9 @@ export default class Forest extends Phaser.Scene{
         super("Forest");
     }
 
-   /*  init(data){
-        this.char = data.char;
-    } */
+    init(data){
+        archerLifes = data.archerLifes;
+    }
 
     preload(){
  
@@ -428,8 +428,12 @@ export default class Forest extends Phaser.Scene{
                 this.archer.archerBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
                 this.wizard.removeFromScreen();
-                //this.wizard.destroy();
-                this.scene.pause();
+                /** Próximo nível */
+                this.sound.stopAll();
+                this.scene.stop();
+                this.scene.start('Castle',{
+                    acherLifes: archerLifes,
+                });
             }
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
@@ -476,9 +480,17 @@ export default class Forest extends Phaser.Scene{
         delay: this.delayDeathRestart,
         repeat: 0,
         callback: () => {
-            this.sound.stopAll();
-            this.scene.stop();
-            this.scene.start('GameOver');
+            archerLifes--;
+            if(archerLifes == 0){
+                this.sound.stopAll();
+                this.scene.stop();
+                this.scene.start('GameOver',{
+                    map: "Forest",
+                });
+            } else {
+                this.sound.stopAll();
+                this.scene.restart();
+            }  
         }
         };
 
@@ -599,5 +611,9 @@ export default class Forest extends Phaser.Scene{
           this.show_shop = true;
         }
       }
+    createMap(){
+
+    }
+
 
 }

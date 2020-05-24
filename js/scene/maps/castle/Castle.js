@@ -5,12 +5,17 @@ import Demon from "../../../models/characters/enemies/Demon/Demon.js";
 import Skeleton from "../../../models/characters/enemies/Skeleton/skeleton.js";
 import Store from "../../../models/Store.js";
 
-var count = 0;
+let count = 0;
+var archerLifes;
 
 export default class Castle extends Phaser.Scene {
   
   constructor() {
     super("Castle");
+  }
+
+  init(data){
+    archerLifes = data.archerLifes;
   }
 
   preload() {
@@ -389,7 +394,7 @@ export default class Castle extends Phaser.Scene {
         if(this.demon.demonHP <= 0){
           this.archer.archerBullets.killAndHide(bullet);
           bullet.removeFromScreen(); 
-          this.demon.killAndHide();
+          /** Venceu o jogo! */
           this.scene.pause();
         }
           this.archer.archerBullets.killAndHide(bullet);
@@ -488,9 +493,17 @@ export default class Castle extends Phaser.Scene {
         delay: this.delayDeathRestart,
         repeat: 0,
         callback: () => {
-          this.sound.stopAll();
-          this.scene.stop();
-          this.scene.start('GameOver');
+          archerLifes--;
+            if(archerLifes == 0){
+                this.sound.stopAll();
+                this.scene.stop();
+                this.scene.start('GameOver',{
+                  map: "Castle",
+                });
+            } else {
+                this.sound.stopAll();
+                this.scene.restart();
+            } 
         }
     };
 
