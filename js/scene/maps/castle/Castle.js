@@ -196,7 +196,7 @@ export default class Castle extends Phaser.Scene {
 
       this.archer = new Archer(this, 100, 300);
 
-	  this.potion_hp = new Store(this,this.archer.x + 525,this.map.heightInPixels-100,"potions",0).setScrollFactor(0); ////////////////////////////////////////////////////////////////////////////////////////
+	    this.potion_hp = new Store(this,this.archer.x + 525,this.map.heightInPixels-100,"potions",0).setScrollFactor(0); ////////////////////////////////////////////////////////////////////////////////////////
       this.potion_velocity = new Store(this,this.archer.x + 530,this.map.heightInPixels-65,"potions",2).setScrollFactor(0);
       this.potion_damage = new Store(this,this.archer.x + 525,this.map.heightInPixels-50,"potions",4).setScrollFactor(0);
       this.image_coin=this.add.image(this.archer.x + 585,this.map.heightInPixels-100,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); // coin
@@ -343,11 +343,10 @@ export default class Castle extends Phaser.Scene {
          });
 
          // adiciona collider da bala com personagem
-         this.physics.add.overlap(this.archer, this.demon.hitboxes, (bullet) => {
-          
-          this.archer.archerHP= this.archer.archerHP - this.demon.demonDamage;
-         healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
-       this.archer.takeDamage();
+         this.physics.add.overlap(this.archer, this.demon.hitboxes, (bullet) => { 
+            this.archer.archerHP= this.archer.archerHP - this.demon.demonDamage;
+            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.archer.takeDamage();
          });
 
         this.physics.add.overlap(this.archer, this.demon, (bullet) => {
@@ -628,7 +627,4 @@ export default class Castle extends Phaser.Scene {
       this.show_shop = true;
     }
   }
-
 }
-
-
