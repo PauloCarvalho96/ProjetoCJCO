@@ -65,7 +65,7 @@ export default class bootGame extends Phaser.Scene{
             playButton.on('pointerdown', function(){
                 this.sound.stopAll();
                 this.scene.stop();
-                this.scene.start('Gothic-Horror');
+                this.scene.start('Intro');
             },this);
         })
 
