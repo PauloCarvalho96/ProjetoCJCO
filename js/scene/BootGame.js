@@ -1,4 +1,3 @@
-import CharSelect from "./CharSelect.js";
 
 export default class bootGame extends Phaser.Scene{
     constructor(){
@@ -6,23 +5,24 @@ export default class bootGame extends Phaser.Scene{
     }
     preload() {
         /// carrega imagens para o menu
+        this.load.image("title", "./assets/menu/ArcherLetters.png");
+        this.load.image("play", "./assets/menu/play.png");
+        this.load.image("back", "./assets/menu/back.png");
+        this.load.image("loadgame", "./assets/menu/loadgame.png");
+        this.load.image("options", "./assets/menu/options.png");
 
-
-        this.load.image("play", "./assets/play.png");
-        this.load.image("back", "./assets/back.png");
-        this.load.image("loadgame", "./assets/loadgame.png");
-        this.load.image("options", "./assets/options.png");
-
+        this.load.audio('menu_song','assets/menu/menu_song.wav');
 
     }
 
-    create(){
-
-
-        
+    create(){   
+        this.sound.play('menu_song', {
+            volume:0.5,
+            loop: true
+          });
         ///setDepth -> valor 1 vai sempre estar acima do valor 0 , valor 2 vai sempre estar em cima do valor 1;
         //setOrigin -> defina o ponto de origem
-        this.add.image(this.game.renderer.width / 2 ,this.game.renderer.height * 0.20,"play").setDepth(1);
+        this.add.image(this.game.renderer.width / 2 ,this.game.renderer.height * 0.20,"title").setDepth(1);
         let playButton = this.add.image(this.game.renderer.width / 2 ,300,"play").setDepth(1).setScale(0.35,0.35);
         let optionsButton = this.add.image(this.game.renderer.width / 2 ,500 ,"options").setDepth(1).setScale(0.5,0.5);
         let loadgameButton = this.add.image(this.game.renderer.width / 2 ,400 ,"loadgame").setDepth(1).setScale(0.5,0.5);
@@ -48,6 +48,7 @@ export default class bootGame extends Phaser.Scene{
         optionsButton.on("pointerover",()=>{
             optionsButton.setTint(0xbfbfbf);
             optionsButton.on('pointerdown', function(){
+                this.sound.stopAll();
                 this.scene.start('options');
             },this);
         })
@@ -62,8 +63,8 @@ export default class bootGame extends Phaser.Scene{
         playButton.on("pointerover",()=>{
             playButton.setTint(0xbfbfbf);
             playButton.on('pointerdown', function(){
-                this.scene.add('charselect', CharSelect);
-                this.scene.start('charselect');
+                this.sound.stopAll();
+                this.scene.start('Gothic-Horror');
             },this);
         })
 

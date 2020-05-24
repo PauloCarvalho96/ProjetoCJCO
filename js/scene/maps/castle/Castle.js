@@ -4,13 +4,17 @@ import Archer from "../../../models/characters/main/archer/Archer.js";
 import Demon from "../../../models/characters/enemies/Demon/Demon.js";
 import Skeleton from "../../../models/characters/enemies/Skeleton/skeleton.js";
 
-var archerLifes = 3;
 let count = 0;
+var archerLifes;
 
 export default class Castle extends Phaser.Scene {
   
   constructor() {
     super("Castle");
+  }
+
+  init(data){
+    archerLifes = data.archerLifes;
   }
 
   preload() {
@@ -366,7 +370,7 @@ export default class Castle extends Phaser.Scene {
         if(this.demon.demonHP <= 0){
           this.archer.archerBullets.killAndHide(bullet);
           bullet.removeFromScreen(); 
-          this.demon.killAndHide();
+          /** Venceu o jogo! */
           this.scene.pause();
         }
           this.archer.archerBullets.killAndHide(bullet);

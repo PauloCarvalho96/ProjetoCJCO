@@ -320,9 +320,14 @@ export default class Gothic extends Phaser.Scene {
             this.nightmare.nightmareHP = this.nightmare.nightmareHP - this.archer.archerHP;
             console.log(this.nightmare.nightmareHP);
             if(this.nightmare.nightmareHP <= 0){
+                /** Próximo nível */
                 this.archer.archerBullets.killAndHide(bullet);
-            bullet.removeFromScreen();
-            this.scene.pause();
+                bullet.removeFromScreen();
+                this.sound.stopAll();
+                this.scene.stop();
+                this.scene.start('Forest',{
+                    acherLifes: archerLifes,
+                });
             }
             this.nightmare.takeDamage();
             this.archer.archerBullets.killAndHide(bullet);

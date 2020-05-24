@@ -11,19 +11,19 @@ class Game extends Phaser.Game{
 
         // Descomentar para abrir o mapa correspondente!
         this.scene.add('BootGame', bootGame);
-        //this.scene.start('BootGame');
+        this.scene.start('BootGame');
         
         //Mapa Forest 
         this.scene.add('Forest',Forest);
-        this.scene.start('Forest');
+        //this.scene.start('Forest');
 
         //Mapa Castle
         this.scene.add('Castle',Castle);
         //this.scene.start('Castle');
 
         //Mapa Ghost-Horror
-        //this.scene.add('Gothic-Horror',Ghotic);
-        this.scene.start('Gothic-Horror');
+        this.scene.add('Gothic-Horror',Ghotic);
+        //this.scene.start('Gothic-Horror');
 
         //GameOver
         this.scene.add('GameOver',GameOver);
