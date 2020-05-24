@@ -25,6 +25,7 @@ export default class GameOver extends Phaser.Scene {
       }); 
 
       this.sound.play('gameover_song', {
+        volume:0.5,
         loop: true
       });
  

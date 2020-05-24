@@ -394,7 +394,9 @@ export default class Castle extends Phaser.Scene {
           this.archer.archerBullets.killAndHide(bullet);
           bullet.removeFromScreen(); 
           /** Venceu o jogo! */
-          this.scene.pause();
+          this.sound.stopAll();
+          this.scene.stop();
+          this.scene.start('Winning');
         }
           this.archer.archerBullets.killAndHide(bullet);
           bullet.removeFromScreen();

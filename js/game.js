@@ -4,6 +4,7 @@ import Castle from './scene/maps/castle/Castle.js';
 import bootGame from './scene/BootGame.js';
 import Ghotic from './scene/maps/ghotic-horror/Gothic.js'
 import GameOver from './scene/gameover/GameOver.js';
+import Winning from './scene/winning/Winning.js';
 
 class Game extends Phaser.Game{
     constructor(){
@@ -14,7 +15,9 @@ class Game extends Phaser.Game{
         this.scene.add('Forest',Forest);
         this.scene.add('Castle',Castle);
         this.scene.add('GameOver',GameOver);
-        this.scene.start('BootGame');
+        this.scene.add('Winning',Winning);
+
+        this.scene.start('Winning');
 
     }
 }
