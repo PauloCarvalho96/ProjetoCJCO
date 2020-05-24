@@ -3,15 +3,13 @@ export default class Store extends Phaser.Physics.Arcade.Sprite {
         super(scene, x, y,texture,frame);
 
         scene.add.existing(this); 
-        //this.setVisible(false);
         this.scene.anims.create({
             key: 'potions', 
             frames: this.scene.anims.generateFrameNumbers('potions', { start: 0, end: 5 }),
             frameRate: 5,
             repeat: -1,
         });
-       // this.scene.load.image("heart","assets/heart.png");//////////////////////////////////
-
+     
         this.coins = 10; // custo de upgrades dos status do archer
         this.hp_label = scene.add.text(550, scene.map.heightInPixels-105, 'health:', {fontSize:'15px', fill:'#ffffff'}).setVisible(false).setScrollFactor(0);
         this.price_hp = scene.add.text(642, scene.map.heightInPixels-105, 'x'+this.coins, {fontSize:'15px', fill:'#ffffff'}).setVisible(false).setScrollFactor(0);
@@ -22,7 +20,7 @@ export default class Store extends Phaser.Physics.Arcade.Sprite {
         this.power = scene.add.text(550, scene.map.heightInPixels-50, 'power:', {fontSize:'15px', fill:'#ffffff'}).setVisible(false).setScrollFactor(0);
         this.price_hp2 = scene.add.text(642, scene.map.heightInPixels-50, 'x'+this.coins, {fontSize:'15px', fill:'#ffffff'}).setVisible(false).setScrollFactor(0);
         this.power1 = scene.add.text(699, scene.map.heightInPixels-50, 'press(3)', {fontSize:'15px', fill:'#ff0000'}).setVisible(false).setScrollFactor(0);
-        //this.scene.add.image(100,300,"heart");/////////////////////////////////////////
+     
     }
 
     potions_text(boolean,coins){

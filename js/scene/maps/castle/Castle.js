@@ -193,8 +193,6 @@ export default class Castle extends Phaser.Scene {
   }
 
   create() {
-    console.log(archerLifes);
-
       this.map = this.make.tilemap({ key: "map" }); // crio o mapa 
 
       // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in

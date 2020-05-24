@@ -150,7 +150,6 @@ export default class Gothic extends Phaser.Scene {
     }
 
     create(){
-        console.log(archerLifes);
         this.show_shop = true;
 
         // carregamento do mapa
@@ -376,7 +375,6 @@ export default class Gothic extends Phaser.Scene {
 
         this.physics.add.overlap(this.archer.archerBullets, this.nightmare, (nightmare,bullet) => {
             this.nightmare.nightmareHP = this.nightmare.nightmareHP - this.archer.archerHP;
-            console.log(this.nightmare.nightmareHP);
             if(this.nightmare.nightmareHP <= 0){
                 /** Próximo nível */
                 coins += 20;
