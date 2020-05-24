@@ -460,18 +460,9 @@ export default class Forest extends Phaser.Scene{
         delay: this.delayDeathRestart,
         repeat: 0,
         callback: () => {
-            this.archer.totalLifes--;
-            if(this.archer.totalLifes == 0){
-                this.sound.stopAll();
-                this.scene.stop();
-                this.scene.start('GameOver');
-            } else {
-                this.archerDeath = false;
-                this.archerDeathConfigs = false;
-                this.archer.archerHP = 100;
-                this.archer.setX(100);
-                this.archer.setY(400);
-            }  
+            this.sound.stopAll();
+            this.scene.stop();
+            this.scene.start('GameOver');
         }
         };
 
@@ -547,10 +538,6 @@ export default class Forest extends Phaser.Scene{
             },this);
 
         }
-    }
-
-    createMap(){
-
     }
 
 
