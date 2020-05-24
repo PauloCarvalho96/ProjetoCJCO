@@ -464,9 +464,11 @@ export default class Castle extends Phaser.Scene {
         delay: this.delayDeathRestart,
         repeat: 0,
         callback: () => {
-            this.scene.restart();
+          this.sound.stopAll();
+          this.scene.stop();
+          this.scene.start('GameOver');
         }
-        };
+    };
 
   }
 

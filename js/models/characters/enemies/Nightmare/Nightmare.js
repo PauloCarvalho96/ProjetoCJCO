@@ -27,7 +27,7 @@ export default class Nightmare extends Phaser.Physics.Arcade.Sprite {
         this.bulletsOnShoot = 5;
 
         // grupo de monstros
-        this.monstersMaxsize = 3;
+        this.monstersMaxsize = 6;
         this.nightmaremonsters = this.scene.physics.add.group({
             classType: FireSkull,
             maxSize: this.monstersMaxsize,

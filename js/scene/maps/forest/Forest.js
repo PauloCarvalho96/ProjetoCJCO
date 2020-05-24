@@ -461,7 +461,9 @@ export default class Forest extends Phaser.Scene{
         delay: this.delayDeathRestart,
         repeat: 0,
         callback: () => {
-            this.scene.restart();
+            this.sound.stopAll();
+            this.scene.stop();
+            this.scene.start('GameOver');
         }
         };
 
@@ -495,8 +497,7 @@ export default class Forest extends Phaser.Scene{
 
         // defrontar o boss
         if(this.archer.x > this.bossLevelX){
-            
-
+        
             // faz as configs do boss 1x
             if(this.boss == false && this.bossConfigs == false){
                 this.forest_song_level.stop();
