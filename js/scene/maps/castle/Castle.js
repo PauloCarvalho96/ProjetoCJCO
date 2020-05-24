@@ -2,7 +2,6 @@ import GhostGroup from "../../../models/characters/enemies/Ghost/GhostGroup.js";
 import EyeGroup from "../../../models/characters/enemies/Eye/EyeGroup.js";
 import Archer from "../../../models/characters/main/archer/Archer.js";
 import Demon from "../../../models/characters/enemies/Demon/Demon.js";
-import Skeleton from "../../../models/characters/enemies/Skeleton/skeleton.js";
 import Store from "../../../models/Store.js";
 
 let count = 0;
@@ -19,9 +18,6 @@ export default class Castle extends Phaser.Scene {
   }
 
   preload() {
-    // carregar as imagens da vida;
-    this.load.image("green-bar","assets/green-bar.png");
-    this.load.image("red-bar","assets/red-bar.png");
     // Mapa
     this.load.image("back1", "assets/maps/castle/tiles/background1.png");
     this.load.image("back2", "assets/maps/castle/tiles/background2.png");
@@ -31,21 +27,25 @@ export default class Castle extends Phaser.Scene {
     this.load.image("back5", "assets/maps/castle/tiles/background5.png");
     this.load.image("tiles", "assets/maps/castle/tiles/main_lev_build.png");
     this.load.image("decorative", "assets/maps/castle/tiles/other_and_decorative.png");
-    this.load.image("tocha", "assets/maps/castle/tiles/torch-C-03.png");
+    //this.load.image("tocha", "assets/maps/castle/tiles/torch-C-03.png");
     this.load.image("lava", "assets/maps/castle/tiles/lava.png");
     this.load.image("coin","assets/faceon_gold_coin.png");
 
     this.load.tilemapTiledJSON("map", "assets/maps/castle/map2_v3.json");
 
-     // spritesheet (Archer)
+    // carregar as imagens da vida;
+    this.load.image("green-bar","assets/green-bar.png");
+    this.load.image("red-bar","assets/red-bar.png");
+
+    // spritesheet (Archer)
     this.load.spritesheet("archer", "assets/characters/main/archer/ArcherIdle.png", {
-      frameWidth: 128,
-      frameHeight: 128
+    frameWidth: 128,
+    frameHeight: 128
     });
 
     this.load.spritesheet("archer_run", "assets/characters/main/archer/ArcherRun.png", {
-      frameWidth: 128,
-      frameHeight: 128
+    frameWidth: 128,
+    frameHeight: 128
     });
 
     this.load.spritesheet("archer_shoot", "assets/characters/main/archer/ArcherAttack.png", {
@@ -68,81 +68,81 @@ export default class Castle extends Phaser.Scene {
         frameHeight: 128
     });
 
-    
+
     // spritesheet inimigos
     this.load.spritesheet("skeleton_run", "assets/characters/enemies/Skeleton/Walk.png", {
-      frameWidth: 150,
-      frameHeight: 150
+    frameWidth: 150,
+    frameHeight: 150
     }); 
 
     // spritesheet inimigos
     this.load.spritesheet("ghost_idle", "assets/characters/enemies/Ghost/ghost_idle.png", {
-      frameWidth: 64,
-      frameHeight: 80
+    frameWidth: 64,
+    frameHeight: 80
     });
-      
+
 
     // spritesheet inimigos
     this.load.spritesheet("ghost_appears", "assets/characters/enemies/Ghost/ghost_appears.png", {
-      frameWidth: 64,
-      frameHeight: 48
+    frameWidth: 64,
+    frameHeight: 48
     });
 
     // spritesheet inimigos
     this.load.spritesheet("ghost_vanish", "assets/characters/enemies/Ghost/ghost_vanish.png", {
-      frameWidth: 64,
-      frameHeight: 64
+    frameWidth: 64,
+    frameHeight: 64
     });
 
     // spritesheet inimigos
     this.load.spritesheet("eye_fly", "assets/characters/enemies/Flying_eye/Flight.png", {
-      frameWidth: 150,
-      frameHeight: 150
+    frameWidth: 150,
+    frameHeight: 150
     });
 
     // disparo eye
     this.load.spritesheet("eye_fire", "assets/characters/enemies/Flying_eye/Attack.png", {
-      frameHeight: 150,
-      frameWidth: 150,
+    frameHeight: 150,
+    frameWidth: 150,
     });
 
     // BOSS
     this.load.spritesheet("walk", "assets/characters/enemies/Demon/walk.png", {
-      frameHeight: 144,
-      frameWidth: 160,
+    frameHeight: 144,
+    frameWidth: 160,
     });
 
     this.load.spritesheet("demon_attack", "assets/characters/enemies/Demon/demon_attack.png", {
-      frameHeight: 192,
-      frameWidth: 240,
+    frameHeight: 192,
+    frameWidth: 240,
     });
 
     this.load.spritesheet("demon_2attack", "assets/characters/enemies/Demon/demon_2attack.png", {
-      frameHeight: 176,
-      frameWidth: 192,
+    frameHeight: 176,
+    frameWidth: 192,
     });
 
     this.load.spritesheet("demon_idle", "assets/characters/enemies/Demon/demon_idle.png", {
-      frameHeight: 144,
-      frameWidth: 160,
+    frameHeight: 144,
+    frameWidth: 160,
     });
 
     // bullet
     this.load.spritesheet("monsterbullet", "assets/characters/enemies/Bullet/bullet.png", {
-      frameHeight: 11,
-      frameWidth: 11,
+    frameHeight: 11,
+    frameWidth: 11,
     });
 
     //explosion
     this.load.spritesheet("explosion", "assets/characters/enemies/Explosion/explosion.png", {
-      frameHeight: 64,
-      frameWidth: 64,
+    frameHeight: 64,
+    frameWidth: 64,
     });
-  
+
     // Poções
     this.load.spritesheet("potions","assets/potions/potions_gradient.png", {
-      frameWidth: 16,
-      frameHeight: 24,
+    frameWidth: 16,
+    frameHeight: 24,
     });
 
     // sounds
@@ -178,7 +178,7 @@ export default class Castle extends Phaser.Scene {
       const castle = this.map.addTilesetImage("main_lev_build", "tiles");
       const windows = this.map.addTilesetImage("main_lev_build", "tiles");
       const boss_map = this.map.addTilesetImage("main_lev_build", "tiles");
-      const tochas = this.map.addTilesetImage("torch-C-03", "tocha");
+      //const tochas = this.map.addTilesetImage("torch-C-03", "tocha");
       const dec = this.map.addTilesetImage("other_and_decorative", "decorative");
       const dec1 = this.map.addTilesetImage("lava", "lava");
 
@@ -192,7 +192,7 @@ export default class Castle extends Phaser.Scene {
       this.map.createStaticLayer("background5", back5, 0, 0); 
       this.map.createStaticLayer("fundo_castelo", castle, 0, 0);
       this.map.createStaticLayer("decoracao", dec, 0, 0);
-      this.map.createStaticLayer("tochas", tochas, 0, 0);
+      //this.map.createStaticLayer("tochas", tochas, 0, 0);
       this.map.createStaticLayer("janelas", windows, 0, 0);
 
       const front = this.map.createStaticLayer("piso", tileset, 0, 0);
@@ -219,6 +219,8 @@ export default class Castle extends Phaser.Scene {
       // add text label to left of bar
       var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
       healthLabel.setScrollFactor(0);
+
+      this.show_shop = true;
 
       /** Sounds */
       this.explosion = this.sound.add('explosion_sound',{
@@ -275,7 +277,6 @@ export default class Castle extends Phaser.Scene {
       this.potion_damage.setVisible(false);
 ///////////////////////////////////////////////////////////////////////////////////////////////
 		
-
       //set tiles from front tilemap that have collides property true as collidable
       front.setCollisionByProperty({ "colides": true }, true); // escrevi mal eu sei mas agora fica assim !!!
       front1.setCollisionByProperty({ "colides": true }, true);
@@ -495,9 +496,7 @@ export default class Castle extends Phaser.Scene {
             if(archerLifes == 0){
                 this.sound.stopAll();
                 this.scene.stop();
-                this.scene.start('GameOver',{
-                  map: "Castle",
-                });
+                this.scene.start('GameOver');
             } else {
                 this.sound.stopAll();
                 this.scene.restart();
@@ -527,7 +526,7 @@ export default class Castle extends Phaser.Scene {
     if(Phaser.Input.Keyboard.JustDown(this.pressQ)){
       this.store();
     }
-    console.log(this.show_shop);
+
     if(this.show_shop == false){
       if(Phaser.Input.Keyboard.JustDown(this.press1)){
         console.log(this.archer.archerHP);

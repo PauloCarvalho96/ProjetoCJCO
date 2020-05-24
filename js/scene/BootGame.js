@@ -64,13 +64,13 @@ export default class bootGame extends Phaser.Scene{
             playButton.setTint(0xbfbfbf);
             playButton.on('pointerdown', function(){
                 this.sound.stopAll();
+                this.scene.stop();
                 this.scene.start('Gothic-Horror');
             },this);
         })
 
         playButton.on("pointerout",()=>{
             playButton.clearTint();
-
         })
    
         

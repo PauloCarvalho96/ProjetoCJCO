@@ -1,8 +1,6 @@
 import Archer from "../../../models/characters/main/archer/Archer.js";
-import Goblin from "../../../models/characters/enemies/Goblin/Goblin.js";
 import GoblinGroup from "../../../models/characters/enemies/Goblin/GoblinGroup.js";
 import Wizard from "../../../models/characters/enemies/Wizard/Wizard.js";
-import Mushroom from "../../../models/characters/enemies/Mushroom/Mushroom.js";
 import MushroomGroup from "../../../models/characters/enemies/Mushroom/MushroomGroup.js";
 import Store from "../../../models/Store.js";
 
@@ -156,8 +154,6 @@ export default class Forest extends Phaser.Scene{
     }
 
     create(){
-        console.log("Starting game");
- 
         // mapa (forest)
         this.map = this.make.tilemap({ key: "forest" });
  
@@ -486,9 +482,7 @@ export default class Forest extends Phaser.Scene{
             if(archerLifes == 0){
                 this.sound.stopAll();
                 this.scene.stop();
-                this.scene.start('GameOver',{
-                    map: "Forest",
-                });
+                this.scene.start('GameOver');
             } else {
                 this.sound.stopAll();
                 this.scene.restart();

@@ -1,11 +1,7 @@
 import Archer from "../../../models/characters/main/archer/Archer.js";
-import FireSkull from "../../../models/characters/enemies/FireSkull/FireSkull.js";
-import Mushroom from "../../../models/characters/enemies/Mushroom/Mushroom.js";
 import FireSkullGroup from "../../../models/characters/enemies/FireSkull/FireSkullGroup.js";
 import MushroomGroupGothic from "../../../models/characters/enemies/Mushroom/MushroomGroupGothic.js";
-import GhostBoss from "../../../models/characters/enemies/Nightmare/Nightmare.js";
 import Nightmare from "../../../models/characters/enemies/Nightmare/Nightmare.js";
-import Explosion from "../../../models/characters/enemies/Explosion/Explosion.js";
 import Store from "../../../models/Store.js";
 
 var archerLifes = 3;
@@ -19,7 +15,7 @@ export default class Gothic extends Phaser.Scene {
         
         //tiles do mapa
         this.load.image("clouds","assets/maps/gothic-horror/tiles/clouds.png");
-        this.load.image("tiles","assets/maps/gothic-horror/tiles/tiles.png");
+        this.load.image("tiles_img","assets/maps/gothic-horror/tiles/tiles.png");
         this.load.image("town","assets/maps/gothic-horror/tiles/town.png");
         this.load.image("tree_bck","assets/maps/gothic-horror/tiles/tree_bck.png");
         this.load.image("water","assets/maps/gothic-horror/tiles/water.png");
@@ -140,7 +136,7 @@ export default class Gothic extends Phaser.Scene {
 
         //nome da tiles
         const clouds = this.map.addTilesetImage("clouds","clouds");
-        const tiles = this.map.addTilesetImage("tiles","tiles");
+        const tiles = this.map.addTilesetImage("tiles","tiles_img");
         const town = this.map.addTilesetImage("town","town");
         const tree_bck = this.map.addTilesetImage("tree_bck","tree_bck");
         const water = this.map.addTilesetImage("water","water");
@@ -234,6 +230,7 @@ export default class Gothic extends Phaser.Scene {
         this.physics.add.collider(this.archer,this.water,() => {
             this.archer.archerHP--;
             this.archer.takeDamage();
+            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
         });
 
         this.physics.add.collider(this.nightmare,this.ground);
@@ -362,9 +359,7 @@ export default class Gothic extends Phaser.Scene {
             if(archerLifes == 0){
                 this.sound.stopAll();
                 this.scene.stop();
-                this.scene.start('GameOver',{
-                    map: "Gothic",
-                });
+                this.scene.start('GameOver');
             } else {
                 this.sound.stopAll();
                 this.scene.restart();
