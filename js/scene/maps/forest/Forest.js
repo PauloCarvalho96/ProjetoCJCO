@@ -6,6 +6,8 @@ import Mushroom from "../../../models/characters/enemies/Mushroom/Mushroom.js";
 import MushroomGroup from "../../../models/characters/enemies/Mushroom/MushroomGroup.js";
 import Store from "../../../models/Store.js";
 
+var archerLifes;
+
 export default class Forest extends Phaser.Scene{
     
     constructor(){
@@ -611,9 +613,4 @@ export default class Forest extends Phaser.Scene{
           this.show_shop = true;
         }
       }
-    createMap(){
-
-    }
-
-
 }
