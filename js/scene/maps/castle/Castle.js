@@ -22,6 +22,20 @@ export default class Castle extends Phaser.Scene {
   }
 
   preload() {
+    //loading
+    this.graphics = this.add.graphics();
+    this.newGraphics = this.add.graphics();
+    var progressBar = new Phaser.Geom.Rectangle(200, 200, 400, 50);
+    var progressBarFill = new Phaser.Geom.Rectangle(205, 205, 290, 40);
+
+    this.graphics.fillStyle(0xffffff, 1);
+    this.graphics.fillRectShape(progressBar);
+
+    this.newGraphics.fillStyle(0x3587e2, 1);
+    this.newGraphics.fillRectShape(progressBarFill);
+
+    var loadingText = this.add.text(250,260,"Loading: ", { fontSize: '32px', fill: '#FFF' });
+
     // Mapa
     this.load.image("back1", "assets/maps/castle/tiles/background1.png");
     this.load.image("back2", "assets/maps/castle/tiles/background2.png");
@@ -165,6 +179,9 @@ export default class Castle extends Phaser.Scene {
     this.archerDeath = false;
     this.archerDeathConfigs = false;
 
+    // loading
+    this.load.on('progress', this.updateBar, {newGraphics:this.newGraphics,loadingText:loadingText});
+    this.load.on('complete', this.complete, {scene:this.scene});
   }
 
   create() {
@@ -646,4 +663,20 @@ export default class Castle extends Phaser.Scene {
       this.show_shop = true;
     }
   }
+
+  updateBar(percentage) {
+    this.newGraphics.clear();
+    this.newGraphics.fillStyle(0x3587e2, 1);
+    this.newGraphics.fillRectShape(new Phaser.Geom.Rectangle(205, 205, percentage*390, 40));
+            
+    percentage = percentage * 100;
+    this.loadingText.setText("Loading: " + percentage.toFixed(2) + "%");
+    console.log("P:" + percentage);
+    
+  }
+
+  complete() {
+      console.log("COMPLETE!");
+  }
+
 }
