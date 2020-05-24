@@ -5,6 +5,7 @@ import Wizard from "../../../models/characters/enemies/Wizard/Wizard.js";
 import Mushroom from "../../../models/characters/enemies/Mushroom/Mushroom.js";
 import MushroomGroup from "../../../models/characters/enemies/Mushroom/MushroomGroup.js";
 
+var archerLifes = 3;
 
 export default class Forest extends Phaser.Scene{
     
@@ -12,8 +13,8 @@ export default class Forest extends Phaser.Scene{
         super("Forest");
     }
 
-   /*  init(data){
-        this.char = data.char;
+   /* init(data){
+        
     } */
 
     preload(){
@@ -417,7 +418,6 @@ export default class Forest extends Phaser.Scene{
             }
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();
-            //this.add.text(4250,300,"WINNER!");
             
         });
 
@@ -461,9 +461,14 @@ export default class Forest extends Phaser.Scene{
         delay: this.delayDeathRestart,
         repeat: 0,
         callback: () => {
-            this.sound.stopAll();
-            this.scene.stop();
-            this.scene.start('GameOver');
+            archerLifes--;
+            if(archerLifes == 0){
+                this.sound.stopAll();
+                this.scene.stop();
+                this.scene.start('GameOver');
+            } else {
+                this.scene.restart();
+            }  
         }
         };
 
@@ -539,6 +544,10 @@ export default class Forest extends Phaser.Scene{
             },this);
 
         }
+    }
+
+    createMap(){
+
     }
 
 

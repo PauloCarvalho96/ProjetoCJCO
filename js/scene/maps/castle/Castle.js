@@ -4,6 +4,7 @@ import Archer from "../../../models/characters/main/archer/Archer.js";
 import Demon from "../../../models/characters/enemies/Demon/Demon.js";
 import Skeleton from "../../../models/characters/enemies/Skeleton/skeleton.js";
 
+var archerLifes = 3;
 let count = 0;
 
 export default class Castle extends Phaser.Scene {
@@ -464,9 +465,14 @@ export default class Castle extends Phaser.Scene {
         delay: this.delayDeathRestart,
         repeat: 0,
         callback: () => {
-          this.sound.stopAll();
-          this.scene.stop();
-          this.scene.start('GameOver');
+          archerLifes--;
+            if(archerLifes == 0){
+                this.sound.stopAll();
+                this.scene.stop();
+                this.scene.start('GameOver');
+            } else {
+                this.scene.restart();
+            } 
         }
     };
 
@@ -474,7 +480,7 @@ export default class Castle extends Phaser.Scene {
 
   update(time,delta) {
 
-    // verifica HP do archer
+      // verifica HP do archer
       if(this.archer.archerHP > 0){
         this.archer.update(this.cursors,time);
       } else {
@@ -488,9 +494,9 @@ export default class Castle extends Phaser.Scene {
         this.archerDeathConfigs = true;
       }
 
-    if(this.cursors.shift.isDown){
-      this.store();
-    }
+      if(this.cursors.shift.isDown){
+        this.store();
+      }
 
     // Mapa do Boss
     if(this.archer.x >= 4000){
@@ -563,7 +569,6 @@ export default class Castle extends Phaser.Scene {
   store(){
     this.add.image(this.archer.x, this.archer.y, 'potion_hp');   
   }
-
 
 }
 

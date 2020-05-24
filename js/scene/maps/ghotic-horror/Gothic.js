@@ -7,6 +7,7 @@ import GhostBoss from "../../../models/characters/enemies/Nightmare/Nightmare.js
 import Nightmare from "../../../models/characters/enemies/Nightmare/Nightmare.js";
 import Explosion from "../../../models/characters/enemies/Explosion/Explosion.js";
 
+var archerLifes = 3;
 export default class Gothic extends Phaser.Scene {
     
     constructor(){
@@ -333,9 +334,14 @@ export default class Gothic extends Phaser.Scene {
         delay: this.delayDeathRestart,
         repeat: 0,
         callback: () => {
-            this.sound.stopAll();
-            this.scene.stop();
-            this.scene.start('GameOver');
+            archerLifes--;
+            if(archerLifes == 0){
+                this.sound.stopAll();
+                this.scene.stop();
+                this.scene.start('GameOver');
+            } else {
+                this.scene.restart();
+            } 
         }
         };
 
