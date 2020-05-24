@@ -5,10 +5,13 @@ import Demon from "../../../models/characters/enemies/Demon/Demon.js";
 import Skeleton from "../../../models/characters/enemies/Skeleton/skeleton.js";
 import Store from "../../../models/Store.js";
 
-let count = 0;
+var count = 0;
 var archerLifes;
 var velocity;
 var damage;
+var coins = 0;
+var upgrades = [1,1,1];
+var alreadyPass = false;
 export default class Castle extends Phaser.Scene {
   
   constructor() {
@@ -16,9 +19,15 @@ export default class Castle extends Phaser.Scene {
   }
 
   init(data){
-    archerLifes = data.archerLifes;
-    velocity = data.velocity;
-    damage = data.damage;
+    if(alreadyPass == false){
+      archerLifes = data.acherLifes;
+      velocity = data.archer.velocity;
+      damage = data.archer.archerDamage;
+      coins = data.coins;
+      upgrades = data.upgrades;
+      alreadyPass = true;
+    }
+    
   }
 
   preload() {
@@ -213,7 +222,9 @@ export default class Castle extends Phaser.Scene {
       this.image_coin=this.add.image(this.archer.x + 585,this.map.heightInPixels-100,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); // coin
       this.image_coin1=this.add.image(this.archer.x + 585,this.map.heightInPixels-70,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); // coin
       this.image_coin2=this.add.image(this.archer.x + 585,this.map.heightInPixels-40,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); // coin
-
+      this.archer_coins = this.add.image(this.archer.x + 670,20,"coin").setScale(0.06,0.06).setVisible(true).setScrollFactor(0);  
+      this.coin_text = this.add.text(this.archer.x + 610, 10,"x" +coins, {fontSize:'20px', fill:'#ffffff'}).setScrollFactor(0); 
+      
       //health bars
       var backgroundBar = this.add.image(this.archer.x-105, 10, 'red-bar');
       backgroundBar.setScrollFactor(0);
@@ -366,6 +377,7 @@ export default class Castle extends Phaser.Scene {
         this.physics.add.overlap(this.archer.archerBullets, this.ghosts, (bullet,ghost) => {
           ghost.ghostHP = ghost.ghostHP - this.archer.archerDamage;
           if(ghost.ghostHP <= 0){
+            coins += 2;
             this.ghosts.killAndHide(ghost);
             ghost.removeFromScreen();
             this.archer.archerBullets.killAndHide(bullet);
@@ -393,6 +405,7 @@ export default class Castle extends Phaser.Scene {
       this.physics.add.collider(this.archer.archerBullets, this.demon, (archer,bullet) => {
         this.demon.demonHP = this.demon.demonHP - this.archer.archerDamage;
         if(this.demon.demonHP <= 0){
+          coins += 20;
           this.archer.archerBullets.killAndHide(bullet);
           bullet.removeFromScreen(); 
           /** Venceu o jogo! */
@@ -407,6 +420,7 @@ export default class Castle extends Phaser.Scene {
         this.physics.add.overlap(this.archer.archerBullets, this.eyes, (bullet,eye) => {
           eye.eyeHP = eye.eyeHP - this.archer.archerDamage;
           if(eye.eyeHP <= 0){
+            coins += 2;
             this.eyes.killAndHide(eye);
             eye.removeFromScreen();
             this.archer.archerBullets.killAndHide(bullet);
@@ -496,6 +510,7 @@ export default class Castle extends Phaser.Scene {
         callback: () => {
           archerLifes--;
             if(archerLifes == 0){
+                alreadyPass = false;
                 this.sound.stopAll();
                 this.scene.stop();
                 this.scene.start('GameOver',{
@@ -512,6 +527,7 @@ export default class Castle extends Phaser.Scene {
 
   update(time,delta) {
 
+      this.coin_text.setText("x" + coins);
       // verifica HP do archer
       if(this.archer.archerHP > 0){
         this.archer.update(this.cursors,time);
@@ -529,26 +545,39 @@ export default class Castle extends Phaser.Scene {
     if(Phaser.Input.Keyboard.JustDown(this.pressQ)){
       this.store();
     }
-    console.log(this.show_shop);
-    if(this.show_shop == false){
-      if(Phaser.Input.Keyboard.JustDown(this.press1)){
-        console.log(this.archer.archerHP);
-        console.log("hp aumentada");
-        this.archer.archerHP = this.archer.archerHP + this.potion_hp.coins;
-        this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
-        console.log(this.archer.archerHP);
-      }else if(Phaser.Input.Keyboard.JustDown(this.press2)){
-        console.log(this.archer.velocity);
-        console.log("velocidade aumentada");
-        this.archer.velocity = this.archer.velocity + this.potion_velocity.coins;
-        console.log(this.archer.velocity);
-      }else if(Phaser.Input.Keyboard.JustDown(this.press3)){
-        console.log(this.archer.archerDamage);
-        console.log("ataque aumentado");
-        this.archer.archerDamage = this.archer.archerDamage + this.potion_damage.coins;
-        console.log(this.archer.archerDamage);
-      }
+    
+    if(coins >= this.potion_hp.coins){
+      this.potion_hp.hp_label1.setColor("#00ff00"); 
+    }else{
+        this.potion_hp.hp_label1.setColor("#ff0000"); 
+    } 
+    if(coins >= this.potion_velocity.coins){ 
+        this.potion_hp.velocity1.setColor("#00ff00") 
+    }else{
+        this.potion_hp.velocity1.setColor("#ff0000");    
+    } 
+    if(coins >= this.potion_damage.coins){ 
+        this.potion_hp.power1.setColor("#00ff00");     
+    }else{
+        this.potion_hp.power1.setColor("#ff0000"); 
     }
+
+    if(this.show_shop == false){
+      if(Phaser.Input.Keyboard.JustDown(this.press1) && coins >= this.potion_hp.coins){
+        this.archer.archerMaxHP += this.potion_hp.coins;
+        this.archer.archerHP = this.archer.archerMaxHP;
+        coins -= this.potion_hp.coins;
+        upgrades[0] += 1;
+      }else if(Phaser.Input.Keyboard.JustDown(this.press2) && coins >= this.potion_velocity.coins){
+        this.archer.velocity = this.archer.velocity + this.potion_velocity.coins;
+        coins -= this.potion_velocity.coins;
+        upgrades[1] += 1;
+      }else if(Phaser.Input.Keyboard.JustDown(this.press3) && coins >= this.potion_damage.coins){
+        this.archer.archerDamage = this.archer.archerDamage + this.potion_damage.coins;
+        coins -= this.potion_damage.coins;
+        upgrades[2] += 1;
+      }
+  }
 
     // Mapa do Boss
     if(this.archer.x >= 4000){
@@ -620,7 +649,7 @@ export default class Castle extends Phaser.Scene {
 
   store(){ // loja
     if(this.show_shop == true){
-      this.potion_hp.potions_text(this.show_shop);
+      this.potion_hp.potions_text(this.show_shop,coins);
       this.potion_hp.setVisible(true);
       this.potion_velocity.setVisible(true);
       this.potion_damage.setVisible(true);
@@ -629,7 +658,7 @@ export default class Castle extends Phaser.Scene {
       this.image_coin2.setVisible(true);
       this.show_shop = false;
     }else{
-      this.potion_hp.potions_text(this.show_shop);
+      this.potion_hp.potions_text(this.show_shop,coins);
       this.potion_hp.setVisible(false);
       this.potion_velocity.setVisible(false);
       this.potion_damage.setVisible(false);
