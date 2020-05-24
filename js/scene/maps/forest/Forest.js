@@ -4,6 +4,7 @@ import GoblinGroup from "../../../models/characters/enemies/Goblin/GoblinGroup.j
 import Wizard from "../../../models/characters/enemies/Wizard/Wizard.js";
 import Mushroom from "../../../models/characters/enemies/Mushroom/Mushroom.js";
 import MushroomGroup from "../../../models/characters/enemies/Mushroom/MushroomGroup.js";
+import Store from "../../../models/Store.js";
 
 var archerLifes;
 
@@ -33,7 +34,7 @@ export default class Forest extends Phaser.Scene{
         this.load.image("wood_env","assets/maps/forest/tiles/wood_env.png");
         this.load.image("torch1","assets/maps/forest/tiles/torch1.png");
         this.load.image("torch2","assets/maps/forest/tiles/torch2.png");
-
+        this.load.image("coin","assets/faceon_gold_coin.png");
         // mapa (forest)
         this.load.tilemapTiledJSON("forest","assets/maps/forest/forest.json");
 
@@ -129,6 +130,12 @@ export default class Forest extends Phaser.Scene{
             frameWidth: 64,
         });
 
+        // Poções
+        this.load.spritesheet("potions","assets/potions/potions_gradient.png", {
+            frameWidth: 16,
+            frameHeight: 24,
+        });
+
         // sounds
         this.load.audio('explosion_sound','assets/characters/enemies/Explosion/explosion.mp3');
         this.load.audio('fire_arrow','assets/characters/main/archer/fire_arrow.mp3');
@@ -190,6 +197,12 @@ export default class Forest extends Phaser.Scene{
         
         // personagens
         this.archer = new Archer(this, 100, 400);
+        this.potion_hp = new Store(this,this.archer.x + 525,this.map.heightInPixels-100,"potions",0).setScrollFactor(0).setVisible(false);
+        this.potion_velocity = new Store(this,this.archer.x + 530,this.map.heightInPixels-65,"potions",2).setScrollFactor(0).setVisible(false);
+        this.potion_damage = new Store(this,this.archer.x + 525,this.map.heightInPixels-50,"potions",4).setScrollFactor(0).setVisible(false);
+        this.image_coin=this.add.image(this.archer.x + 585,this.map.heightInPixels-100,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); // coin
+        this.image_coin1=this.add.image(this.archer.x + 585,this.map.heightInPixels-70,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); 
+        this.image_coin2=this.add.image(this.archer.x + 585,this.map.heightInPixels-40,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); 
 
         /** Sounds */
         this.explosion = this.sound.add('explosion_sound',{
@@ -260,6 +273,10 @@ export default class Forest extends Phaser.Scene{
         healthLabel.setScrollFactor(0);
 
         this.cursors = this.input.keyboard.createCursorKeys();
+        this.press1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE);
+        this.press2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
+        this.press3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
+        this.pressQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
 
         // collider
         this.physics.add.collider(this.archer,this.ground);
@@ -499,6 +516,28 @@ export default class Forest extends Phaser.Scene{
             this.archerDeathConfigs = true;
         }
         
+        if(Phaser.Input.Keyboard.JustDown(this.pressQ)){
+            this.store();
+        }
+        if(this.show_shop == false){
+            if(Phaser.Input.Keyboard.JustDown(this.press1)){
+              console.log(this.archer.archerHP);
+              console.log("hp aumentada");
+              this.archer.archerHP = this.archer.archerHP + this.potion_hp.coins[0];
+              console.log(this.archer.archerHP);
+            }else if(Phaser.Input.Keyboard.JustDown(this.press2)){
+              console.log(this.archer.velocity);
+              console.log("velocidade aumentada");
+              this.archer.velocity = this.archer.velocity + this.potion_velocity.coins[1];
+              console.log(this.archer.velocity);
+            }else if(Phaser.Input.Keyboard.JustDown(this.press3)){
+              console.log(this.archer.archerDamage);
+              console.log("ataque aumentado");
+              this.archer.archerDamage = this.archer.archerDamage + this.potion_damage.coins[2] ;
+              console.log(this.archer.archerDamage);
+            }
+        }
+
         // itera as balas para as destruir dps de se afastarem do arqueiro
         this.archer.archerBullets.children.iterate(function (bullet) {
             if(bullet.x > this.archer.x + (this.game.config.width/2) || bullet.x < this.archer.x - (this.game.config.width/2)){
@@ -553,4 +592,25 @@ export default class Forest extends Phaser.Scene{
         }
     }
 
+    store(){ // loja
+        if(this.show_shop == true){
+          this.potion_hp.potions_text(this.show_shop);
+          this.potion_hp.setVisible(true);
+          this.potion_velocity.setVisible(true);
+          this.potion_damage.setVisible(true);
+          this.image_coin.setVisible(true);
+          this.image_coin1.setVisible(true);
+          this.image_coin2.setVisible(true);
+          this.show_shop = false;
+        }else{
+          this.potion_hp.potions_text(this.show_shop);
+          this.potion_hp.setVisible(false);
+          this.potion_velocity.setVisible(false);
+          this.potion_damage.setVisible(false);
+          this.image_coin.setVisible(false);
+          this.image_coin1.setVisible(false);
+          this.image_coin2.setVisible(false);
+          this.show_shop = true;
+        }
+      }
 }

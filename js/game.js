@@ -15,7 +15,7 @@ class Game extends Phaser.Game{
         
         //Mapa Forest 
         this.scene.add('Forest',Forest);
-        //his.scene.start('Forest');
+       // this.scene.start('Forest');
 
         //Mapa Castle
         this.scene.add('Castle',Castle);

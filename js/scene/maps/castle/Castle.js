@@ -346,11 +346,10 @@ export default class Castle extends Phaser.Scene {
          });
 
          // adiciona collider da bala com personagem
-         this.physics.add.overlap(this.archer, this.demon.hitboxes, (bullet) => {
-          
-          this.archer.archerHP= this.archer.archerHP - this.demon.demonDamage;
-         healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
-       this.archer.takeDamage();
+         this.physics.add.overlap(this.archer, this.demon.hitboxes, (bullet) => { 
+            this.archer.archerHP= this.archer.archerHP - this.demon.demonDamage;
+            healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.archer.takeDamage();
          });
 
         this.physics.add.overlap(this.archer, this.demon, (bullet) => {
@@ -639,7 +638,4 @@ export default class Castle extends Phaser.Scene {
       this.show_shop = true;
     }
   }
-
 }
-
-
