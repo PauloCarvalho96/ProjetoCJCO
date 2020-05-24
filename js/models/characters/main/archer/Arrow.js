@@ -7,6 +7,8 @@ export default class Arrow extends Phaser.Physics.Arcade.Sprite {
         scene.physics.add.existing(this); 
         scene.physics.world.enable(this);
 
+        this.scene.load.image()
+
         this.setScale(0.5)
         this.setSize(60, 10);
         this.setOffset(35,60);

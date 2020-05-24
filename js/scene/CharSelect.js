@@ -12,14 +12,10 @@ export default class CharSelect extends Phaser.Scene{
         this.load.image("back", "./assets/back.png");
         this.load.image("charselect","./assets/charselect.png");
         this.load.image("ArcherLetters","./assets/characters/main/archer/ArcherLetters.png");
-        this.load.image("KnightLetters","./assets/characters/main/knight/KnightLetters.png");
         //CARREGAR TODAS AS ANIMAÇOES DO ARQUEIRO
 
     this.load.spritesheet('ArcherDash', './assets/characters/main/archer/ArcherDash.png',
         { frameWidth: 128, frameHeight: 128 }
-    );
-    this.load.spritesheet('KnightAttack', './assets/characters/main/knight/KnightAttack.png',
-        { frameWidth: 144, frameHeight: 64 }
     );
 
  

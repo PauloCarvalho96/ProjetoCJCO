@@ -2,10 +2,10 @@ import GhostGroup from "../../../models/characters/enemies/Ghost/GhostGroup.js";
 import EyeGroup from "../../../models/characters/enemies/Eye/EyeGroup.js";
 import Archer from "../../../models/characters/main/archer/Archer.js";
 import Demon from "../../../models/characters/enemies/Demon/Demon.js";
-import Knight from "../../../models/characters/main/knight/Knight.js";
 import Skeleton from "../../../models/characters/enemies/Skeleton/skeleton.js";
+import Store from "../../../models/characters/Store.js";
 
-let count = 0;
+var count = 0;
 
 export default class Castle extends Phaser.Scene {
   
@@ -28,7 +28,7 @@ export default class Castle extends Phaser.Scene {
     this.load.image("decorative", "assets/maps/castle/tiles/other_and_decorative.png");
     this.load.image("tocha", "assets/maps/castle/tiles/torch-C-03.png");
     this.load.image("lava", "assets/maps/castle/tiles/lava.png");
-    this.load.image("potion_hp","assets/potions/potions_gradient.png");
+    this.load.image("coin","assets/faceon_gold_coin.png");
 
     this.load.tilemapTiledJSON("map", "assets/maps/castle/map2_v3.json");
 
@@ -123,7 +123,11 @@ export default class Castle extends Phaser.Scene {
       frameWidth: 11,
     });
 
-
+    // Poções
+    this.load.spritesheet("potions","assets/potions/potions_gradient.png", {
+      frameWidth: 16,
+      frameHeight: 24,
+    });
 
     // se conseguir chegar ao final do nivel entra no modo de BOSS
     this.boss = false;
@@ -133,10 +137,6 @@ export default class Castle extends Phaser.Scene {
 
     create() {
       this.map = this.make.tilemap({ key: "map" }); // crio o mapa 
-
-
-
-
       // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
       // Phaser's cache (i.e. the name you used in preload)
       const back1 = this.map.addTilesetImage("01 background", "back1");
@@ -174,8 +174,17 @@ export default class Castle extends Phaser.Scene {
       //this.archer = new Archer(this, 2012, 117);
       //this.archer = new Archer(this, 4010, 500);
 
+
+      this.potion_hp = new Store(this,this.archer.x + 525,this.map.heightInPixels-100,"potions",0).setScrollFactor(0); ////////////////////////////////////////////////////////////////////////////////////////
+      this.potion_velocity = new Store(this,this.archer.x + 530,this.map.heightInPixels-65,"potions",2).setScrollFactor(0);
+      this.potion_damage = new Store(this,this.archer.x + 525,this.map.heightInPixels-50,"potions",4).setScrollFactor(0);
+      this.image_coin=this.add.image(this.archer.x + 585,this.map.heightInPixels-100,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); // coin
+      this.image_coin1=this.add.image(this.archer.x + 585,this.map.heightInPixels-70,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); // coin
+      this.image_coin2=this.add.image(this.archer.x + 585,this.map.heightInPixels-40,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); // coin
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////
       //health bars
-      var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
+      this.show_shop = true;
+      var backgroundBar = this.add.image(this.archer.x-105, 10, 'red-bar');
       backgroundBar.setScrollFactor(0);
       backgroundBar.setOrigin(0,0);
       var healthBar = this.add.image(this.archer.x-90, 10, 'green-bar');
@@ -183,6 +192,7 @@ export default class Castle extends Phaser.Scene {
       healthBar.setScrollFactor(0);
       // add text label to left of bar
       var healthLabel = this.add.text(this.archer.x-50, 10, 'Health', {fontSize:'20px', fill:'#ffffff'});
+      healthBar.setInteractive();
       healthLabel.setScrollFactor(0);
 
 
@@ -205,8 +215,15 @@ export default class Castle extends Phaser.Scene {
       //camera is not allowed to go out bounds
       camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
-      this.cursors = this.input.keyboard.createCursorKeys();
-
+      this.cursors = this.input.keyboard.createCursorKeys(); ////////////////////////////////////////////////////////////////////
+      this.press1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE);
+      this.press2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
+      this.press3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
+      this.pressQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+      this.potion_hp.setVisible(false);
+      this.potion_velocity.setVisible(false);
+      this.potion_damage.setVisible(false);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //set tiles from front tilemap that have collides property true as collidable
       front.setCollisionByProperty({ "colides": true }, true); // escrevi mal eu sei mas agora fica assim !!!
       front1.setCollisionByProperty({ "colides": true }, true);
@@ -260,8 +277,8 @@ export default class Castle extends Phaser.Scene {
         // demon (BOSS) monstros/propriedades
         this.physics.add.overlap(this.archer, this.demon.demonMonsters, (archer,monsterBullet) => {
           this.archer.archerHP--;
-         healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
-       this.archer.takeDamage();
+          healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+          this.archer.takeDamage();
           
        });
 
@@ -270,15 +287,15 @@ export default class Castle extends Phaser.Scene {
         this.physics.add.collider(this.archer, this.demon.DemonBullets, (bullet) => {
           this.archer.archerHP--;
           healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
-        this.archer.takeDamage();
+          this.archer.takeDamage();
          });
 
          // adiciona collider da bala com personagem
          this.physics.add.overlap(this.archer, this.demon.hitboxes, (bullet) => {
           
           this.archer.archerHP= this.archer.archerHP - this.demon.demonDamage;
-         healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
-       this.archer.takeDamage();
+          healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+          this.archer.takeDamage();
          });
 
          this.physics.add.overlap(this.archer, this.demon, (bullet) => {
@@ -416,20 +433,32 @@ export default class Castle extends Phaser.Scene {
           this.time.addEvent(this.demonSecondShoot);
       }
     };
-
+    
   }
 
   update(time,delta) {
-    //console.log(this.archer.x);
-    //console.log(this.archer.y);
-    //console.log(this.map.widthInPixels-20);
+    //console.log(this.map.heightInPixels);
+    console.log(this.game.config.width);
     this.checkArcherHP();
     this.archer.update(this.cursors,time);
-
-    if(this.cursors.shift.isDown){
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+    if(Phaser.Input.Keyboard.JustDown(this.pressQ)){
       this.store();
     }
-
+    console.log(this.show_shop);
+    if(this.show_shop == false){
+      if(Phaser.Input.Keyboard.JustDown(this.press1)){
+        console.log("hp aumentada");
+        this.archer.archerHP = 99999;
+      }else if(Phaser.Input.Keyboard.JustDown(this.press2)){
+        console.log("velocidade aumentada");
+        this.archer.velocity = 10000;
+      }else if(Phaser.Input.Keyboard.JustDown(this.press3)){
+        console.log("ataque aumentado");
+        this.archer.archerDamage = 10000;
+      }
+    }
+////////////////////////////////////////////////////////////////////////////////////////////////////
     // Mapa do Boss
     if(this.archer.x >= 4000){
       let espaco = this.demon.x-this.archer.x;
@@ -446,7 +475,6 @@ export default class Castle extends Phaser.Scene {
         this.boss = true;
         this.bossConfigs = true;
       }
-      console.log(this.map.widthInPixels-20);
       if(this.archer.x < 4020 && this.boss == true){
         this.archer.x = 4020;
       }else if(this.archer.x > this.map.widthInPixels-20){
@@ -501,10 +529,28 @@ export default class Castle extends Phaser.Scene {
     }
   }
 
-  store(){
-    this.add.image(this.archer.x, this.archer.y, 'potion_hp');   
+  //////////////////////////////////////////////////////////////
+  store(){ // loja
+    if(this.show_shop == true){
+      this.potion_hp.potions_text(this.show_shop);
+      this.potion_hp.setVisible(true);
+      this.potion_velocity.setVisible(true);
+      this.potion_damage.setVisible(true);
+      this.image_coin.setVisible(true);
+      this.image_coin1.setVisible(true);
+      this.image_coin2.setVisible(true);
+      this.show_shop = false;
+    }else{
+      this.potion_hp.potions_text(this.show_shop);
+      this.potion_hp.setVisible(false);
+      this.potion_velocity.setVisible(false);
+      this.potion_damage.setVisible(false);
+      this.image_coin.setVisible(false);
+      this.image_coin1.setVisible(false);
+      this.image_coin2.setVisible(false);
+      this.show_shop = true;
+    }
   }
-
 
 }
 

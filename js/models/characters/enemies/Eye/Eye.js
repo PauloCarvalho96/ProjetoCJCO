@@ -123,8 +123,6 @@ export default class Eye extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-
-
     takeDamage(){
         let i = 0;
         let repetition = 100;

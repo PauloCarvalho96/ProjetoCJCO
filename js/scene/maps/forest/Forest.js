@@ -1,5 +1,4 @@
 import Archer from "../../../models/characters/main/archer/Archer.js";
-import Knight from "../../../models/characters/main/knight/Knight.js";
 import Goblin from "../../../models/characters/enemies/Goblin/Goblin.js";
 import GoblinGroup from "../../../models/characters/enemies/Goblin/GoblinGroup.js";
 import Wizard from "../../../models/characters/enemies/Wizard/Wizard.js";
