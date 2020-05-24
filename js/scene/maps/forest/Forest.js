@@ -56,22 +56,20 @@ export default class Forest extends Phaser.Scene{
             frameHeight: 128
         });
 
-        this.load.spritesheet("archer_arrow", "assets/characters/main/archer/arrow.png", {
+        this.load.spritesheet("archer_jump", "assets/characters/main/archer/ArcherJump.png", {
             frameWidth: 128,
             frameHeight: 128
         });
 
-        // spritesheet (Knight)
-        this.load.spritesheet("knight", "assets/characters/main/knight/KnightIdle.png", {
-            frameWidth: 64,
-            frameHeight: 64
+        this.load.spritesheet("archer_death", "assets/characters/main/archer/ArcherDeath.png", {
+            frameWidth: 128,
+            frameHeight: 128
         });
 
-        this.load.spritesheet("knight_run", "assets/characters/main/knight/KnightRun.png", {
-            frameWidth: 96,
-            frameHeight: 64
+        this.load.spritesheet("archer_arrow", "assets/characters/main/archer/arrow.png", {
+            frameWidth: 128,
+            frameHeight: 128
         });
-        
 
         // spritesheet goblin
         this.load.spritesheet("goblin_run", "assets/characters/enemies/Goblin/Run.png", {
@@ -130,12 +128,22 @@ export default class Forest extends Phaser.Scene{
             frameWidth: 64,
         });
 
+        // sounds
         this.load.audio('explosion_sound','assets/characters/enemies/Explosion/explosion.mp3');
+        this.load.audio('fire_arrow','assets/characters/main/archer/fire_arrow.mp3');
+        this.load.audio('jump_sound','assets/characters/main/archer/Jump.wav');
+        this.load.audio('hit_sound','assets/characters/main/archer/Hit.wav');
+        this.load.audio('forest_song_level','assets/maps/forest/forest_song_level.wav');
+        this.load.audio('forest_song_boss','assets/maps/forest/forest_song_boss.wav');
 
         // se conseguir chegar ao final do nivel entra no modo de BOSS
         this.boss = false;
         this.bossConfigs = false;
         this.bossLevelX = 3850;
+
+        // archer death
+        this.archerDeath = false;
+        this.archerDeathConfigs = false;
 
     }
 
@@ -181,6 +189,36 @@ export default class Forest extends Phaser.Scene{
         
         // personagens
         this.archer = new Archer(this, 100, 400);
+
+        /** Sounds */
+        this.explosion = this.sound.add('explosion_sound',{
+            volume:0.1,
+        });
+
+        this.fireSound = this.sound.add("fire_arrow",{
+            volume:0.1,
+        });
+        this.archer.fireSound = this.fireSound;
+        this.jumpSound = this.sound.add("jump_sound",{
+            volume:0.1,
+        });
+        this.archer.jumpSound = this.jumpSound;
+        this.hitSound = this.sound.add("hit_sound",{
+            volume:0.1,
+        });
+        this.archer.hitSound = this.hitSound;
+
+        this.forest_song_level = this.sound.add('forest_song_level',{
+            loop:true,
+            volume:0.5,
+        });
+        this.forest_song_level.play();
+
+        this.forest_song_boss = this.sound.add('forest_song_boss',{
+            loop:true,
+            volume:0.5,
+        });
+
 
         // *inimigos*
 
@@ -272,35 +310,35 @@ export default class Forest extends Phaser.Scene{
             //percorre as balas de cada inimigo e adiciona collider nas balas
             this.physics.add.collider(this.rocks, mushroom.mushroomBullets, (bullet) => {
                 bullet.explosion();
-                this.sound.play('explosion_sound'); 
+                this.explosion.play(); 
                 mushroom.mushroomBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
             });
 
             this.physics.add.collider(this.ground, mushroom.mushroomBullets, (bullet) => {
                 bullet.explosion();
-                this.sound.play('explosion_sound'); 
+                this.explosion.play(); 
                 mushroom.mushroomBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
             });
 
             this.physics.add.collider(this.plataforms, mushroom.mushroomBullets, (bullet) => {
                 bullet.explosion();
-                this.sound.play('explosion_sound'); 
+                this.explosion.play(); 
                 mushroom.mushroomBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
             });
 
             this.physics.add.collider(this.wall, mushroom.mushroomBullets, (bullet) => {
                 bullet.explosion();
-                this.sound.play('explosion_sound'); 
+                this.explosion.play(); 
                 mushroom.mushroomBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
             });
 
             this.physics.add.collider(this.archer,mushroom.mushroomBullets, (archer,bullet) => {
                 bullet.explosion();
-                this.sound.play('explosion_sound'); 
+                this.explosion.play(); 
                 this.archer.archerHP= this.archer.archerHP - mushroom.mushDamage;
                 healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
                 this.archer.takeDamage();
@@ -395,7 +433,7 @@ export default class Forest extends Phaser.Scene{
 
         this.physics.add.collider(this.wizard.wizardBullets,this.archer,(archer,bullet) => {
             bullet.explosion();
-            this.sound.play('explosion_sound'); 
+            this.explosion.play(); 
             this.wizard.wizardBullets.killAndHide(bullet);
             bullet.removeFromScreen();
             this.archer.archerHP--;
@@ -406,28 +444,49 @@ export default class Forest extends Phaser.Scene{
         // colliders fireball (wizard)
         this.physics.add.collider(this.wizard.wizardBullets, this.ground, (bullet) => {
             bullet.explosion();
-            this.sound.play('explosion_sound'); 
+            this.explosion.play(); 
             this.wizard.wizardBullets.killAndHide(bullet);
             bullet.removeFromScreen();
         });
 
         this.physics.add.collider(this.wizard.wizardBullets, this.plataforms, (bullet) => {
             bullet.explosion();
-            this.sound.play('explosion_sound'); 
+            this.explosion.play(); 
             this.wizard.wizardBullets.killAndHide(bullet);
             bullet.removeFromScreen();
         });
+
+        this.delayDeathRestart = 2000;
+        this.deathAnim = {
+        delay: this.delayDeathRestart,
+        repeat: 0,
+        callback: () => {
+            this.sound.stopAll();
+            this.scene.stop();
+            this.scene.start('GameOver');
+        }
+        };
 
     }
 
     update(time,delta){
 
-        console.log(this.archer.x);
-        //console.log(this.wizard.wizardHP);
+        console.log(this.archer.archerHP);
+        
+        // verifica HP do archer
+        if(this.archer.archerHP > 0){
+            this.archer.update(this.cursors,time);
+        } else {
+            this.archer.isDeath();
+            this.archerDeath = true;
+        }
 
-        this.archer.update(this.cursors,time);
-        this.checkArcherHP();
-
+        // gameover
+        if(this.archerDeath == true && this.archerDeathConfigs == false){
+            this.time.addEvent(this.deathAnim);
+            this.archerDeathConfigs = true;
+        }
+        
         // itera as balas para as destruir dps de se afastarem do arqueiro
         this.archer.archerBullets.children.iterate(function (bullet) {
             if(bullet.x > this.archer.x + (this.game.config.width/2) || bullet.x < this.archer.x - (this.game.config.width/2)){
@@ -438,9 +497,11 @@ export default class Forest extends Phaser.Scene{
 
         // defrontar o boss
         if(this.archer.x > this.bossLevelX){
-
+        
             // faz as configs do boss 1x
             if(this.boss == false && this.bossConfigs == false){
+                this.forest_song_level.stop();
+                this.forest_song_boss.play();
                 //evento de disparo do boss
                 this.boss = true;
                 this.bossConfigs = true;
@@ -480,9 +541,5 @@ export default class Forest extends Phaser.Scene{
         }
     }
 
-    checkArcherHP(){
-        if(this.archer.archerHP <= 0){
-            this.scene.restart();
-        }
-    }
+
 }

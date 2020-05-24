@@ -11,7 +11,9 @@ export default class Nightmare extends Phaser.Physics.Arcade.Sprite {
 
         this.setSize(95, 70);
         this.setOffset(15,25);
-
+        
+        this.nightmareHP = 100;
+        this.nightmareDamage = 20;
         this.velocity = 100;
 
         // grupo de balas
@@ -25,7 +27,7 @@ export default class Nightmare extends Phaser.Physics.Arcade.Sprite {
         this.bulletsOnShoot = 5;
 
         // grupo de monstros
-        this.monstersMaxsize = 3;
+        this.monstersMaxsize = 6;
         this.nightmaremonsters = this.scene.physics.add.group({
             classType: FireSkull,
             maxSize: this.monstersMaxsize,
@@ -73,7 +75,34 @@ export default class Nightmare extends Phaser.Physics.Arcade.Sprite {
             this.flipX = false;
         }
     }
+    takeDamage(){
+        let i = 0;
+        let repetition = 100;
+        let changeTint = true;
 
+        this.scene.time.addEvent({
+            repeat: repetition,
+            loop: false,
+            callback: () => {
+                //in the last repetition replace the normal color (tint) and re-enables collision
+                if (i >= repetition) {
+                    this.tint = 0xFFFFFF
+                } else {
+
+                    if (changeTint) {
+                        this.tint = 0xFF0000
+                    } else {
+                        this.tint = 0xFFFFFF
+                    }
+                    if (i % 20 == 0) {
+                        changeTint = !changeTint;
+                    }
+                }
+                i++
+            }
+        });
+
+    }
     shoot(time){
         if(this.timeToShoot < time){
             for(let i=0;i<this.bulletsOnShoot;i++){
