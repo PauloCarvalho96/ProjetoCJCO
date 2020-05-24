@@ -281,6 +281,8 @@ export default class Gothic extends Phaser.Scene {
         });
 
         this.physics.add.collider(this.nightmare.nightmarebullets, this.archer, (archer,bullet) => {
+            this.archer.archerHP--;
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
             this.archer.takeDamage();
             bullet.explosion();
             this.explosion.play();
@@ -299,6 +301,18 @@ export default class Gothic extends Phaser.Scene {
         }); 
 
         this.physics.add.overlap(this.archer, this.mushroomGroup, () => {
+            this.archer.archerHP--;
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.archer.takeDamage();
+        }); 
+
+        this.physics.add.overlap(this.archer, this.nightmare.nightmaremonsters, () => {
+            this.archer.archerHP--;
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.archer.takeDamage();
+        }); 
+
+        this.physics.add.overlap(this.archer, this.nightmare, () => {
             this.archer.archerHP--;
             this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
             this.archer.takeDamage();
@@ -548,7 +562,6 @@ export default class Gothic extends Phaser.Scene {
         percentage = percentage * 100;
         this.loadingText.setText("Loading: " + percentage.toFixed(2) + "%");
         console.log("P:" + percentage);
-        
     }
 
     complete() {
