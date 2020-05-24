@@ -12,7 +12,7 @@ export default class Store extends Phaser.Physics.Arcade.Sprite {
         });
        // this.scene.load.image("heart","assets/heart.png");//////////////////////////////////
 
-        this.coins = 1; // custo de upgrades dos status do archer
+        this.coins = 10; // custo de upgrades dos status do archer
         this.hp_label = scene.add.text(550, scene.map.heightInPixels-105, 'health:', {fontSize:'15px', fill:'#ffffff'}).setVisible(false).setScrollFactor(0);
         this.price_hp = scene.add.text(642, scene.map.heightInPixels-105, 'x'+this.coins, {fontSize:'15px', fill:'#ffffff'}).setVisible(false).setScrollFactor(0);
         this.hp_label1 = scene.add.text(700, scene.map.heightInPixels-105, 'press(1)', {fontSize:'15px', fill:'#ff0000'}).setVisible(false).setScrollFactor(0);

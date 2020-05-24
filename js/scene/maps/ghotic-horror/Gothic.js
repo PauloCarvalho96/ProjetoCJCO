@@ -35,6 +35,7 @@ export default class Gothic extends Phaser.Scene {
         this.load.image("tree_bck","assets/maps/gothic-horror/tiles/tree_bck.png");
         this.load.image("water","assets/maps/gothic-horror/tiles/water.png");
         this.load.image("coin","assets/faceon_gold_coin.png");
+        this.load.image("heart","assets/heart.png");
         // carregamento do mapa
         this.load.tilemapTiledJSON("gothic","assets/maps/gothic-horror/gothic-horror.json");
 
@@ -180,6 +181,9 @@ export default class Gothic extends Phaser.Scene {
         this.image_coin=this.add.image(this.archer.x + 585,this.map.heightInPixels-100,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); // coin
         this.image_coin1=this.add.image(this.archer.x + 585,this.map.heightInPixels-70,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0);
         this.image_coin2=this.add.image(this.archer.x + 585,this.map.heightInPixels-40,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); 
+        this.heart_image1 = this.add.image(30,50,"heart").setScale(0.05,0.05).setVisible(true).setScrollFactor(0);
+        this.heart_image2 = this.add.image(55,50,"heart").setScale(0.05,0.05).setVisible(true).setScrollFactor(0);
+        this.heart_image3 = this.add.image(80,50,"heart").setScale(0.05,0.05).setVisible(true).setScrollFactor(0);
         this.archer_coins = this.add.image(this.archer.x + 670,20,"coin").setScale(0.06,0.06).setVisible(true).setScrollFactor(0);  
         this.coin_text = this.add.text(this.archer.x + 610, 10,"x" +coins, {fontSize:'20px', fill:'#ffffff'}).setScrollFactor(0); 
         /** Sounds */
@@ -321,7 +325,7 @@ export default class Gothic extends Phaser.Scene {
         this.physics.add.overlap(this.archer.archerBullets, this.mushroomGroup, (bullet,mushroom) => {
             mushroom.mushHP = mushroom.mushHP - this.archer.archerDamage;
             if(mushroom.mushHP <= 0){ /////////////////////////////////////////////////////////////////////////////////////////////
-                coins += 2;
+                coins += 3;
                 this.mushroomGroup.killAndHide(mushroom);
                 mushroom.removeFromScreen();
                 this.archer.archerBullets.killAndHide(bullet);
@@ -398,8 +402,6 @@ export default class Gothic extends Phaser.Scene {
 
 
     update(time,delta){
-        
-        console.log("hp: " +this.archer.archerHP + " update: "+ upgrades[0]);
         this.coin_text.setText("x" + coins);
         // verifica HP do archer
         if(this.archer.archerHP > 0){
@@ -407,6 +409,13 @@ export default class Gothic extends Phaser.Scene {
         } else {
             this.archer.isDeath();
             this.archerDeath = true;
+        }
+
+        if(archerLifes <=  2){
+            this.heart_image3.setVisible(false);
+        }
+        if(archerLifes <= 1){
+            this.heart_image2.setVisible(false);
         }
 
         // gameover
@@ -436,7 +445,7 @@ export default class Gothic extends Phaser.Scene {
         }
         if(this.show_shop == false){
             if(Phaser.Input.Keyboard.JustDown(this.press1) && coins >= this.potion_hp.coins){
-              this.archer.archerMaxHP += this.potion_hp.coins;
+              this.archer.archerMaxHP += this.potion_hp.coins; 
               this.archer.archerHP = this.archer.archerMaxHP;
               this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
               coins -= this.potion_hp.coins;
@@ -450,7 +459,7 @@ export default class Gothic extends Phaser.Scene {
               upgrades[1] = this.potion_velocity.coins;
               this.potion_hp.price_hp1.setText('x'+this.potion_velocity.coins) // atualiza o preco
             }else if(Phaser.Input.Keyboard.JustDown(this.press3) && coins >= this.potion_damage.coins){
-              this.archer.archerDamage += this.potion_damage.coins;
+              this.archer.archerDamage += 15; 
               coins -= this.potion_damage.coins;
               this.potion_damage.coins *= 2; // para o preco dos upgrades aumentar sempre que se compra
               upgrades[2] = this.potion_damage.coins; 

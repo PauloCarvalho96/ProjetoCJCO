@@ -17,7 +17,7 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
         // hp archer
         this.archerHP = 100;
         this.archerMaxHP = 100;
-        this.archerDamage = 50;
+        this.archerDamage = 25;
         
         this.velocityY = -350;
         this.velocity = 200;
