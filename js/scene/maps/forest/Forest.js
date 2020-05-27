@@ -540,6 +540,7 @@ export default class Forest extends Phaser.Scene{
     }
 
     update(time,delta){
+        console.log(this.archer.x);
         this.coin_text.setText("x" + coins);
         this.potion_hp.price_hp.setText('x'+this.potion_hp.coins) // atualiza o preco
         this.potion_hp.price_hp1.setText('x'+this.potion_velocity.coins) // atualiza o preco
@@ -593,7 +594,7 @@ export default class Forest extends Phaser.Scene{
 
         if(this.show_shop == false){
             if(Phaser.Input.Keyboard.JustDown(this.press1) && coins >= this.potion_hp.coins){
-              this.archer.archerMaxHP += this.potion_hp.coins
+              this.archer.archerMaxHP += 20;
               this.archer.archerHP = this.archer.archerMaxHP;
               this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
               coins -= this.potion_hp.coins;
@@ -601,7 +602,7 @@ export default class Forest extends Phaser.Scene{
               upgrades[0] = this.potion_hp.coins;
               this.potion_hp.price_hp.setText('x'+this.potion_hp.coins) // atualiza o preco
             }else if(Phaser.Input.Keyboard.JustDown(this.press2) && coins >= this.potion_velocity.coins){
-              this.archer.velocity += 50;
+              this.archer.velocity += 30;
               coins -= this.potion_velocity.coins;
               this.potion_velocity.coins *= 2; // para o preco dos upgrades aumentar sempre que se compra 
               upgrades[1] = this.potion_velocity.coins;

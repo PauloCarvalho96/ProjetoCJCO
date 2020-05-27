@@ -101,10 +101,7 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
             this.flipX = true;
         }
 
-        // se a distancia ao arqueiro for maior entao nao dispara
-        if(space > this.spaceToShoot || space < -this.spaceToShoot){
-            this.play('walk',true);      
-        }
+        this.play('walk',true);      
     }
 
     // para disparar
@@ -116,7 +113,6 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
                 if(fireBall){
                      // ataque do boss 
                     this.play('demon_attack',true);
-                    console.log("entrei corno");
                     let bullet = this.DemonBullets.getFirstDead(true, this.x, this.y);
                     if(space > 0 && bullet){ // lado esquerdo
                         bullet.setVelocityX(-125);
@@ -129,9 +125,9 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
                         bullet.active = true;
                         bullet.visible = true;
                     }
-                    bullet.setVelocity(0,0);
-                    bullet.active = true;
-                    bullet.visible = true;
+                    fireBall.setVelocity(0,0);
+                    fireBall.active = true;
+                    fireBall.visible = true;
                     this.timeToShoot = time + this.fireRate;
                 }
             }  
