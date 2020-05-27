@@ -416,11 +416,12 @@ export default class Castle extends Phaser.Scene {
           this.archer.takeDamage();
           
         }); 
-        this.physics.add.collider(this.archer.archerBullets, this.demon.demonMonsters, (bullet,demon) => {
+        this.physics.add.collider(this.archer.archerBullets, this.demon.demonMonsters, (bullet,demon,Skeleton) => {
+          Skeleton.skeletonHP = Skeleton.skeletonHP - this.archer.archerDamage;
           this.archer.archerBullets.killAndHide(bullet);
           bullet.removeFromScreen();
-          this.demon.demonMonsters.killAndHide(demon);
-          demon.removeFromScreen();
+          //this.demon.demonMonsters.killAndHide(demon);
+          //demon.removeFromScreen();
       });
 
       this.physics.add.collider(this.archer.archerBullets, this.demon, (archer,bullet) => {

@@ -10,6 +10,7 @@ export default class Skeleton extends Phaser.Physics.Arcade.Sprite {
         this.setOffset(50,50);
 
         this.velocity = 60;
+        this.skeletonHP = 100;
 
         this.setVisible(true);
 
