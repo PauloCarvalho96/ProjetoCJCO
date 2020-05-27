@@ -127,26 +127,23 @@ export default class Archer extends Phaser.Physics.Arcade.Sprite {
     }
 
     shoot(time){
-        // verifica pos do jogador para disparar a seta
-        if(this.flipX){
-            this.direction = 1;
-        } else {
-            this.direction = 3;
-        }
-        let bullet = this.archerBullets.getFirstDead(true, this.x, this.y-10,"archer_arrow",this.direction);
+        let bullet = this.archerBullets.getFirstDead(true, this.x, this.y-10,"archer_arrow",3);
         if(bullet){ 
             this.fireSound.play();
             //velocidade da bala
             if(this.flipX){
+                bullet.flipX = true;
                 bullet.setVelocityX(-bullet.baseVelocity);
             } else {
                 bullet.setVelocityX(bullet.baseVelocity);
+                bullet.flipX = false;
             }
             bullet.active = true;
             bullet.visible = true;
             this.timeToShoot = time + this.fireRate;
         }
     }
+
 
     takeDamage(){
 

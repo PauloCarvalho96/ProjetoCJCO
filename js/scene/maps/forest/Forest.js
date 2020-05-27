@@ -457,8 +457,8 @@ export default class Forest extends Phaser.Scene{
             if(monster.gobHP <= 0){
                 this.wizard.wizardMonsters.killAndHide(monster);
                 monster.removeFromScreen();
-            this.archer.archerBullets.killAndHide(bullet);
-            bullet.removeFromScreen();
+                this.archer.archerBullets.killAndHide(bullet);
+                bullet.removeFromScreen();
             }
             this.archer.archerBullets.killAndHide(bullet);
             bullet.removeFromScreen();    
