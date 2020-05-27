@@ -467,7 +467,6 @@ export default class Gothic extends Phaser.Scene {
         }
         if(this.show_shop == false){
             if(Phaser.Input.Keyboard.JustDown(this.press1) && coins >= this.potion_hp.coins){
-              this.archer.archerMaxHP += 20; 
               this.archer.archerHP = this.archer.archerMaxHP;
               this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
               coins -= this.potion_hp.coins;
@@ -475,13 +474,13 @@ export default class Gothic extends Phaser.Scene {
               upgrades[0] = this.potion_hp.coins;
               this.potion_hp.price_hp.setText('x'+this.potion_hp.coins) // atualiza o preco
             }else if(Phaser.Input.Keyboard.JustDown(this.press2) && coins >= this.potion_velocity.coins){
-              this.archer.velocity += 30;
+              this.archer.velocity += 300;
               coins -= this.potion_velocity.coins;
               this.potion_velocity.coins *= 2; // para o preco dos upgrades aumentar sempre que se compra 
               upgrades[1] = this.potion_velocity.coins;
               this.potion_hp.price_hp1.setText('x'+this.potion_velocity.coins) // atualiza o preco
             }else if(Phaser.Input.Keyboard.JustDown(this.press3) && coins >= this.potion_damage.coins){
-              this.archer.archerDamage += 15; 
+              this.archer.archerDamage += 1500; 
               if(this.archer.archerDamage > 55){
                 this.archer.archerDamage = 100;
               }

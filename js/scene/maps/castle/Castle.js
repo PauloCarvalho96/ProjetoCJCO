@@ -565,7 +565,6 @@ export default class Castle extends Phaser.Scene {
 
     if(this.show_shop == false){
       if(Phaser.Input.Keyboard.JustDown(this.press1) && coins >= this.potion_hp.coins){
-        this.archer.archerMaxHP += 20;
         this.archer.archerHP = this.archer.archerMaxHP;
         this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
         coins -= this.potion_hp.coins;

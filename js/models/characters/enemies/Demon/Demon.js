@@ -101,7 +101,9 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
             this.flipX = true;
         }
 
-        this.play('walk',true);      
+        this.on("animationcomplete", ()=>{
+            this.play('walk',true);
+        });
     }
 
     // para disparar
@@ -111,7 +113,6 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
                 let px = Math.floor(Math.random() * (4700 - 4050 + 1) + 4050);
                 let fireBall = this.demonfireball.getFirstDead(true, px, 20);
                 if(fireBall){
-                     // ataque do boss 
                     this.play('demon_attack',true);
                     let bullet = this.DemonBullets.getFirstDead(true, this.x, this.y);
                     if(space > 0 && bullet){ // lado esquerdo
