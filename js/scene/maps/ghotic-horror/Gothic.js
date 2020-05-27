@@ -173,7 +173,7 @@ export default class Gothic extends Phaser.Scene {
 
         // criação da personagem
         this.archer = new Archer(this, 100, 500);
-
+        coins = 0; 
         this.potion_hp = new Store(this,this.archer.x + 525,this.map.heightInPixels-100,"potions",0).setScrollFactor(0).setVisible(false); 
         this.potion_velocity = new Store(this,this.archer.x + 530,this.map.heightInPixels-65,"potions",2).setScrollFactor(0).setVisible(false);
         this.potion_damage = new Store(this,this.archer.x + 525,this.map.heightInPixels-50,"potions",4).setScrollFactor(0).setVisible(false);
@@ -185,6 +185,9 @@ export default class Gothic extends Phaser.Scene {
         this.heart_image3 = this.add.image(80,50,"heart").setScale(0.05,0.05).setVisible(true).setScrollFactor(0);
         this.archer_coins = this.add.image(this.archer.x + 670,20,"coin").setScale(0.06,0.06).setVisible(true).setScrollFactor(0);  
         this.coin_text = this.add.text(this.archer.x + 610, 10,"x" +coins, {fontSize:'20px', fill:'#ffffff'}).setScrollFactor(0); 
+        upgrades[0] = 10;
+        upgrades[1] = 10;
+        upgrades[2] = 10;
         /** Sounds */
         this.explosion = this.sound.add('explosion_sound',{
             volume:0.1,
@@ -464,7 +467,6 @@ export default class Gothic extends Phaser.Scene {
         }
         if(this.show_shop == false){
             if(Phaser.Input.Keyboard.JustDown(this.press1) && coins >= this.potion_hp.coins){
-              this.archer.archerMaxHP += this.potion_hp.coins; 
               this.archer.archerHP = this.archer.archerMaxHP;
               this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
               coins -= this.potion_hp.coins;
@@ -472,13 +474,16 @@ export default class Gothic extends Phaser.Scene {
               upgrades[0] = this.potion_hp.coins;
               this.potion_hp.price_hp.setText('x'+this.potion_hp.coins) // atualiza o preco
             }else if(Phaser.Input.Keyboard.JustDown(this.press2) && coins >= this.potion_velocity.coins){
-              this.archer.velocity += this.potion_velocity.coins;
+              this.archer.velocity += 30;
               coins -= this.potion_velocity.coins;
               this.potion_velocity.coins *= 2; // para o preco dos upgrades aumentar sempre que se compra 
               upgrades[1] = this.potion_velocity.coins;
               this.potion_hp.price_hp1.setText('x'+this.potion_velocity.coins) // atualiza o preco
             }else if(Phaser.Input.Keyboard.JustDown(this.press3) && coins >= this.potion_damage.coins){
-              this.archer.archerDamage += 15; 
+              this.archer.archerDamage += 15;
+              if(this.archer.archerDamage > 55){
+                this.archer.archerDamage = 100;
+              }
               coins -= this.potion_damage.coins;
               this.potion_damage.coins *= 2; // para o preco dos upgrades aumentar sempre que se compra
               upgrades[2] = this.potion_damage.coins; 

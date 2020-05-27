@@ -88,7 +88,7 @@ export default class Wizard extends Phaser.Physics.Arcade.Sprite {
         if(this.x < 3850){
             this.setVelocityX(50);
             this.flipX = false;
-        } else if(this.x > 4500){
+        } else if(this.x > 4575){
             this.setVelocityX(-50);
             this.flipX = true;
         }

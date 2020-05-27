@@ -1,5 +1,6 @@
 import DemonBullet from "./DemonBullet.js";
 import Skeleton from "../Skeleton/skeleton.js";
+import Fireball from "../FireBall/Fireball.js";
 
 export default class Demon extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
@@ -16,8 +17,19 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
 
         this.demonHP = 3500;
         this.demonDamage = 5;
+        this.bulletsOnShoot = 5;
+        this.fireRate = 6000;
+        this.enemiesToSpawn = 3;
+        this.spawnRate = 10000;
+        this.timeToSpawn = 0;
+        this.timeToShoot = 0;
+        this.bulletsMaxsize = 10;
 
-        this.bulletsMaxsize = 2;
+        this.demonfireball = this.scene.physics.add.group({
+            classType: Fireball,
+            maxSize: this.bulletsMaxsize,
+        });
+       
         this.DemonBullets = this.scene.physics.add.group({
             classType: DemonBullet,
             maxSize: this.bulletsMaxsize,
@@ -68,13 +80,17 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
         this.play('walk',true);
     }
 
-    update(space){
+    update(space,time){
         // verificar para que lado o inimigo vira
         this.side(space);
+
+        this.shoot(space,time);
+
+        this.spawn(time);
     }
 
    // para definir para que lado virar 
-   side(space){
+   side(space,time){
         if(space > 0){
             this.setVelocityX(-50);
             this.flipX = false;
@@ -85,32 +101,61 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
             this.flipX = true;
         }
 
-        // se a distancia ao arqueiro for maior entao nao dispara
-        if(space > this.spaceToShoot || space < -this.spaceToShoot){
-            this.play('walk',true);      
-        }
+        this.on("animationcomplete", ()=>{
+            this.play('walk',true);
+        });
     }
 
     // para disparar
-    shoot(space){
-        this.play('demon_attack',true);
-        let bullet = this.DemonBullets.getFirstDead(true, this.x, this.y);
-        if(space > 0 && bullet){ // lado esquerdo
-            bullet.setVelocityX(-125);
-            bullet.setVelocityY(125);
-            bullet.active = true;
-            bullet.visible = true;
+    shoot(space,time){
+        if(this.timeToShoot < time){
+            for(let i=0;i<this.bulletsOnShoot;i++){
+                let px = Math.floor(Math.random() * (4700 - 4050 + 1) + 4050);
+                let fireBall = this.demonfireball.getFirstDead(true, px, 20);
+                if(fireBall){
+                    this.play('demon_attack',true);
+                    let bullet = this.DemonBullets.getFirstDead(true, this.x, this.y);
+                    if(space > 0 && bullet){ // lado esquerdo
+                        bullet.setVelocityX(-125);
+                        bullet.setVelocityY(125);
+                        bullet.active = true;
+                        bullet.visible = true;
+                    }
+                    if(space < 0 && bullet) { // lado direito
+                        bullet.setVelocity(125);
+                        bullet.active = true;
+                        bullet.visible = true;
+                    }
+                    fireBall.setVelocity(0,0);
+                    fireBall.active = true;
+                    fireBall.visible = true;
+                    this.timeToShoot = time + this.fireRate;
+                }
+            }  
         }
 
-        if(space < 0 && bullet) { // lado direito
-            bullet.setVelocity(125);
-            bullet.active = true;
-            bullet.visible = true;
+    }
+
+    
+    spawn(time){
+        if(this.timeToSpawn < time){
+            for(let i=0;i<this.enemiesToSpawn;i++){
+                let px = Math.floor(Math.random() * (4700 - 4050 + 1) + 4050);
+                let monster = this.demonMonsters.getFirstDead(true,px,550);
+                if(monster){
+                    this.secondShoot();
+                    monster.setVelocity(-monster.velocity,0);
+                    monster.flipX = true;
+                    monster.active = true;
+                    monster.visible = true;
+                    this.timeToSpawn = time + this.spawnRate;
+                }
+            }  
         }
     }
 
     // 2 ataque
-    secondShoot(space){
+    secondShoot(){
         this.play('demon_2attack',true);
         this.shootLeft();
         this.shootRight();
@@ -156,18 +201,6 @@ export default class Demon extends Phaser.Physics.Arcade.Sprite {
         this.y = 700;
         this.setVelocity(0, 0);
     }
-
-    spawn(){
-        let px = Math.floor(Math.random() * (4700 - 4050 + 1) + 4050);
-        let monster = this.demonMonsters.getFirstDead(true,px,100);
-        if(monster){
-            monster.setVelocity(-60,0);
-            monster.flipX = true;
-            monster.active = true;
-            monster.visible = true;
-        }
-    }
-
 
     takeDamage(){
         let i = 0;
