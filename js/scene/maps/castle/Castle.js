@@ -8,7 +8,7 @@ var count = 0;
 var archerLifes;
 var velocity;
 var damage;
-var coins = 0;
+var coins;
 var upgrades;
 var alreadyPass = false;
 export default class Castle extends Phaser.Scene {
@@ -430,6 +430,8 @@ export default class Castle extends Phaser.Scene {
         if(this.demon.demonHP <= 0){
           this.archer.archerBullets.killAndHide(bullet);
           bullet.removeFromScreen(); 
+          coins = 0; // zera as moedas
+          alreadyPass = false;
           /** Venceu o jogo! */
           this.sound.stopAll();
           this.scene.stop();
@@ -474,78 +476,41 @@ export default class Castle extends Phaser.Scene {
          this.physics.add.collider(this.demon.hitboxes, front, (hit) => {
           this.demon.hitboxes.killAndHide(hit);
           this.demon.removeHitFromScreen(hit);
-        }); 
+        });
+
+        this.physics.add.collider(this.demon.demonfireball, front, (bullet) => {
+          bullet.explosion();
+          this.explosion.play(); 
+          this.demon.demonfireball.killAndHide(bullet);
+          bullet.removeFromScreen();
+        });
+
+        this.physics.add.collider(this.demon.demonfireball,boss_m, (bullet) => {
+          bullet.explosion();
+          this.explosion.play(); 
+          this.demon.demonfireball.killAndHide(bullet);
+          bullet.removeFromScreen();
+        });
         
-      // 1 ataque
-      this.enemyShootDelay = 2000;
-      this.demonFirstShoot = {
-        delay: this.enemyShootDelay,
-        repeat: 0,
-        callback: () => {
-            // dispara
-            this.demon.shoot(this.demon.x-this.archer.x); 
-            count++;
-        }
-      };
-
-      // evento para duraçao de cada rajada de disparos
-      this.demonFirstDelay = 9000;
-      this.eventFirstShoot = {
-        delay: this.demonFirstDelay,
-        repeat: -1,
-        callback: () => {  
-            // quando acaba a animaçao de disparo entao volta a idle
-            this.demon.on("animationcomplete", ()=>{
-              this.demon.play('walk',true);
-            });
-            this.time.addEvent(this.demonFirstShoot);
-        }
-    };
-
-    // Segundo ataque 
-    this.enemy2ShootDelay = 0;
-    this.demonSecondShoot = {
-      delay: this.enemy2ShootDelay,
-      repeat: 0,
-      callback: () => {
-          // dispara
-        this.demon.spawn();
-        this.demon.secondShoot(this.demon.x-this.archer.x);     
-      }
-    };
-
-    this.demonSecondDelay = 4500;
-    this.eventSecondShoot  = {
-      delay: this.demonFirstDelay*count + this.demonSecondDelay,
-      repeat: -1,
-      callback: () => {  
-          // quando acaba a animaçao de disparo entao volta a idle
-          this.demon.on("animationcomplete", ()=>{
-            this.demon.play('walk',true);
-          });
-          this.time.addEvent(this.demonSecondShoot);
-      }
-    };
-
-    this.delayDeathRestart = 2000;
-        this.deathAnim = {
-        delay: this.delayDeathRestart,
-        repeat: 0,
-        callback: () => {
-            archerLifes--;
-            if(archerLifes == 0){
-              archerLifes = 3;
-              alreadyPass = false;
-              coins = 0;
-              this.sound.stopAll();
-              this.scene.stop();
-              this.scene.start('GameOver');
-            } else {
-              this.sound.stopAll();
-              this.scene.restart();
-            } 
-        }
-    };
+        this.delayDeathRestart = 2000;
+            this.deathAnim = {
+            delay: this.delayDeathRestart,
+            repeat: 0,
+            callback: () => {
+                archerLifes--;
+                if(archerLifes == 0){
+                  archerLifes = 3;
+                  alreadyPass = false;
+                  coins = 0;
+                  this.sound.stopAll();
+                  this.scene.stop();
+                  this.scene.start('GameOver');
+                } else {
+                  this.sound.stopAll();
+                  this.scene.restart();
+                } 
+            }
+        };
   }
 
   update(time,delta) {
@@ -608,13 +573,16 @@ export default class Castle extends Phaser.Scene {
         upgrades[0] = this.potion_hp.coins;
         this.potion_hp.price_hp.setText('x'+this.potion_hp.coins) // atualiza o preco
       }else if(Phaser.Input.Keyboard.JustDown(this.press2) && coins >= this.potion_velocity.coins){
-        this.archer.velocity += this.potion_velocity.coins;
+        this.archer.velocity += 50;
         coins -= this.potion_velocity.coins;
         this.potion_velocity.coins *= 2; // para o preco dos upgrades aumentar sempre que se compra 
         upgrades[1] = this.potion_velocity.coins;
         this.potion_hp.price_hp1.setText('x'+this.potion_velocity.coins) // atualiza o preco
       }else if(Phaser.Input.Keyboard.JustDown(this.press3)&& coins >= this.potion_damage.coins){
         this.archer.archerDamage += 15;
+        if(this.archer.archerDamage > 55){
+          this.archer.archerDamage = 100;
+        }
         coins -= this.potion_damage.coins;
         this.potion_damage.coins *= 2; // para o preco dos upgrades aumentar sempre que se compra 
         upgrades[2] = this.potion_damage.coins;
@@ -628,19 +596,16 @@ export default class Castle extends Phaser.Scene {
       if( espaco <= 10 && espaco >= -10  ){
         this.demon.setVelocityX(0);
         this.demon.play("demon_idle",true);
-      }else{
-        this.demon.update(this.demon.x-this.archer.x);
       }
       if(this.boss == false && this.bossConfigs == false){
         this.castle_song_level.stop();
         this.castle_song_boss.play();
-        //evento de disparo do boss
-        this.time.addEvent(this.eventFirstShoot);
-        this.time.addEvent(this.eventSecondShoot);
         this.boss = true;
         this.bossConfigs = true;
       }
      
+      this.demon.update(this.demon.x-this.archer.x,time);
+
       if(this.archer.x < 4020 && this.boss == true){
         this.archer.x = 4020;
       }else if(this.archer.x > this.map.widthInPixels-20){
