@@ -35,6 +35,7 @@ export default class Gothic extends Phaser.Scene {
         this.load.image("tree_bck","assets/maps/gothic-horror/tiles/tree_bck.png");
         this.load.image("water","assets/maps/gothic-horror/tiles/water.png");
         this.load.image("coin","assets/faceon_gold_coin.png");
+        this.load.image("heart","assets/heart.png");
         // carregamento do mapa
         this.load.tilemapTiledJSON("gothic","assets/maps/gothic-horror/gothic-horror.json");
 
@@ -149,7 +150,6 @@ export default class Gothic extends Phaser.Scene {
     }
 
     create(){
-        console.log(archerLifes);
         this.show_shop = true;
 
         // carregamento do mapa
@@ -173,15 +173,21 @@ export default class Gothic extends Phaser.Scene {
 
         // criação da personagem
         this.archer = new Archer(this, 100, 500);
-
+        coins = 0; 
         this.potion_hp = new Store(this,this.archer.x + 525,this.map.heightInPixels-100,"potions",0).setScrollFactor(0).setVisible(false); 
         this.potion_velocity = new Store(this,this.archer.x + 530,this.map.heightInPixels-65,"potions",2).setScrollFactor(0).setVisible(false);
         this.potion_damage = new Store(this,this.archer.x + 525,this.map.heightInPixels-50,"potions",4).setScrollFactor(0).setVisible(false);
         this.image_coin=this.add.image(this.archer.x + 585,this.map.heightInPixels-100,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); // coin
         this.image_coin1=this.add.image(this.archer.x + 585,this.map.heightInPixels-70,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0);
         this.image_coin2=this.add.image(this.archer.x + 585,this.map.heightInPixels-40,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); 
+        this.heart_image1 = this.add.image(30,50,"heart").setScale(0.05,0.05).setVisible(true).setScrollFactor(0);
+        this.heart_image2 = this.add.image(55,50,"heart").setScale(0.05,0.05).setVisible(true).setScrollFactor(0);
+        this.heart_image3 = this.add.image(80,50,"heart").setScale(0.05,0.05).setVisible(true).setScrollFactor(0);
         this.archer_coins = this.add.image(this.archer.x + 670,20,"coin").setScale(0.06,0.06).setVisible(true).setScrollFactor(0);  
         this.coin_text = this.add.text(this.archer.x + 610, 10,"x" +coins, {fontSize:'20px', fill:'#ffffff'}).setScrollFactor(0); 
+        upgrades[0] = 10;
+        upgrades[1] = 10;
+        upgrades[2] = 10;
         /** Sounds */
         this.explosion = this.sound.add('explosion_sound',{
             volume:0.1,
@@ -211,7 +217,6 @@ export default class Gothic extends Phaser.Scene {
             volume:0.5,
         });
 
-
         this.nightmare = new Nightmare(this,5500,400);
 
         // grupos de inimigos
@@ -229,6 +234,7 @@ export default class Gothic extends Phaser.Scene {
         this.press2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
         this.press3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
         this.pressQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+        this.pressP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
 
         /** Health bar */
         var backgroundBar = this.add.image(this.archer.x-90, 10, 'red-bar');
@@ -281,6 +287,8 @@ export default class Gothic extends Phaser.Scene {
         });
 
         this.physics.add.collider(this.nightmare.nightmarebullets, this.archer, (archer,bullet) => {
+            this.archer.archerHP--;
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
             this.archer.takeDamage();
             bullet.explosion();
             this.explosion.play();
@@ -304,6 +312,18 @@ export default class Gothic extends Phaser.Scene {
             this.archer.takeDamage();
         }); 
 
+        this.physics.add.overlap(this.archer, this.nightmare.nightmaremonsters, () => {
+            this.archer.archerHP--;
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.archer.takeDamage();
+        }); 
+
+        this.physics.add.overlap(this.archer, this.nightmare, () => {
+            this.archer.archerHP--;
+            this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
+            this.archer.takeDamage();
+        }); 
+
         /** Propriedades balas mushroom -> archer */
         this.mushroomGroup.children.iterate(function (mushroom) {
             this.physics.add.collider(this.archer,mushroom.mushroomBullets, (archer,bullet) => {
@@ -320,8 +340,8 @@ export default class Gothic extends Phaser.Scene {
         /** Propriedades arrow */
         this.physics.add.overlap(this.archer.archerBullets, this.mushroomGroup, (bullet,mushroom) => {
             mushroom.mushHP = mushroom.mushHP - this.archer.archerDamage;
-            if(mushroom.mushHP <= 0){ /////////////////////////////////////////////////////////////////////////////////////////////
-                coins += 2;
+            if(mushroom.mushHP <= 0){ 
+                coins += 3;
                 this.mushroomGroup.killAndHide(mushroom);
                 mushroom.removeFromScreen();
                 this.archer.archerBullets.killAndHide(bullet);
@@ -358,7 +378,6 @@ export default class Gothic extends Phaser.Scene {
 
         this.physics.add.overlap(this.archer.archerBullets, this.nightmare, (nightmare,bullet) => {
             this.nightmare.nightmareHP = this.nightmare.nightmareHP - this.archer.archerHP;
-            console.log(this.nightmare.nightmareHP);
             if(this.nightmare.nightmareHP <= 0){
                 /** Próximo nível */
                 coins += 20;
@@ -384,6 +403,7 @@ export default class Gothic extends Phaser.Scene {
             if(archerLifes == 0){
                 // se quiser voltar a jogar um novo jogo
                 archerLifes = 3;
+                coins = 0;
                 this.sound.stopAll();
                 this.scene.stop();
                 this.scene.start('GameOver');
@@ -398,8 +418,6 @@ export default class Gothic extends Phaser.Scene {
 
 
     update(time,delta){
-        
-        console.log("hp: " +this.archer.archerHP + " update: "+ upgrades[0]);
         this.coin_text.setText("x" + coins);
         // verifica HP do archer
         if(this.archer.archerHP > 0){
@@ -409,12 +427,25 @@ export default class Gothic extends Phaser.Scene {
             this.archerDeath = true;
         }
 
+        if(archerLifes <=  2){
+            this.heart_image3.setVisible(false);
+        }
+        if(archerLifes <= 1){
+            this.heart_image2.setVisible(false);
+        }
+
         // gameover
         if(this.archerDeath == true && this.archerDeathConfigs == false){
             this.time.addEvent(this.deathAnim);
             this.archerDeathConfigs = true;
         }
 
+        // pause game
+        if(Phaser.Input.Keyboard.JustDown(this.pressP)){
+            this.pauseGame();
+        }
+
+        // entrar na loja
         if(Phaser.Input.Keyboard.JustDown(this.pressQ)){
             this.store();
         }
@@ -436,7 +467,6 @@ export default class Gothic extends Phaser.Scene {
         }
         if(this.show_shop == false){
             if(Phaser.Input.Keyboard.JustDown(this.press1) && coins >= this.potion_hp.coins){
-              this.archer.archerMaxHP += this.potion_hp.coins;
               this.archer.archerHP = this.archer.archerMaxHP;
               this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
               coins -= this.potion_hp.coins;
@@ -444,13 +474,16 @@ export default class Gothic extends Phaser.Scene {
               upgrades[0] = this.potion_hp.coins;
               this.potion_hp.price_hp.setText('x'+this.potion_hp.coins) // atualiza o preco
             }else if(Phaser.Input.Keyboard.JustDown(this.press2) && coins >= this.potion_velocity.coins){
-              this.archer.velocity += this.potion_velocity.coins;
+              this.archer.velocity += 30;
               coins -= this.potion_velocity.coins;
               this.potion_velocity.coins *= 2; // para o preco dos upgrades aumentar sempre que se compra 
               upgrades[1] = this.potion_velocity.coins;
               this.potion_hp.price_hp1.setText('x'+this.potion_velocity.coins) // atualiza o preco
             }else if(Phaser.Input.Keyboard.JustDown(this.press3) && coins >= this.potion_damage.coins){
-              this.archer.archerDamage += this.potion_damage.coins;
+              this.archer.archerDamage += 15;
+              if(this.archer.archerDamage > 55){
+                this.archer.archerDamage = 100;
+              }
               coins -= this.potion_damage.coins;
               this.potion_damage.coins *= 2; // para o preco dos upgrades aumentar sempre que se compra
               upgrades[2] = this.potion_damage.coins; 
@@ -526,6 +559,14 @@ export default class Gothic extends Phaser.Scene {
         }
     }
 
+    // pause game
+    pauseGame(){
+        this.scene.launch('Paused',{
+            map: 'Gothic-Horror',
+        });
+        this.scene.pause();
+    }
+
     updateBar(percentage) {
         this.newGraphics.clear();
         this.newGraphics.fillStyle(0x3587e2, 1);
@@ -534,7 +575,6 @@ export default class Gothic extends Phaser.Scene {
         percentage = percentage * 100;
         this.loadingText.setText("Loading: " + percentage.toFixed(2) + "%");
         console.log("P:" + percentage);
-        
     }
 
     complete() {

@@ -56,7 +56,6 @@ export default class bootgame extends Phaser.Scene{
         playButton.on("pointerout",()=>{
             playButton.clearTint();
         })
-   
         
     }
 }

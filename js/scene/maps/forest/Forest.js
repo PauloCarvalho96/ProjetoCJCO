@@ -18,7 +18,7 @@ export default class Forest extends Phaser.Scene{
 
     init(data){
         if(alreadyPass == false){
-            archerLifes = data.acherLifes;
+            archerLifes = data.archerLifes;
             velocity = data.archer.velocity;
             damage = data.archer.archerDamage;
             coins = data.coins;
@@ -57,6 +57,7 @@ export default class Forest extends Phaser.Scene{
         this.load.image("torch1","assets/maps/forest/tiles/torch1.png");
         this.load.image("torch2","assets/maps/forest/tiles/torch2.png");
         this.load.image("coin","assets/faceon_gold_coin.png");
+        this.load.image("heart","assets/heart.png");
         // mapa (forest)
         this.load.tilemapTiledJSON("forest","assets/maps/forest/forest.json");
 
@@ -181,8 +182,6 @@ export default class Forest extends Phaser.Scene{
     }
 
     create(){
-        //console.log("Starting game");
- 
         // mapa (forest)
         this.map = this.make.tilemap({ key: "forest" });
  
@@ -225,11 +224,8 @@ export default class Forest extends Phaser.Scene{
         
         this.show_shop = true;
 
-        console.log("TEST: " +upgrades[0] +' ' + upgrades[1] + " " + upgrades[2]);
-
         this.archer.velocity = velocity;
         this.archer.archerDamage = damage;
-        console.log(this.archer.archerHP + " " +this.archer.velocity + " " + this.archer.archerDamage);
         this.potion_hp = new Store(this,this.archer.x + 525,this.map.heightInPixels-100,"potions",0).setScrollFactor(0).setVisible(false);
         this.potion_hp.coins = upgrades[0]; 
         this.potion_velocity = new Store(this,this.archer.x + 530,this.map.heightInPixels-65,"potions",2).setScrollFactor(0).setVisible(false);
@@ -239,6 +235,9 @@ export default class Forest extends Phaser.Scene{
         this.image_coin=this.add.image(this.archer.x + 585,this.map.heightInPixels-100,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); // coin
         this.image_coin1=this.add.image(this.archer.x + 585,this.map.heightInPixels-70,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); 
         this.image_coin2=this.add.image(this.archer.x + 585,this.map.heightInPixels-40,"coin").setScale(0.04,0.04).setVisible(false).setScrollFactor(0); 
+        this.heart_image1 = this.add.image(30,50,"heart").setScale(0.05,0.05).setVisible(true).setScrollFactor(0);
+        this.heart_image2 = this.add.image(55,50,"heart").setScale(0.05,0.05).setVisible(true).setScrollFactor(0);
+        this.heart_image3 = this.add.image(80,50,"heart").setScale(0.05,0.05).setVisible(true).setScrollFactor(0);
         this.archer_coins = this.add.image(this.archer.x + 670,20,"coin").setScale(0.06,0.06).setVisible(true).setScrollFactor(0);  
         this.coin_text = this.add.text(this.archer.x + 610, 10,"x" +coins, {fontSize:'20px', fill:'#ffffff'}).setScrollFactor(0);  
         
@@ -315,6 +314,7 @@ export default class Forest extends Phaser.Scene{
         this.press2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
         this.press3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
         this.pressQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+        this.pressP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
 
         // collider
         this.physics.add.collider(this.archer,this.ground);
@@ -422,7 +422,7 @@ export default class Forest extends Phaser.Scene{
             mushroom.mushHP = mushroom.mushHP - this.archer.archerDamage;
             mushroom.takeDamage();
             if(mushroom.mushHP <= 0){
-                coins += 2;
+                coins += 3;
                 this.mushGroup.killAndHide(mushroom);
                 mushroom.removeFromScreen();
                 this.archer.archerBullets.killAndHide(bullet);
@@ -467,7 +467,7 @@ export default class Forest extends Phaser.Scene{
         this.physics.add.overlap(this.archer.archerBullets, this.wizard, (wizard,bullet) => {
             this.wizard.wizardHP = this.wizard.wizardHP - this.archer.archerDamage;
             if(this.wizard.wizardHP <= 0){
-                coins += 20;
+                coins += 40;
                 this.archer.archerBullets.killAndHide(bullet);
                 bullet.removeFromScreen();
                 this.wizard.removeFromScreen();
@@ -525,7 +525,9 @@ export default class Forest extends Phaser.Scene{
         callback: () => {
             archerLifes--;
             if(archerLifes == 0){
+                archerLifes = 3;
                 alreadyPass = false;
+                coins = 0;
                 this.sound.stopAll();
                 this.scene.stop();
                 this.scene.start('GameOver');
@@ -550,13 +552,23 @@ export default class Forest extends Phaser.Scene{
             this.archerDeath = true;
         }
 
-        console.log("damage: " + this.archer.archerDamage + " hp: " +this.archer.archerHP+ " hp_max: "+this.archer.archerMaxHP +" velocity: " +this.archer.velocity );
-        console.log("array de upgrades: " +upgrades[0] +" " +upgrades[1] + " " + upgrades[2]);
+    
+        if(archerLifes <=  2){
+            this.heart_image3.setVisible(false);
+        }
+        if(archerLifes <= 1){
+            this.heart_image2.setVisible(false);
+        }
 
         // gameover
         if(this.archerDeath == true && this.archerDeathConfigs == false){
             this.time.addEvent(this.deathAnim);
             this.archerDeathConfigs = true;
+        }
+
+        // pause game
+        if(Phaser.Input.Keyboard.JustDown(this.pressP)){
+            this.pauseGame();
         }
         
         if(Phaser.Input.Keyboard.JustDown(this.pressQ)){
@@ -581,7 +593,6 @@ export default class Forest extends Phaser.Scene{
 
         if(this.show_shop == false){
             if(Phaser.Input.Keyboard.JustDown(this.press1) && coins >= this.potion_hp.coins){
-              this.archer.archerMaxHP += this.potion_hp.coins
               this.archer.archerHP = this.archer.archerMaxHP;
               this.healthBar.setScale(this.archer.archerHP/this.archer.archerMaxHP,1);
               coins -= this.potion_hp.coins;
@@ -589,13 +600,16 @@ export default class Forest extends Phaser.Scene{
               upgrades[0] = this.potion_hp.coins;
               this.potion_hp.price_hp.setText('x'+this.potion_hp.coins) // atualiza o preco
             }else if(Phaser.Input.Keyboard.JustDown(this.press2) && coins >= this.potion_velocity.coins){
-              this.archer.velocity += this.potion_velocity.coins;
+              this.archer.velocity += 30;
               coins -= this.potion_velocity.coins;
               this.potion_velocity.coins *= 2; // para o preco dos upgrades aumentar sempre que se compra 
               upgrades[1] = this.potion_velocity.coins;
               this.potion_hp.price_hp1.setText('x'+this.potion_velocity.coins) // atualiza o preco
             }else if(Phaser.Input.Keyboard.JustDown(this.press3)&& coins >= this.potion_damage.coins){
-              this.archer.archerDamage += this.potion_damage.coins;
+              this.archer.archerDamage += 15;
+              if(this.archer.archerDamage > 55){
+                this.archer.archerDamage = 100;
+              }
               coins -= this.potion_damage.coins;
               this.potion_damage.coins *= 2; // para o preco dos upgrades aumentar sempre que se compra 
               upgrades[2] = this.potion_damage.coins;
@@ -693,4 +707,13 @@ export default class Forest extends Phaser.Scene{
     complete() {
         console.log("COMPLETE!");
     }
+
+    // pause game
+    pauseGame(){
+        this.scene.launch('Paused',{
+            map: 'Forest',
+        });
+        this.scene.pause();
+    }
+
 }

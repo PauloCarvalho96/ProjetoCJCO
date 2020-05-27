@@ -20,6 +20,7 @@ export default class EnemiesGroup extends Phaser.Physics.Arcade.Group {
         let child8 = new Eye(scene,1589,165,20);
         let child9 = new Eye(scene,3940,500,20);
         let child10 = new Eye(scene,1047,165,20);
+        let child11 = new Eye(scene,2050,110,30);
 
         this.add(child1,true);
         this.add(child2);
@@ -31,6 +32,7 @@ export default class EnemiesGroup extends Phaser.Physics.Arcade.Group {
         this.add(child8);
         this.add(child9);
         this.add(child10);
+        this.add(child11);
 
         this.setVelocityX(10);
 
